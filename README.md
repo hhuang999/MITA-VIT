@@ -4,6 +4,8 @@
 
 当前阶段为 P0 环境准备。下载、模型加载和环境检查入口已实现；探针与 RQ 实验入口在检查点 1 确认后开发。
 
+本地环境已通过验收。计划中的 `hhuang999/MITA-VIT` 私有仓库尚未创建：自动审批要求用户明确确认上传内容与目标账号；下文 HPC clone 命令须等仓库创建完成后使用。
+
 ## 本地快速开始
 
 在本目录打开终端，VS Code 解释器选择 `.venv/Scripts/python.exe`。环境为 Python 3.12.11、PyTorch 2.7.0 + CUDA 12.8、TorchVision 0.22.0、timm 1.0.30。Python 与邻近课程项目隔离。

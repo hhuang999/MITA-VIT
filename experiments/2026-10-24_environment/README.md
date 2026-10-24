@@ -8,3 +8,5 @@
 `uv pip check --python .venv/Scripts/python.exe`：57 个包兼容，退出码 0。
 
 测试覆盖 timm DeiT-S 的层数、head 数、patch/CLS 数和 CPU 前向；真实图片脚本覆盖预训练缓存加载、默认预处理及 CUDA 前向。本阶段尚未实现或检验注意力探针，没有研究结果。
+
+已验证代码归档于初始化提交 `f114977`。下载文献脚本在归档前只增加了 BibTeX 行末空白清理，模型与测试代码未变。
