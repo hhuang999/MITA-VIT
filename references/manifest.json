@@ -1,0 +1,100 @@
+[
+  {
+    "name": "mita",
+    "arxiv_id": "2602.01219",
+    "url": "https://arxiv.org/abs/2602.01219",
+    "pdf": "references/papers/mita_2602.01219.pdf",
+    "sha256": "18aeca2c72f3632a220685f1d8a346c4e640e5cc37f222c9b3c77bb913b5e9d3"
+  },
+  {
+    "name": "clustered_attention",
+    "arxiv_id": "2007.04825",
+    "url": "https://arxiv.org/abs/2007.04825",
+    "pdf": "references/papers/clustered_attention_2007.04825.pdf",
+    "sha256": "17040134b52617bc7a8829d8a8d62fa0ba97c8c8f55053369957623f34b58d73"
+  },
+  {
+    "name": "attention_flow",
+    "arxiv_id": "2005.00928",
+    "url": "https://arxiv.org/abs/2005.00928",
+    "pdf": "references/papers/attention_flow_2005.00928.pdf",
+    "sha256": "7af1bfaabb468d3e6e7883cda36a613d7478008b05121b5c3cface8157ab74e2"
+  },
+  {
+    "name": "attention_not_explanation",
+    "arxiv_id": "1902.10186",
+    "url": "https://arxiv.org/abs/1902.10186",
+    "pdf": "references/papers/attention_not_explanation_1902.10186.pdf",
+    "sha256": "ffc666e7e27ddf832b209027d9b35c5a8525d0bd2b114099d0bec252135fd322"
+  },
+  {
+    "name": "attention_not_not_explanation",
+    "arxiv_id": "1908.04626",
+    "url": "https://arxiv.org/abs/1908.04626",
+    "pdf": "references/papers/attention_not_not_explanation_1908.04626.pdf",
+    "sha256": "d9e507dfa544d04e2738b069352cad8849246e58650a1f6c19f6ba7091260a47"
+  },
+  {
+    "name": "transformer_interpretability",
+    "arxiv_id": "2012.09838",
+    "url": "https://arxiv.org/abs/2012.09838",
+    "pdf": "references/papers/transformer_interpretability_2012.09838.pdf",
+    "sha256": "5464f9b31fa05d32e93f373f1f5de032a3c72aa86e35b4be4ef8f9e1456a7768"
+  },
+  {
+    "name": "eraser",
+    "arxiv_id": "1911.03429",
+    "url": "https://arxiv.org/abs/1911.03429",
+    "pdf": "references/papers/eraser_1911.03429.pdf",
+    "sha256": "c6dc7b4b93850339c32dbb64a453d79e5bc65a8c8b659b4a02f5d8fb9a9bab21"
+  },
+  {
+    "name": "attention_knockout",
+    "arxiv_id": "2304.14767",
+    "url": "https://arxiv.org/abs/2304.14767",
+    "pdf": "references/papers/attention_knockout_2304.14767.pdf",
+    "sha256": "cd79268a052edc843dddb5dae9534a7803fb1202a574a503dd2faf8541b8b217"
+  },
+  {
+    "name": "deit",
+    "arxiv_id": "2012.12877",
+    "url": "https://arxiv.org/abs/2012.12877",
+    "pdf": "references/papers/deit_2012.12877.pdf",
+    "sha256": "a0fbdd27c115594326fd75b3a0f569fb94cbf0b5c34c84fdc204d993064188bb"
+  },
+  {
+    "name": "dino",
+    "arxiv_id": "2104.14294",
+    "url": "https://arxiv.org/abs/2104.14294",
+    "pdf": "references/papers/dino_2104.14294.pdf",
+    "sha256": "aa464cfd59a428890190bea1065823a491a853478b4fb2a25f5eb44d442ce296"
+  },
+  {
+    "name": "topk_attention",
+    "arxiv_id": "2106.06899",
+    "url": "https://arxiv.org/abs/2106.06899",
+    "pdf": "references/papers/topk_attention_2106.06899.pdf",
+    "sha256": "8afa96776455a24ee9b3e9d78d71394790ec42a42278708cc6e24a474be3ecf0"
+  },
+  {
+    "name": "registers",
+    "arxiv_id": "2309.16588",
+    "url": "https://arxiv.org/abs/2309.16588",
+    "pdf": "references/papers/registers_2309.16588.pdf",
+    "sha256": "e7b94bffc68d851322d799a8be387fc8b36d53f9e6cc757bac511305acd60776"
+  },
+  {
+    "name": "rise",
+    "arxiv_id": "1806.07421",
+    "url": "https://arxiv.org/abs/1806.07421",
+    "pdf": "references/papers/rise_1806.07421.pdf",
+    "sha256": "19dc6a77a1f94328145b35979a7c212bc11b6bdadd5d255ae588686a6e5fa92e"
+  },
+  {
+    "name": "teaching_matters",
+    "arxiv_id": "2212.03862",
+    "url": "https://arxiv.org/abs/2212.03862",
+    "pdf": "references/papers/teaching_matters_2212.03862.pdf",
+    "sha256": "4a5989d0df40656b45ff86f9dedb599b5e9322dc53d9d1e696e9dc73cd5e01d1"
+  }
+]

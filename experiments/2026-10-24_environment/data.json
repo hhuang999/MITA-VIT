@@ -1,0 +1,12 @@
+{
+  "imagenette_validation": 3925,
+  "pet_test": 3669,
+  "pet_test_pairs_complete": true,
+  "pet_label_meaning": {
+    "1": "foreground",
+    "2": "background",
+    "3": "boundary"
+  },
+  "pet_archives": "Copied from existing local course downloads; torchvision verified MD5 before extraction",
+  "imagenet": "Access denied by Hugging Face (403); user deferred authorization"
+}

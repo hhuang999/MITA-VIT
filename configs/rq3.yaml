@@ -1,0 +1,11 @@
+base: base.yaml
+rq: rq3
+dataset: oxford_iiit_pet
+split: test
+k: [4, 8, 16, 32, 64]
+layers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+heatmap_layers: [9, 10, 11, 12]
+foreground_threshold: 0.5
+boundary_label: 3
+gaussian_sigma_fraction: 0.25
+baselines: [cls_attention, center_gaussian]
