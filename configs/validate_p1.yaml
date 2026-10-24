@@ -1,0 +1,15 @@
+model: deit_small_patch16_224.fb_in1k
+dataset: imagenette
+split: val
+device: cuda
+batch_size: 32
+num_workers: 0
+n_images: 3925
+subset_seed: 0
+m: 16
+k: 197
+grouping: grid
+readset: ours
+mode: strict
+max_logit_error: 0.00001
+output: experiments/2026-10-24_p1_validation
