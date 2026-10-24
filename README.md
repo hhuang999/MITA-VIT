@@ -2,7 +2,7 @@
 
 把预训练 ViT 每层每个注意力头概括成“16 块区域各读取 k 个 token”，再通过限制读取集合检验预测是否保持。核心模型是 DeiT-S/16，研究问题依次为概括的忠实性（RQ1）、逐层差异（RQ2）和与物体前景的对应（RQ3）。
 
-当前阶段为 P0 环境验收完成（ImageNet 授权按用户决定延后）。下载、模型加载和环境检查入口已实现；探针与 RQ 实验入口在检查点 1 确认后开发。
+当前阶段为 P1 核心探针验收完成，停在检查点 2。读取模式、固定说明书的严格执行、网格/K-means 分组、随机对照及指标已实现；RQ1 曲线试跑在下一阶段进行。实现与验收讲解见 [检查点 2](docs/checkpoint_2.md)。
 
 本地环境已通过验收，项目已同步到 [MITA-VIT 私有仓库](https://github.com/hhuang999/MITA-VIT)。默认分支为 `main`。
 
@@ -32,7 +32,7 @@ CUDA 安装组合来自 [PyTorch 官方版本说明](https://pytorch.org/get-sta
 .\.venv\Scripts\python.exe scripts/check_environment.py
 ```
 
-真实图片推理记录写入 `experiments/2026-10-24_environment/environment.json`。单张图片的预测只用于检查环境，不代表数据集准确率。RQ1 调试运行待 P2 交付，计划使用 Imagenette 的 500 张验证图片。
+P0 单图推理记录位于 `experiments/2026-10-24_environment/environment.json`。P1 已在 Imagenette 全部 3,925 张验证图上检查：原模型准确率 80.28%，读取模式和 k=197 全层执行的输出均与原模型完全一致；记录位于 `experiments/2026-10-24_p1_validation/`。RQ1 调试运行待 P2 交付，计划使用约 500 张验证图片。
 
 `.env` 中保留 `HF_TOKEN`，通过 `python-dotenv` 读取。默认缓存为 `checkpoints/huggingface/` 和 `checkpoints/torch/`；可用 `HF_HOME`、`TORCH_HOME` 显式指定其他磁盘。
 
@@ -50,7 +50,7 @@ CUDA 安装组合来自 [PyTorch 官方版本说明](https://pytorch.org/get-sta
 
 ## 目录与文档
 
-`src/mita_probe/` 为可编辑安装的包，`scripts/` 放命令入口，`configs/` 保存研究设置；`tests/` 放测试，`hpc/` 放远程环境脚本。当前配置文件记录约定值，配置加载与实验执行在后续阶段实现。
+`src/mita_probe/` 为可编辑安装的包，`scripts/` 放命令入口，`configs/` 保存研究设置；`tests/` 放测试，`hpc/` 放远程环境脚本。`configs/validate_p1.yaml` 可用于实现验收；RQ1–RQ3 配置加载与实验入口在对应阶段实现。
 
 - [研究设计](docs/research_design.md)：方法公式与实验依据。
 - [研究叙事](docs/research_narrative.md)：保留所有【待填】。
@@ -83,6 +83,6 @@ bash hpc/download_data.sh imagenet
 
 该入口只下载 validation（50,000 张），保存 seed=0 的 5,000 张抽样索引，后续 RQ1/RQ2 共用。Hugging Face 的 parquet 分片与解码后的数据都会占空间，下载前核对存储余量。
 
-`hpc/run.sh rq1`（或 rq2/rq3）为后续实验模板，依赖对应的 `scripts/run_rq*.py`；P0 阶段这些入口尚未实现，模板会明确报错。原有连通测试保留为 `hpc/train_smoke.py`，未经用户确认不启动。
+`hpc/run.sh rq1`（或 rq2/rq3）为后续实验模板，依赖对应的 `scripts/run_rq*.py`；当前这些入口尚未实现，模板会明确报错。原有连通测试保留为 `hpc/train_smoke.py`，未经用户确认不启动。
 
 代码用本地 push / HPC pull 同步；远程生成的结果小文件经检查后 commit / push，本地 pull。若平台不能访问 GitHub，按 HPC 说明使用 scp 或 JupyterLab 上传代码，数据不从本地上传。用完停止开发环境以释放资源。

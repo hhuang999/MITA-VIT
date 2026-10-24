@@ -1,0 +1,18 @@
+2026-10-24 16:43:21,578 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k)
+2026-10-24 16:43:21,590 [timm/deit_small_patch16_224.fb_in1k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-24 16:43:21,948 Validating 3925 images at commit 2b17f538870159c4c958a651908301b3f377c1a0
+2026-10-24 16:43:25,247 320/3925 images; max execution logit error 0
+2026-10-24 16:43:28,199 640/3925 images; max execution logit error 0
+2026-10-24 16:43:31,192 960/3925 images; max execution logit error 0
+2026-10-24 16:43:34,246 1280/3925 images; max execution logit error 0
+2026-10-24 16:43:37,330 1600/3925 images; max execution logit error 0
+2026-10-24 16:43:40,478 1920/3925 images; max execution logit error 0
+2026-10-24 16:43:43,560 2240/3925 images; max execution logit error 0
+2026-10-24 16:43:46,839 2560/3925 images; max execution logit error 0
+2026-10-24 16:43:50,082 2880/3925 images; max execution logit error 0
+2026-10-24 16:43:53,314 3200/3925 images; max execution logit error 0
+2026-10-24 16:43:56,532 3520/3925 images; max execution logit error 0
+2026-10-24 16:44:00,096 3840/3925 images; max execution logit error 0
+2026-10-24 16:44:00,981 3925/3925 images; max execution logit error 0
+2026-10-24 16:44:00,985 Results: {'run_id': '2026-10-24_p1_validation', 'timestamp': '2026-10-24T16:43:21.945708+08:00', 'git_commit': '2b17f538870159c4c958a651908301b3f377c1a0', 'model': 'deit_small_patch16_224.fb_in1k', 'dataset': 'imagenette_val_160px', 'n_images': 3925, 'rq': 'p1_validation', 'replace_scope': 'all', 'layer': '', 'grouping': 'grid', 'readset': 'ours', 'seed': 0, 'mode': 'strict', 'm': 16, 'k': 197, 'agree': 1.0, 'agree_ci_low': '', 'agree_ci_high': '', 'kl': 0.0, 'acc_original': 0.8028025477707006, 'acc_executed': 0.8028025477707006, 'notes': 'P1 full-key identity check; not a fidelity sweep'}; checks: {'original_correct': 3151, 'n_images': 3925, 'execution_agreed': 3925, 'read_agreed': 3925, 'max_read_logit_error': 0.0, 'max_execute_logit_error': 0.0, 'elapsed_seconds': 39.03472700002021}
+2026-10-24 16:44:00,985 P1 validation passed

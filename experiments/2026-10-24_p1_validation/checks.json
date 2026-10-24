@@ -1,0 +1,9 @@
+{
+  "original_correct": 3151,
+  "n_images": 3925,
+  "execution_agreed": 3925,
+  "read_agreed": 3925,
+  "max_read_logit_error": 0.0,
+  "max_execute_logit_error": 0.0,
+  "elapsed_seconds": 39.03472700002021
+}

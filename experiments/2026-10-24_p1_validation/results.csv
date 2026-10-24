@@ -1,0 +1,2 @@
+run_id,timestamp,git_commit,model,dataset,n_images,rq,replace_scope,layer,grouping,readset,seed,mode,m,k,agree,agree_ci_low,agree_ci_high,kl,acc_original,acc_executed,notes
+2026-10-24_p1_validation,2026-10-24T16:43:21.945708+08:00,2b17f538870159c4c958a651908301b3f377c1a0,deit_small_patch16_224.fb_in1k,imagenette_val_160px,3925,p1_validation,all,,grid,ours,0,strict,16,197,1.0,,,0.0,0.8028025477707006,0.8028025477707006,P1 full-key identity check; not a fidelity sweep
