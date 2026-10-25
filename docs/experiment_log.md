@@ -1,5 +1,14 @@
 # 实验日志
 
+## 2026-10-26 rq2_smoke 与 rq3_smoke
+
+- 目的：正式运行前验证逐层入口和 Pet observe 指标链路。
+- 设置：`configs/rq2_smoke.yaml` 为相同 ImageNet 索引前 50 张、24 组；`configs/rq3_smoke.yaml` 为 Pet test 前 50 张、k=16/32，不作为研究结论。
+- 在哪跑：本地 RTX 4060，代码 `4915a9e`；RQ2 4.68 秒，RQ3 1.98 秒。
+- 结果：RQ2 24 组全部完成，恒等一致率 100%、读取和执行误差 0；RQ3 两个 k 的 observe 输出不变，全部层/热图/背景读取记录产出。
+- 异常：无。正式结果将独立写入新目录。
+- 下一步：HPC 排队结束后先重跑 pytest 与 200 张恒等，再按任务优先级运行。
+
 ## 2026-10-26 identity_200_local 与 pet_alignment
 
 - 目的：正式补跑前的 200 张恒等验收，以及 RQ3 图片/mask/token 的几何对齐检查。
