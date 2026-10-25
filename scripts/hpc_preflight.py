@@ -53,9 +53,15 @@ def main():
         report["gpu"] = {"name": torch.cuda.get_device_name(0),
                          "memory_gib": round(torch.cuda.get_device_properties(0).total_memory / 2**30, 2)}
     if shutil.which("nvidia-smi"):
-        result = subprocess.run(["nvidia-smi", "--query-gpu=name,driver_version,memory.total", "--format=csv,noheader"],
-                                capture_output=True, text=True, timeout=15)
-        report["nvidia_smi"] = result.stdout.strip() if result.returncode == 0 else "unavailable"
+        try:
+            result = subprocess.run(
+                ["nvidia-smi", "--query-gpu=name,driver_version,memory.total", "--format=csv,noheader"],
+                capture_output=True, text=True, timeout=15,
+            )
+            report["nvidia_smi"] = result.stdout.strip() if result.returncode == 0 else "unavailable"
+        except (OSError, subprocess.TimeoutExpired) as error:
+            # CPU containers can expose a non-executable NVIDIA placeholder.
+            report["nvidia_smi"] = f"unavailable ({type(error).__name__})"
     if args.stage in {"assets", "ready"}:
         if args.stage == "ready" and not torch.cuda.is_available():
             errors.append("The first GPU job requires a visible CUDA device")

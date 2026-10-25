@@ -12,6 +12,7 @@
 - 代码已推送到私有仓库；以同一分支的 Git bundle 经 SSH 同步，远程保留完整提交历史并将 origin 设为私有仓库，避免在计算节点存放 GitHub 凭据。
 - 安装调整：PyTorch 源下载未锁定的 Pillow 12.3 极慢，且随后会被项目要求的 Pillow 13.0 替换；主动停止该安装，保留日志与已下载缓存。改为先从 PyTorch 源安装 torch/torchvision wheel（`--no-deps`），再从 PyPI 一并解析其运行依赖和项目锁定依赖，最后执行 `pip check`。版本不变。
 - 网络调整：HPC 对 PyPI 主站同一 simple 页面约 4.09 秒，对清华镜像约 0.44 秒；通用依赖使用 `PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple`，CUDA wheel 仍通过显式 PyTorch 官方索引。前两次慢速安装日志保留在远程工作目录，没有修改锁定版本。
+- 一次 CUDA 运行库下载触发 ReadTimeout，已保留日志，使用 `PIP_DEFAULT_TIMEOUT=120` 复用缓存重试；安装完成，`pip check` 无依赖冲突。CPU 环境初次 preflight 遇到 `nvidia-smi` 占位文件的 Exec format error；已将此类可选驱动信息采集失败记为 unavailable，GPU 作业仍必须通过 CUDA 可见性检查和完整测试。
 - 下一步：完成依赖和数据准备，提交首次作业脚本供用户审阅。
 
 P0/P1 实现验收、P2 试跑与正式研究结果分别记录。
