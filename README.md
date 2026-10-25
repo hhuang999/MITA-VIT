@@ -86,6 +86,8 @@ PYTHON_BIN=/absolute/persistent/path/mita-python/bin/python bash hpc/setup.sh
 
 `setup.sh` 要求显式提供 Python 3.11/3.12 的 `PYTHON_BIN`，在项目内创建 `.venv` 并安装固定依赖；不运行模型推理。CUDA 默认 cu128；GPU 环境中的 preflight 和测试负责检查实际驱动兼容性。若需切换 CUDA wheel，使用 `TORCH_INDEX_URL` 指定受支持的索引，并记录实际环境后重新验收，不更改 torch 2.7.0 与研究参数。
 
+HPC 访问 PyPI 主站较慢，本轮安装通用依赖时另设 `PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple`；CUDA wheel 仍使用显式 PyTorch 官方索引。安装来源可因网络条件调整，依赖锁定版本保持不变。
+
 在 HPC 独立设置 `.env`，不要通过 Git 传密钥。将 `HF_HOME`、`TORCH_HOME` 指向项目 `checkpoints/` 或持久化数据盘，用 `MITA_DATA_ROOT` 指定数据盘目录。先确认 HPC 是否有与固定版本/顺序一致的共享副本，没有则直接在 HPC 下载：
 
 ```bash

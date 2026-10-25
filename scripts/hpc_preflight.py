@@ -26,7 +26,7 @@ from mita_probe.io import source_commit, write_json
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--stage", choices=["environment", "ready"], default="environment")
+    parser.add_argument("--stage", choices=["environment", "assets", "ready"], default="environment")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.output.exists():
@@ -56,8 +56,8 @@ def main():
         result = subprocess.run(["nvidia-smi", "--query-gpu=name,driver_version,memory.total", "--format=csv,noheader"],
                                 capture_output=True, text=True, timeout=15)
         report["nvidia_smi"] = result.stdout.strip() if result.returncode == 0 else "unavailable"
-    if args.stage == "ready":
-        if not torch.cuda.is_available():
+    if args.stage in {"assets", "ready"}:
+        if args.stage == "ready" and not torch.cuda.is_available():
             errors.append("The first GPU job requires a visible CUDA device")
         try:
             weights = Path(hf_hub_download(MODEL_REPO, "model.safetensors", revision=MODEL_REVISION, local_files_only=True))
