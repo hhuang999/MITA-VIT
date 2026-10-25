@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 from mita_probe.runtime import configure_runtime
@@ -16,7 +17,7 @@ from huggingface_hub import HfApi, constants
 from timm.data import ImageNetInfo
 
 from mita_probe.data import ImageNetValidation, subset_indices
-from mita_probe.io import write_json
+from mita_probe.io import source_commit, write_json
 from mita_probe.models import load_model
 
 
@@ -26,6 +27,7 @@ def main():
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError(args.output)
+    commit = source_commit(ROOT)
     manifest = json.loads((ROOT / "data/imagenet_manifest.json").read_text())
     revision = manifest["revision"]
     cache = Path(constants.HF_HUB_CACHE) / "datasets--ILSVRC--imagenet-1k/snapshots" / revision
@@ -75,6 +77,7 @@ def main():
     if logits.shape != (32, 1000) or not torch.isfinite(logits).all():
         raise ValueError("ImageNet loader/model smoke check failed")
     report = {
+        "timestamp": datetime.now(timezone.utc).isoformat(), "git_commit": commit,
         "dataset": "ILSVRC/imagenet-1k", "revision": revision, "split": "validation",
         "n_images": len(data), "n_classes": 1000, "images_per_class": 50,
         "label_order_matches_timm": True,

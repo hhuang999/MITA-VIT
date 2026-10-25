@@ -43,7 +43,8 @@ def main() -> None:
         data = load_dataset(
             "parquet", split="validation",
             data_files={"validation": [str(path) for path in shards]},
-            cache_dir=str(args.root / "imagenet_cache"),
+            # Keep generated lock filenames below the Windows path-length limit.
+            cache_dir=str(args.root / "hf"),
         )
         if len(data) != 50000:
             raise ValueError("Expected all 50,000 ImageNet validation images")

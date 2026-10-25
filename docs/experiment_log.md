@@ -8,6 +8,7 @@ P0/P1 实现验收、P2 试跑与正式研究结果分别记录。
 - 设置：HF revision `49e2ee26f3810fb5a7536bbf732a7b07389a47b5`；仅 14 个 validation 分片，共 6,693,093,726 字节。
 - 在哪跑：本地；下载原始日志保留在忽略的 `data/imagenet_download.log` 和 `data/imagenet_prefetch.log`。
 - 异常与处理：先启动 datasets 下载，随后并行预取。Windows 无 symlink 的缓存流程中观察到已完成分片被另一进程重复下载；已核对进程身份并终止原始下载器（退出码 1，为主动终止），保留已下载文件及预取进程。入口改为先下载快照，再直接从本地 Parquet 生成数据集，避免重复传输。
+- 本地整理首次因生成的锁文件名过长报 WinError 206；缓存改为较短的 `data/hf/` 后重试，未重新下载分片。首次日志 `data/imagenet_prepare.log`、重试日志 `data/imagenet_prepare_retry.log` 均保留。
 - 下一步：下载完成后校验 14 个源 SHA-256、50,000 张 / 1,000 类标签、固定子集及真实图片推理。
 
 ## 2026-10-25 rq1_pilot
