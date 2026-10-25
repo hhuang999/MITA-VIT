@@ -1,0 +1,17 @@
+{
+  "gpu": "NVIDIA A800-SXM4-80GB",
+  "multiprocessors": 108,
+  "torch": "2.7.0+cu128",
+  "seed": 0,
+  "weights_shape": [
+    3072,
+    197
+  ],
+  "k": 16,
+  "draw_calls": 12,
+  "repeated_hashes": [
+    "2a5d6d9f33e6dcf4a80143ac29340de4e4bdf49bc5744af60c3fb2830d042e8f",
+    "2a5d6d9f33e6dcf4a80143ac29340de4e4bdf49bc5744af60c3fb2830d042e8f"
+  ],
+  "same_device_repeat_identical": true
+}
