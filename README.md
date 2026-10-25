@@ -43,7 +43,7 @@ P0 单图推理记录位于 `experiments/2026-10-24_environment/environment.json
 | DeiT-S/16 | `checkpoints/huggingface/` | 核心模型 |
 | Imagenette 160px | `data/imagenette2-160/` | 调试；原模型输出是 ImageNet 1000 类，不能直接与 10 类编号比较 |
 | Oxford-IIIT Pet | `data/oxford-iiit-pet/` | RQ3 测试集与 trimap |
-| ImageNet 验证集 | 尚未下载 | 当前 HF 账号未获授权，用户选择稍后处理；先查 HPC 共享副本 |
+| ImageNet 验证集 | 尚未下载 | 2026-10-25 已验证项目 token 可读取验证集文件；先查 HPC 共享副本 |
 | 14 篇参考文献 | `references/papers/` | PDF 不进 Git；来源与校验和见 `references/manifest.json` |
 
 文献可通过 `python scripts/download_references.py` 重建，BibTeX 见 `references/references.bib`。DINO、DINOv2、Waterbirds 属于选做项目，本阶段不下载。资源实际完成情况以 `docs/progress.md` 为准。
@@ -75,7 +75,7 @@ bash hpc/setup.sh
 
 `setup.sh` 默认使用镜像解释器创建独立 `.venv`。它要求 Python 3.11/3.12；若镜像版本不同，先提供符合版本的 `PYTHON_BIN`。CUDA 默认 cu128，必须先核对实际 GPU 驱动；可通过 `TORCH_INDEX_URL` 选择 PyTorch 2.7.0 支持的 cu118/cu126/cu128。脚本尚未在 HPC 实测。
 
-在 HPC 独立设置 `.env`，不要通过 Git 传密钥。将 `HF_HOME`、`TORCH_HOME` 指向项目 `checkpoints/` 或持久化数据盘，数据直接在 HPC 下载。ImageNet 先确认是否有共享副本；没有且账号获批后才执行：
+在 HPC 独立设置 `.env`，不要通过 Git 传密钥。将 `HF_HOME`、`TORCH_HOME` 指向项目 `checkpoints/` 或持久化数据盘，数据直接在 HPC 下载。ImageNet 账号授权已验证；先确认 HPC 是否有共享副本，没有则执行：
 
 ```bash
 bash hpc/download_data.sh imagenet

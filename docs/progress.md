@@ -1,4 +1,4 @@
-# 进度看板（最后更新：2026-10-24）
+# 进度看板（最后更新：2026-10-25）
 
 ## 当前阶段
 
@@ -12,7 +12,7 @@ P1 核心探针已完成并验收，分支 `feature/core-probe`；当前为检�
 | 目录及文档归位、凭据隔离 | 完成 | env 改为 .env；HPC 说明不进 Git |
 | 独立 Python 环境与依赖锁定 | 完成 | Python 3.12.11；torch 2.7.0+cu128；torchvision 0.22.0+cu128；timm 1.0.30 |
 | 模型与公开数据准备 | 完成 | DeiT-S；Imagenette 验证集 3,925 张；Pet 测试集 3,669 对 |
-| ImageNet 验证集 | 待做 | HF 文件请求 403；用户明确选择稍后处理授权；先查 HPC 共享副本 |
+| ImageNet 验证集 | 授权已验证，待下载 | 2026-10-25 项目 token 读取验证集分片成功（HTTP 206，Parquet 文件头有效）；先查 HPC 共享副本 |
 | 文献 PDF 与 BibTeX | 完成 | 交接 §2.6 的 14 篇；PDF 可解析，保留 SHA-256 与原始 BibTeX |
 | GPU 真实图片推理与 pytest | 完成 | 离线预训练权重推理、1 项结构/前向测试；不是 RQ 结果 |
 | 私有仓库与首个提交 | 完成 | [hhuang999/MITA-VIT](https://github.com/hhuang999/MITA-VIT)，已确认 private；main 已推送并跟踪 origin/main |
@@ -24,7 +24,6 @@ P1 核心探针已完成并验收，分支 `feature/core-probe`；当前为检�
 ## 需要用户决定或帮忙的事
 
 - 检查点 2：用户确认讲解后才进入 P2 试跑。
-- ImageNet 授权按用户决定延后，不影响 P1/P2 的 Imagenette 开发。
 - 首次 HPC 作业仍须审阅脚本并确认。
 
 ## 已完成的里程碑
@@ -33,3 +32,4 @@ P1 核心探针已完成并验收，分支 `feature/core-probe`；当前为检�
 - 2026-10-24：完成本地 CUDA 环境、模型/公开数据/文献准备；验收记录见 `experiments/2026-10-24_environment/`。
 - 2026-10-24：本地初始化提交 `f114977`；经用户明确授权创建 MITA-VIT 私有仓库并推送。凭据、数据、权重和文献 PDF 均未纳入 Git。
 - 2026-10-24：用户确认进入 P1；在独立分支完成核心探针，22 项测试通过，预训练模型在 Imagenette 上通过恒等验收；验收代码提交 `2b17f53`。
+- 2026-10-25：用户完成 ImageNet 授权；用项目 `.env` 中的 token 请求 `validation-00000-of-00014.parquet` 的前 4 字节，返回 HTTP 206、`Content-Range: bytes 0-3/479922797`，内容为 `PAR1`。实际文件访问已验证，尚未下载完整验证集。
