@@ -1,0 +1,6 @@
+k,contrast,difference,ci_low,ci_high,analysis
+4,kmeans_minus_grid,-0.0602,-0.07300499999999999,-0.046595000000000004,exploratory; no multiplicity adjustment
+8,kmeans_minus_grid,-0.0194,-0.034,-0.004790000000000009,exploratory; no multiplicity adjustment
+16,kmeans_minus_grid,0.02,0.008,0.031424999999999974,exploratory; no multiplicity adjustment
+32,kmeans_minus_grid,0.0266,0.0174,0.0362,exploratory; no multiplicity adjustment
+64,kmeans_minus_grid,0.0134,0.006,0.0208,exploratory; no multiplicity adjustment

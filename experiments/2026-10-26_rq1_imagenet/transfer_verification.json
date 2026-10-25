@@ -1,0 +1,7 @@
+{
+  "archive": "rq1-results.tar.gz",
+  "remote_sha256": "4e3a9fe0f0e6db49292559d68666e8fb257456385878e3990cba23b69d27b097",
+  "local_sha256": "4e3a9fe0f0e6db49292559d68666e8fb257456385878e3990cba23b69d27b097",
+  "passed": true,
+  "archive_retention": "Ignored local data directory; remote persistent work directory"
+}

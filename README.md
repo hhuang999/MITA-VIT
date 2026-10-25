@@ -34,6 +34,8 @@ CUDA 安装组合来自 [PyTorch 官方版本说明](https://pytorch.org/get-sta
 
 P0 单图推理记录位于 `experiments/2026-10-24_environment/environment.json`。P1 已在 Imagenette 全部 3,925 张验证图上检查：原模型准确率 80.28%，读取模式和 k=197 全层执行的输出均与原模型完全一致；记录位于 `experiments/2026-10-24_p1_validation/`。P2 的 500 张完整试跑见 `experiments/2026-10-25_rq1_pilot/`。
 
+正式 ImageNet 5,000 张 RQ1 已在 HPC A800 完成：35 组、175,000 条逐图结果；k=64 的 grid / random / K-means 一致率为 88.62% / 60.22% / 89.96%。[检查点 4 分析](docs/analysis/rq1.md)含曲线、置信区间、复现条件和下一步选项，完整输出位于 `experiments/2026-10-26_rq1_imagenet/`。
+
 `.env` 中保留 `HF_TOKEN`，通过 `python-dotenv` 读取。默认缓存为 `checkpoints/huggingface/` 和 `checkpoints/torch/`；可用 `HF_HOME`、`TORCH_HOME` 显式指定其他磁盘。
 
 ## 资源
@@ -103,9 +105,11 @@ bash hpc/download_data.sh imagenet
 
 本轮 HPC 直连 Hugging Face API 出现连接重置，使用临时 SSH loopback 转发接入本机已有代理；官方 `.hf.co` CDN 可直连。Xet 传输过慢时设置 `HF_HUB_DISABLE_XET=1`，以普通 HTTP 获取相同 revision。代理仅用于资产准备，动态端口不写入脚本；GPU 作业使用本地缓存与离线模式。CPU 环境可用 `scripts/hpc_preflight.py --stage assets --output <新 JSON 路径>` 检查完整资产，无需启动 GPU。
 
-远程完整数据与环境已通过验收：14 个官方分片哈希、5,000 张解码、模型权重和抽样索引均通过，12 项跨机器核对一致；记录位于 `experiments/2026-10-25_hpc_environment/`。临时隧道已关闭，CPU 开发环境已停止；持久化目录保留，GPU 验收待用户审阅脚本。
+远程完整数据与环境已通过验收：14 个官方分片哈希、5,000 张解码、模型权重和抽样索引均通过，12 项跨机器核对一致；记录位于 `experiments/2026-10-25_hpc_environment/`。临时隧道已关闭。2026-10-26 经用户确认完成 GPU 首次验收及正式 RQ1，环境已停止，持久化目录保留。
 
 首次 GPU 作业使用 `bash hpc/first_job.sh experiments/YYYY-MM-DD_hpc_first`：离线 preflight → 完整 pytest → ImageNet 固定子集前 50 张 × 35 组 → 曲线。脚本和资源选择见 [审阅文档](docs/hpc_first_job_review.md)，用户确认后才运行。
+
+本轮实际使用可分配的 2×A800 / CPU 16 核规格，研究脚本使用单 GPU。首次验收记录为 `experiments/2026-10-26_hpc_first/`，29 项测试通过，恒等误差为 0。固定 CUDA 随机种子不保证不同 GPU 上的采样序列相同；本轮保存了 4060/A800 诊断，复现实验应同时保留 GPU 型号、PyTorch 版本、batch 和种子设置。
 
 `bash hpc/run.sh rq1 experiments/YYYY-MM-DD_rq1_formal` 使用正式配置（ImageNet 5,000 张）；首次脚本不自动调用它。RQ2/RQ3 入口尚未实现。原有连通测试保留为 `hpc/train_smoke.py`。
 

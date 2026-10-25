@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-10-25T16:14:19.394705+00:00",
+  "git_commit": "8946e29271f227138e2e15ff0f8e72c817686038",
+  "stage": "ready",
+  "platform": "Linux",
+  "python": "3.12.15",
+  "isolated_venv": true,
+  "packages": {
+    "torch": "2.7.0+cu128",
+    "torchvision": "0.22.0+cu128",
+    "timm": "1.0.30",
+    "datasets": "5.1.0",
+    "huggingface-hub": "2.3.0",
+    "numpy": "2.5.4"
+  },
+  "cuda_runtime": "12.8",
+  "cuda_available": true,
+  "data_free_gib": 40620.1,
+  "model_revision": "91327a9c99f98fe6b524cd4d397b7226b80e1365",
+  "dataset_revision": "49e2ee26f3810fb5a7536bbf732a7b07389a47b5",
+  "gpu": {
+    "name": "NVIDIA A800-SXM4-80GB",
+    "memory_gib": 79.25
+  },
+  "nvidia_smi": "NVIDIA A800-SXM4-80GB, 570.86.10, 81920 MiB\nNVIDIA A800-SXM4-80GB, 570.86.10, 81920 MiB",
+  "model_sha256": "1e747b4a8d0df2cfbd3c450e8c97685d867448ab0c2ddbfb34b6885f5cb23e5b",
+  "dataset_images": 50000,
+  "subset_images": 5000,
+  "canonical_indices_sha256": "2a30b08255f2bed51235cb6d7462f53035cb4c129efc77bcde4f73436d8f0168",
+  "errors": [],
+  "passed": true
+}
