@@ -43,7 +43,7 @@ P0 单图推理记录位于 `experiments/2026-10-24_environment/environment.json
 | DeiT-S/16 | `checkpoints/huggingface/` | 核心模型 |
 | Imagenette 160px | `data/imagenette2-160/` | 调试；原模型输出是 ImageNet 1000 类，不能直接与 10 类编号比较 |
 | Oxford-IIIT Pet | `data/oxford-iiit-pet/` | RQ3 测试集与 trimap |
-| ImageNet 验证集 | 尚未下载 | 2026-10-25 已验证项目 token 可读取验证集文件；先查 HPC 共享副本 |
+| ImageNet 验证集 | `data/imagenet_val/` | 50,000 张已下载并校验；固定 seed=0 的 5,000 张索引，覆盖 994 类 |
 | 14 篇参考文献 | `references/papers/` | PDF 不进 Git；来源与校验和见 `references/manifest.json` |
 
 文献可通过 `python scripts/download_references.py` 重建，BibTeX 见 `references/references.bib`。DINO、DINOv2、Waterbirds 属于选做项目，本阶段不下载。资源实际完成情况以 `docs/progress.md` 为准。
@@ -91,6 +91,8 @@ bash hpc/download_data.sh imagenet
 ```
 
 该入口只下载 validation（50,000 张），保存 seed=0 的 5,000 张抽样索引，后续 RQ1/RQ2 共用。Hugging Face 的 parquet 分片与解码后的数据都会占空间，下载前核对存储余量。
+
+本地数据已于 2026-10-25 下载并验收。源分片约 6.69 GB，保存的数据集约 6.71 GB，另有缓存。数据版本见 `data/imagenet_manifest.json`，验收记录见 `experiments/2026-10-25_imagenet_download/verification.json`。`scripts/verify_imagenet.py --output <新的 JSON 路径>` 会核对源文件 SHA-256、标签顺序、固定子集解码及 32 张真实图片的模型前向。
 
 `bash hpc/run.sh rq1 experiments/YYYY-MM-DD_rq1_formal` 使用正式配置（ImageNet 5,000 张）；RQ2/RQ3 入口尚未实现。原有连通测试保留为 `hpc/train_smoke.py`，未经用户确认不启动首次 HPC 作业。
 

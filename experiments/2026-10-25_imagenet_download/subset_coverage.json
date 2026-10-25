@@ -1,0 +1,15 @@
+{
+  "subset_size": 5000,
+  "subset_seed": 0,
+  "represented_classes": 994,
+  "missing_classes": [
+    379,
+    744,
+    770,
+    905,
+    910,
+    939
+  ],
+  "min_nonzero_class_count": 1,
+  "max_class_count": 13
+}

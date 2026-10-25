@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-P2 的完整 RQ1 试跑已完成，独立分支 `feature/rq1-pilot`。检查点 3 的曲线、统计与正式实验计划见 `docs/checkpoint_3.md`；ImageNet 验证集下载与校验进行中。
+P2 的完整 RQ1 试跑与 ImageNet 验证集下载、校验均已完成，独立分支 `feature/rq1-pilot`。当前停在检查点 3，曲线、统计与正式实验计划见 `docs/checkpoint_3.md`。尚未启动 P3 / P4。
 
 ## 任务
 
@@ -12,7 +12,7 @@ P2 的完整 RQ1 试跑已完成，独立分支 `feature/rq1-pilot`。检查点 
 | 目录及文档归位、凭据隔离 | 完成 | env 改为 .env；HPC 说明不进 Git |
 | 独立 Python 环境与依赖锁定 | 完成 | Python 3.12.11；torch 2.7.0+cu128；torchvision 0.22.0+cu128；timm 1.0.30 |
 | 模型与公开数据准备 | 完成 | DeiT-S；Imagenette 验证集 3,925 张；Pet 测试集 3,669 对 |
-| ImageNet 验证集 | 进行中 | 用户授权本地下载完整 validation；固定数据 revision，下载后核对 SHA-256 与 seed=0 子集 |
+| ImageNet 验证集 | 完成 | 50,000 张 / 1,000 类；14 个分片 SHA-256 通过；seed=0 的 5,000 张覆盖 994 类，全部可解码；32 张 CUDA 前向通过 |
 | 文献 PDF 与 BibTeX | 完成 | 交接 §2.6 的 14 篇；PDF 可解析，保留 SHA-256 与原始 BibTeX |
 | GPU 真实图片推理与 pytest | 完成 | 离线预训练权重推理、1 项结构/前向测试；不是 RQ 结果 |
 | 私有仓库与首个提交 | 完成 | [hhuang999/MITA-VIT](https://github.com/hhuang999/MITA-VIT)，已确认 private；main 已推送并跟踪 origin/main |
@@ -36,3 +36,4 @@ P2 的完整 RQ1 试跑已完成，独立分支 `feature/rq1-pilot`。检查点 
 - 2026-10-24：用户确认进入 P1；在独立分支完成核心探针，22 项测试通过，预训练模型在 Imagenette 上通过恒等验收；验收代码提交 `2b17f53`。
 - 2026-10-25：用户完成 ImageNet 授权；用项目 `.env` 中的 token 请求 `validation-00000-of-00014.parquet` 的前 4 字节，返回 HTTP 206、`Content-Range: bytes 0-3/479922797`，内容为 `PAR1`。实际文件访问已验证，尚未下载完整验证集。
 - 2026-10-25：用户确认检查点 2 并授权进入 P2；完成 Imagenette 500 张完整 RQ1，代码提交 `b436890`，结果见 `experiments/2026-10-25_rq1_pilot/`。预设 k≤64 的样本一致率均未达到 90%。
+- 2026-10-25：完成 ImageNet validation 下载和数据验收，数据位于 `data/imagenet_val/`；源版本、14 个哈希、标签与解码验证见 `experiments/2026-10-25_imagenet_download/verification.json`。正式 5,000 张 RQ1 与恒等验收留待 P4。
