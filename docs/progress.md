@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-用户已确认检查点 2，进入 P2；独立分支 `feature/rq1-pilot`。本地 Imagenette 500 张运行完整 RQ1 试跑，并下载 ImageNet 验证集。下一个检查点为 3：试跑曲线、异常分析与正式实验计划。
+P2 的完整 RQ1 试跑已完成，独立分支 `feature/rq1-pilot`。检查点 3 的曲线、统计与正式实验计划见 `docs/checkpoint_3.md`；ImageNet 验证集下载与校验进行中。
 
 ## 任务
 
@@ -12,7 +12,7 @@
 | 目录及文档归位、凭据隔离 | 完成 | env 改为 .env；HPC 说明不进 Git |
 | 独立 Python 环境与依赖锁定 | 完成 | Python 3.12.11；torch 2.7.0+cu128；torchvision 0.22.0+cu128；timm 1.0.30 |
 | 模型与公开数据准备 | 完成 | DeiT-S；Imagenette 验证集 3,925 张；Pet 测试集 3,669 对 |
-| ImageNet 验证集 | 授权已验证，待下载 | 2026-10-25 项目 token 读取验证集分片成功（HTTP 206，Parquet 文件头有效）；先查 HPC 共享副本 |
+| ImageNet 验证集 | 进行中 | 用户授权本地下载完整 validation；固定数据 revision，下载后核对 SHA-256 与 seed=0 子集 |
 | 文献 PDF 与 BibTeX | 完成 | 交接 §2.6 的 14 篇；PDF 可解析，保留 SHA-256 与原始 BibTeX |
 | GPU 真实图片推理与 pytest | 完成 | 离线预训练权重推理、1 项结构/前向测试；不是 RQ 结果 |
 | 私有仓库与首个提交 | 完成 | [hhuang999/MITA-VIT](https://github.com/hhuang999/MITA-VIT)，已确认 private；main 已推送并跟踪 origin/main |
@@ -20,6 +20,8 @@
 | P1 核心探针实现 | 完成 | grid/k-means、读取与固定说明书执行、随机对照、指标、Imagenette 加载 |
 | P1 单元与集成测试 | 完成 | 22 项通过，包含 CPU/CUDA、手算、平均性质、k=197 恒等、无 NaN、作用域和恢复 |
 | P1 真实数据验收与讲解 | 完成 | Imagenette 3,925 张，准确率 80.28%；读取与 k=197 全层执行输出误差均为 0；讲解见 checkpoint_2.md |
+| P2 完整 RQ1 试跑 | 完成 | 500 张、35 组；grid k=64 一致率 88.2%，random 51.88%，K-means 86.8%；耗时 170.7 秒 |
+| P2 测试、曲线与检查点报告 | 完成 | 27 项测试；k=197 一致率 100%、输出误差 0；checkpoint_3.md 与 PNG/PDF 曲线 |
 
 ## 需要用户决定或帮忙的事
 
@@ -33,3 +35,4 @@
 - 2026-10-24：本地初始化提交 `f114977`；经用户明确授权创建 MITA-VIT 私有仓库并推送。凭据、数据、权重和文献 PDF 均未纳入 Git。
 - 2026-10-24：用户确认进入 P1；在独立分支完成核心探针，22 项测试通过，预训练模型在 Imagenette 上通过恒等验收；验收代码提交 `2b17f53`。
 - 2026-10-25：用户完成 ImageNet 授权；用项目 `.env` 中的 token 请求 `validation-00000-of-00014.parquet` 的前 4 字节，返回 HTTP 206、`Content-Range: bytes 0-3/479922797`，内容为 `PAR1`。实际文件访问已验证，尚未下载完整验证集。
+- 2026-10-25：用户确认检查点 2 并授权进入 P2；完成 Imagenette 500 张完整 RQ1，代码提交 `b436890`，结果见 `experiments/2026-10-25_rq1_pilot/`。预设 k≤64 的样本一致率均未达到 90%。

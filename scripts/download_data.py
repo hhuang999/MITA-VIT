@@ -28,10 +28,15 @@ def main() -> None:
         print(f"Oxford-IIIT Pet test: {len(data)} images")
     else:
         from datasets import load_dataset
-        from huggingface_hub import HfApi
+        from huggingface_hub import HfApi, snapshot_download
         import numpy as np
 
         revision = HfApi().dataset_info("ILSVRC/imagenet-1k", token=True).sha
+        print(f"Downloading ImageNet validation at revision {revision}", flush=True)
+        snapshot_download(
+            "ILSVRC/imagenet-1k", repo_type="dataset", revision=revision, token=True,
+            allow_patterns=["data/validation-*.parquet"], max_workers=4,
+        )
         data = load_dataset(
             "ILSVRC/imagenet-1k", split="validation", token=True,
             revision=revision, data_files={"validation": "data/validation-*.parquet"},

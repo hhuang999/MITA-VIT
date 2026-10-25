@@ -43,13 +43,14 @@ def main():
         ax.set_axisbelow(True)
         if metric == "agree":
             ax.axhline(90, color="#999999", linestyle="--", linewidth=1)
-            ax.text(4.1, 91.5, "90% reference", color="#666666", fontsize=9)
+            ax.text(62, 91.5, "90% reference", ha="right", color="#666666", fontsize=9)
             ax.set_ylim(0, 103)
         else:
             ax.set_ylim(bottom=0)
         ax.set_title(args.title, loc="left", fontsize=13, pad=14)
-        ax.legend(frameon=False, loc="best", fontsize=10)
-        fig.get_layout_engine().set(rect=(0, .055, 1, 1))
+        ax.legend(frameon=True, facecolor="white", edgecolor="none", framealpha=1,
+                  loc="upper left" if metric == "agree" else "upper right", fontsize=10)
+        fig.get_layout_engine().set(rect=(0, .055, 1, .945))
         footer = ("All 12 layers | m = 16 | Frozen original-model summaries"
                   + (" | Error bars: ±1 seed SD" if metric == "agree" else ""))
         fig.text(.5, .015, footer, ha="center", fontsize=8, color="#555555")
