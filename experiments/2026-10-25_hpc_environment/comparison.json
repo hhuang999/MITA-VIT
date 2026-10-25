@@ -1,0 +1,18 @@
+{
+  "checks": {
+    "revision": true,
+    "n_images": true,
+    "n_classes": true,
+    "images_per_class": true,
+    "indices_sha256": true,
+    "decoded_subset_images": true,
+    "label_order_matches_timm": true,
+    "shards": true,
+    "model_sha256": true,
+    "canonical_indices_sha256": true,
+    "remote_assets_passed": true,
+    "no_remote_inference": true
+  },
+  "passed": true,
+  "remote_source_commit": "8946e29271f227138e2e15ff0f8e72c817686038"
+}

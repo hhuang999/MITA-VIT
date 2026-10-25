@@ -13,7 +13,12 @@
 - 安装调整：PyTorch 源下载未锁定的 Pillow 12.3 极慢，且随后会被项目要求的 Pillow 13.0 替换；主动停止该安装，保留日志与已下载缓存。改为先从 PyTorch 源安装 torch/torchvision wheel（`--no-deps`），再从 PyPI 一并解析其运行依赖和项目锁定依赖，最后执行 `pip check`。版本不变。
 - 网络调整：HPC 对 PyPI 主站同一 simple 页面约 4.09 秒，对清华镜像约 0.44 秒；通用依赖使用 `PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple`，CUDA wheel 仍通过显式 PyTorch 官方索引。前两次慢速安装日志保留在远程工作目录，没有修改锁定版本。
 - 一次 CUDA 运行库下载触发 ReadTimeout，已保留日志，使用 `PIP_DEFAULT_TIMEOUT=120` 复用缓存重试；安装完成，`pip check` 无依赖冲突。CPU 环境初次 preflight 遇到 `nvidia-smi` 占位文件的 Exec format error；已将此类可选驱动信息采集失败记为 unavailable，GPU 作业仍必须通过 CUDA 可见性检查和完整测试。
-- 下一步：完成依赖和数据准备，提交首次作业脚本供用户审阅。
+- 网络异常：HPC 直连 Hugging Face 的 curl、urllib 和 hub 客户端均出现连接重置，下载流程停止。使用临时、仅监听远程 loopback 的 SSH 转发连接本机已有代理后，官方源 HTTP 200，固定 revision 权重已缓存；ImageNet 也由 HPC 端通过此连接从官方源下载，未上传本地数据副本。作业阶段使用离线模式。
+- 下载调整：Xet 分块传输过慢，保留未完成缓存到备份目录后，设置 `HF_HUB_DISABLE_XET=1`，用固定 revision 的 `snapshot_download(max_workers=14)` 预取 validation 分片。API 通过临时代理、官方 `.hf.co` CDN 直连；随后项目下载入口复用缓存生成数据集与索引。临时隧道曾断开一次，恢复后下载完成，未修改数据版本或内容。
+- 远程最终验收：代码 `8946e29271f227138e2e15ff0f8e72c817686038`；Python 3.12.15，torch 2.7.0+cu128，torchvision 0.22.0+cu128，timm 1.0.30；环境 preflight、assets preflight 和 pip check 全部通过，保存 72 项依赖清单。
+- 数据结果：50,000 张、1,000 类各 50 张；14 个官方分片 SHA-256 全部一致，固定 seed=0 的 5,000 张全部解码。模型权重、标签与索引等 12 项跨机器核对全部通过。记录见 `experiments/2026-10-25_hpc_environment/`；`loader_smoke.performed=false`，未执行远程模型推理。
+- 收尾：临时 SSH 代理隧道已关闭。原浏览器任务空间消失后，经用户明确同意重新打开平台，仅停止 CPU 环境 `mita-p3-env`；平台显示“退出”，随后关闭任务空间。代码、独立解释器、数据与缓存均位于持久化 SSD。
+- 下一步：用户审阅 `docs/hpc_first_job_review.md` 与 `hpc/first_job.sh`；确认后执行首次 GPU 验收，通过后再进行正式 5,000 张 RQ1。
 
 P0/P1 实现验收、P2 试跑与正式研究结果分别记录。
 
