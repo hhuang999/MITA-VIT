@@ -50,7 +50,16 @@ P0 单图推理记录位于 `experiments/2026-10-24_environment/environment.json
 
 ## 目录与文档
 
-`src/mita_probe/` 为可编辑安装的包，`scripts/` 放命令入口，`configs/` 保存研究设置；`tests/` 放测试，`hpc/` 放远程环境脚本。`configs/validate_p1.yaml` 可用于实现验收；RQ1–RQ3 配置加载与实验入口在对应阶段实现。
+`src/mita_probe/` 为可编辑安装的包，`scripts/` 放命令入口，`configs/` 保存研究设置；`tests/` 放测试，`hpc/` 放远程环境脚本。`configs/validate_p1.yaml` 可用于实现验收；RQ1 入口已实现，RQ2/RQ3 随后续阶段实现。
+
+P2 完整试跑使用 Imagenette 500 张，包含 35 组设置及 k=197 恒等检查。先提交代码，再指定新的输出目录；入口拒绝覆盖已有实验：
+
+```powershell
+.\.venv\Scripts\python.exe scripts/run_rq1.py --config configs/rq1_pilot.yaml --output experiments/2026-10-25_rq1_pilot
+.\.venv\Scripts\python.exe scripts/make_figures.py experiments/2026-10-25_rq1_pilot
+```
+
+`results.csv` 每行对应一个方法/k/种子；`predictions.csv` 保留逐图结果；`summary.csv` 汇总方法均值及随机种子标准差；`contrasts.csv` 保存 grid 减随机对照的配对 bootstrap 95% 区间。图只读 CSV。区间按图片重采样，随机对照先对 5 个种子求平均，不把种子视为额外图片。
 
 - [研究设计](docs/research_design.md)：方法公式与实验依据。
 - [研究叙事](docs/research_narrative.md)：保留所有【待填】。
@@ -83,6 +92,6 @@ bash hpc/download_data.sh imagenet
 
 该入口只下载 validation（50,000 张），保存 seed=0 的 5,000 张抽样索引，后续 RQ1/RQ2 共用。Hugging Face 的 parquet 分片与解码后的数据都会占空间，下载前核对存储余量。
 
-`hpc/run.sh rq1`（或 rq2/rq3）为后续实验模板，依赖对应的 `scripts/run_rq*.py`；当前这些入口尚未实现，模板会明确报错。原有连通测试保留为 `hpc/train_smoke.py`，未经用户确认不启动。
+`bash hpc/run.sh rq1 experiments/YYYY-MM-DD_rq1_formal` 使用正式配置（ImageNet 5,000 张）；RQ2/RQ3 入口尚未实现。原有连通测试保留为 `hpc/train_smoke.py`，未经用户确认不启动首次 HPC 作业。
 
 代码用本地 push / HPC pull 同步；远程生成的结果小文件经检查后 commit / push，本地 pull。若平台不能访问 GitHub，按 HPC 说明使用 scp 或 JupyterLab 上传代码，数据不从本地上传。用完停止开发环境以释放资源。

@@ -12,4 +12,5 @@ fi
 export HF_HOME="${HF_HOME:-$PWD/checkpoints/huggingface}"
 export TORCH_HOME="${TORCH_HOME:-$PWD/checkpoints/torch}"
 .venv/bin/python -m pytest
-.venv/bin/python "$entry" --config "configs/${rq}.yaml"
+output="${2:?Provide a new experiment output directory}"
+.venv/bin/python "$entry" --config "configs/${rq}.yaml" --output "$output"

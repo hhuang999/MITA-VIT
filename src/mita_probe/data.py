@@ -32,5 +32,25 @@ class Imagenette1k(Dataset):
         return image, self.labels[target]
 
 
+class ImageNetValidation(Dataset):
+    """Load the pinned Hugging Face validation split saved by download_data.py."""
+
+    def __init__(self, root: Path, model):
+        from datasets import load_from_disk
+
+        self.dataset = load_from_disk(str(root))
+        if len(self.dataset) != 50000:
+            raise ValueError("Expected 50,000 ImageNet validation images")
+        self.preprocessing = resolve_model_data_config(model)
+        self.transform = create_transform(**self.preprocessing, is_training=False)
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, index):
+        row = self.dataset[index]
+        return self.transform(row["image"].convert("RGB")), int(row["label"])
+
+
 def subset_indices(n_total: int, n_images: int, seed: int = 0) -> list[int]:
     return np.random.default_rng(seed).choice(n_total, n_images, replace=False).tolist()

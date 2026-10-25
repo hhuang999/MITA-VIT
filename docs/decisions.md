@@ -75,3 +75,10 @@
 - 随机对照仅替换读取集合，保留路由；由调用方维护独立、带种子的 torch.Generator，跨 batch 连续取样，不影响模型的全局 RNG。
 - 主指标是预测一致率；KL 定义为 `KL(p_original || p_executed)`。bootstrap 在图片维度成对重采样，先对随机对照的种子求平均；随机种子之间的波动另行报告。
 - 当前真实数据验收使用 Imagenette 全部 3,925 张验证图，沿用 timm 默认 eval 预处理。它不替代尚未取得的 ImageNet 5,000 张恒等验收。
+
+## P2 实现约定（2026-10-25）
+
+- 用户授权下载 ImageNet，并推进到检查点 3。按阶段表，P2 仍使用 Imagenette 500 张；完整运行 grid、random 五种子和 K-means 的五个 k 值，共 35 组。ImageNet 只下载 validation，固定数据版本与 seed=0 的 5,000 张索引，为 P4 准备。
+- 每组重新从原模型读取说明书，逐批核对其 logits 与未挂 hook 的原模型完全一致。每次运行先在同一图片子集做 k=197 全层恒等检查。
+- 每个 (k, random seed) 建立独立 CUDA RNG，并跨 batch 连续采样；batch 大小和图片顺序都保存。随机种子标准差使用样本标准差（ddof=1）。
+- 图中随机误差条表示 5 个种子的 ±1 标准差；方法差异的 95% 区间使用 1,000 次图片配对 bootstrap，单独保存，避免混淆两类不确定性。
