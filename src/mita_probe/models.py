@@ -130,3 +130,25 @@ def execute_attention(model, patterns: dict[int, ReadingPattern]):
     finally:
         for handle in handles:
             handle.remove()
+
+
+@contextmanager
+def capture_cls_attention(model):
+    """Observe final-layer CLS-to-patch attention, averaged over heads."""
+    attention = model.blocks[-1].attn
+    captured = {}
+
+    @torch.no_grad()
+    def hook(module, inputs, output):
+        batch, tokens, _ = output.shape
+        q, keys, _ = output.reshape(batch, tokens, 3, attention.num_heads,
+                                    attention.head_dim).permute(2, 0, 3, 1, 4).unbind(0)
+        q, keys = attention.q_norm(q), attention.k_norm(keys)
+        weights = ((q[:, :, :1] * attention.scale) @ keys.transpose(-2, -1)).softmax(-1)
+        captured["heatmap"] = weights[:, :, 0, 1:].mean(1)
+
+    handle = attention.qkv.register_forward_hook(hook)
+    try:
+        yield captured
+    finally:
+        handle.remove()

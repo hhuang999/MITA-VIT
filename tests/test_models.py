@@ -127,6 +127,24 @@ def test_group_count_diagnostics_preserve_summaries_and_count_all_queries(model)
     assert counts[1]["dot_product_routes_including_cls"].sum(-1).eq(197).all()
 
 
+def test_cls_attention_capture_matches_full_attention_and_does_not_change_logits(model):
+    from mita_probe.models import capture_cls_attention
+    attention = model.blocks[-1].attn
+    qkv_values = []
+    handle = attention.qkv.register_forward_hook(lambda module, inputs, output: qkv_values.append(output))
+    images = torch.randn(1, 3, 224, 224)
+    with torch.inference_mode():
+        original = model(images)
+        with capture_cls_attention(model) as capture:
+            observed = model(images)
+    handle.remove()
+    q, keys, _ = qkv_values[-1].reshape(1, 197, 3, 6, 64).permute(2, 0, 3, 1, 4).unbind(0)
+    expected = ((q * attention.scale) @ keys.transpose(-2, -1)).softmax(-1)[:, :, 0, 1:].mean(1)
+    torch.testing.assert_close(capture["heatmap"], expected)
+    torch.testing.assert_close(observed, original, atol=0, rtol=0)
+    assert not attention.qkv._forward_hooks
+
+
 @pytest.mark.parametrize("grouping,readset", [("kmeans", "ours"), ("grid", "random")])
 def test_control_paths_are_read_only_then_execute(model, grouping, readset):
     images = torch.randn(1, 3, 224, 224)

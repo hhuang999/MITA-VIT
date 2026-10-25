@@ -42,3 +42,37 @@ def paired_bootstrap_difference(
     tail = (1 - confidence) / 2
     low, high = np.quantile(means, [tail, 1 - tail])
     return float(difference.mean()), float(low), float(high)
+
+
+def foreground_ratio(readsets, foreground, valid, regions=None):
+    """Per-image selected foreground fraction; exclude CLS and invalid tokens.
+
+    Count occurrences across heads/regions, not the union of selected tokens.
+    An optional [batch, regions] mask selects only background source regions.
+    """
+    batch = readsets.shape[0]
+    zero = torch.zeros(batch, 1, dtype=torch.bool, device=foreground.device)
+    fg = torch.cat([zero, foreground & valid], dim=1)
+    available = torch.cat([zero, valid], dim=1)
+    selected_fg = fg.gather(1, readsets.flatten(1)).reshape_as(readsets)
+    selected_valid = available.gather(1, readsets.flatten(1)).reshape_as(readsets)
+    if regions is not None:
+        region_mask = regions[:, None, :, None]
+        selected_fg = selected_fg & region_mask
+        selected_valid = selected_valid & region_mask
+    numerator = selected_fg.flatten(1).sum(1)
+    denominator = selected_valid.flatten(1).sum(1)
+    return torch.where(denominator > 0, numerator / denominator, torch.nan)
+
+
+def heatmap_metrics(heatmap, foreground, valid):
+    """Foreground mass fraction and pointing hit on valid spatial tokens."""
+    if (heatmap < 0).any() or not torch.isfinite(heatmap).all():
+        raise ValueError("Heatmap values must be finite and nonnegative")
+    mass = (heatmap * valid).sum(-1)
+    ratio = (heatmap * foreground * valid).sum(-1) / mass
+    # torch.argmax resolves equal maxima by the first flattened spatial index.
+    maximum = heatmap.masked_fill(~valid, -torch.inf).argmax(-1)
+    hit = foreground.gather(1, maximum[:, None]).squeeze(1).float()
+    usable = valid.any(-1) & mass.gt(0)
+    return torch.where(usable, ratio, torch.nan), torch.where(usable, hit, torch.nan)

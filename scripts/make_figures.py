@@ -36,14 +36,15 @@ def main():
                 ax.errorbar(values.k, values.agree * 100, yerr=values.seed_std * 100,
                             color=color, fmt="none", capsize=4)
         ax.set_xscale("log", base=2)
-        ax.set_xticks([4, 8, 16, 32, 64], labels=[4, 8, 16, 32, 64])
+        ticks = sorted(summary.k.unique())
+        ax.set_xticks(ticks, labels=ticks)
         ax.set_xlabel("Tokens per reading set, k (log scale)")
         ax.set_ylabel(ylabel)
         ax.grid(axis="y", color="#dddddd", linewidth=.7)
         ax.set_axisbelow(True)
         if metric == "agree":
             ax.axhline(90, color="#999999", linestyle="--", linewidth=1)
-            ax.text(62, 91.5, "90% reference", ha="right", color="#666666", fontsize=9)
+            ax.text(max(ticks), 91.5, "90% reference", ha="right", color="#666666", fontsize=9)
             ax.set_ylim(0, 103)
         else:
             ax.set_ylim(bottom=0)
