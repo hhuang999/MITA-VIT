@@ -1,5 +1,14 @@
 # 实验日志
 
+## 2026-10-26 identity_200_local 与 pet_alignment
+
+- 目的：正式补跑前的 200 张恒等验收，以及 RQ3 图片/mask/token 的几何对齐检查。
+- 设置：`configs/identity_200.yaml`；固定 ImageNet 5,000 张索引的前 200 张。Pet 检查使用 test 全集 seed=0 抽取 5 张（2335、1874、989、1129、3117），不是重新抽样 ImageNet。
+- 在哪跑：本地 .venv / RTX 4060；恒等计算 2.91 秒；代码 `ac6ef03`。
+- 结果：200 张 k=197 一致率 100%，读取与执行最大 logit 误差 0；该 200 张原模型准确率 78%。39 项完整 pytest 通过（9.62 秒）。已人工逐张查看 alignment.png：前景与猫狗轮廓、边界带和 14×14 网格对应，无 resize/crop 位移。
+- 异常：无。trimap 官方 README 确认为 1 前景、2 背景、3 未分类边界；哈希与预处理尺寸已保存。
+- 下一步：保持 m、k、索引、种子、FP32 与 batch=32，运行正式补充和 RQ2；RQ3 已满足对齐检查前提。
+
 ## 2026-10-26 overnight_rq1_local_tests
 
 - 目的：RQ1 补跑前验证比较入口与 K-means 组大小诊断不改变原输出。

@@ -1,0 +1,32 @@
+model: deit_small_patch16_224.fb_in1k
+device: cuda
+batch_size: 32
+num_workers: 0
+subset_seed: 0
+m: 16
+mode: strict
+grouping: grid
+readset: ours
+kmeans_iterations: 10
+kmeans_init: grid
+output_root: experiments
+rq: rq1
+dataset: imagenet_val
+n_images: 200
+indices: data/imagenet_val_indices_seed0.json
+replace_scope: all
+k: []
+methods:
+- grid
+- random
+- kmeans
+random_seeds:
+- 0
+- 1
+- 2
+- 3
+- 4
+bootstrap_resamples: 1000
+confidence_level: 0.95
+agreement_reference: 0.9
+purpose: identity_200
