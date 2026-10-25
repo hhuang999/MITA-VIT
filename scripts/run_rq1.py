@@ -38,7 +38,9 @@ def validate_config(config):
             raise ValueError(f"This RQ1 implementation requires {key}={value}")
     if config["dataset"] not in {"imagenette", "imagenet_val"}:
         raise ValueError("Use Imagenette or the saved ImageNet validation split")
-    if config["k"] != [4, 8, 16, 32, 64]:
+    authorized_extra = config["k"] == [128] and config.get("purpose") == "user_requested_k128"
+    identity_only = config["k"] == [] and config.get("purpose") == "identity_200"
+    if config["k"] != [4, 8, 16, 32, 64] and not authorized_extra and not identity_only:
         raise ValueError("Keep the prespecified k sweep")
     if config["methods"] != ["grid", "random", "kmeans"] or config["random_seeds"] != list(range(5)):
         raise ValueError("Run all three methods and random seeds 0-4")
@@ -132,7 +134,11 @@ def run(config, output, commit):
     if checks["identity_agreement"] != 1 or max_read_error != 0 or max_identity_error >= 1e-5:
         raise AssertionError("Read-only or k=197 identity validation failed")
     logging.info("Identity passed: %s", checks)
+    if config.get("purpose") == "identity_200":
+        logging.info("200-image prerequisite complete; no sweep requested")
+        return
     results = []
+    count_histograms = {}
     fields = ["method", "k", "seed", "index", "target", "original", "executed", "agree",
               "kl", "original_correct", "executed_correct"]
     with (output / "predictions.csv").open("w", newline="", encoding="utf-8") as stream:
@@ -146,9 +152,16 @@ def run(config, output, commit):
                 rows, offset = [], 0
                 for batch_index, (images, labels) in enumerate(loader):
                     images = images.to(device)
+                    counts = {} if method == "kmeans" and config.get("collect_grouping_counts") else None
                     with read_attention(model, k_top=k, grouping=grouping, readset=readset,
-                                        generator=generator) as patterns:
+                                        generator=generator, grouping_counts=counts) as patterns:
                         original = model(images)
+                    if counts is not None:
+                        for layer, kinds in counts.items():
+                            for kind, values in kinds.items():
+                                key = (layer, kind)
+                                histogram = torch.bincount(values.flatten(), minlength=198).cpu()
+                                count_histograms[key] = count_histograms.get(key, torch.zeros(198, dtype=torch.long)) + histogram
                     if not torch.equal(original.cpu(), original_batches[batch_index]):
                         raise AssertionError("Reading or preprocessing changed original logits")
                     with execute_attention(model, patterns):
@@ -184,6 +197,12 @@ def run(config, output, commit):
     summary, contrasts = aggregate_predictions(pd.read_csv(output / "predictions.csv"), config)
     write_csv(output / "summary.csv", summary)
     write_csv(output / "contrasts.csv", contrasts)
+    if count_histograms:
+        write_csv(output / "group_query_counts.csv", [
+            {"layer": layer, "kind": kind, "query_count": count, "frequency": int(frequency)}
+            for (layer, kind), histogram in count_histograms.items()
+            for count, frequency in enumerate(histogram.tolist())
+        ])
     checks.update({"settings_completed": len(results), "elapsed_seconds": time.perf_counter() - started})
     write_json(output / "checks.json", checks)
     logging.info("RQ1 complete: %d settings, %.1f seconds", len(results), checks["elapsed_seconds"])

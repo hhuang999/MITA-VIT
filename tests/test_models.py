@@ -111,6 +111,22 @@ def test_hooks_are_removed_when_forward_raises(model):
     assert all(not block.attn._forward_pre_hooks for block in model.blocks)
 
 
+def test_group_count_diagnostics_preserve_summaries_and_count_all_queries(model):
+    images = torch.randn(1, 3, 224, 224)
+    counts = {}
+    with torch.inference_mode():
+        with read_attention(model, k_top=4, grouping="kmeans", layers=(1,)) as baseline:
+            original = model(images)
+        with read_attention(model, k_top=4, grouping="kmeans", layers=(1,),
+                            grouping_counts=counts) as diagnostic:
+            observed = model(images)
+    torch.testing.assert_close(original, observed, atol=0, rtol=0)
+    torch.testing.assert_close(baseline[1].readsets, diagnostic[1].readsets)
+    torch.testing.assert_close(baseline[1].routes, diagnostic[1].routes)
+    assert counts[1]["euclidean_patch_clusters"].sum(-1).eq(196).all()
+    assert counts[1]["dot_product_routes_including_cls"].sum(-1).eq(197).all()
+
+
 @pytest.mark.parametrize("grouping,readset", [("kmeans", "ours"), ("grid", "random")])
 def test_control_paths_are_read_only_then_execute(model, grouping, readset):
     images = torch.randn(1, 3, 224, 224)

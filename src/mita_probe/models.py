@@ -43,6 +43,7 @@ def read_attention(
     readset: str = "ours",
     generator: torch.Generator | None = None,
     layers: tuple[int, ...] | None = None,
+    grouping_counts: dict | None = None,
 ):
     """Capture the latest original forward; leave this context before executing it.
 
@@ -77,6 +78,17 @@ def read_attention(
             if grouping == "kmeans":
                 landmarks = kmeans_landmarks(patches, landmarks)
             pattern = read_patterns(queries, keys, landmarks, k_top, attention.scale)
+            if grouping_counts is not None:
+                distances = (patches.square().sum(-1, keepdim=True)
+                             + landmarks.square().sum(-1).unsqueeze(-2)
+                             - 2 * patches @ landmarks.transpose(-2, -1))
+                assignments = distances.argmin(-1)
+                grouping_counts[layer] = {
+                    "euclidean_patch_clusters": torch.nn.functional.one_hot(
+                        assignments, m_side ** 2).sum(-2),
+                    "dot_product_routes_including_cls": torch.nn.functional.one_hot(
+                        pattern.routes, m_side ** 2).sum(-2),
+                }
             if readset == "random":
                 pattern = random_readsets(pattern, generator)
             patterns[layer] = pattern
