@@ -10,6 +10,7 @@
 - 本地端到端预演：代码 `8d02692`；`configs/rq1_hpc_smoke.yaml`，ImageNet 固定子集前 50 张，全部 35 组，19.9 秒；k=197 预测一致率 100%、最大读取/恒等误差均为 0；没有非有限输出。记录在 `experiments/2026-10-25_hpc_local_smoke/`，明确标为 local rehearsal，不视为远程验收或正式研究结果。
 - 本地 ready preflight：通过，权重 SHA-256 `1e747b4a8d0df2cfbd3c450e8c97685d867448ab0c2ddbfb34b6885f5cb23e5b`；记录在 `experiments/2026-10-25_hpc_local_preflight/`。
 - 代码已推送到私有仓库；以同一分支的 Git bundle 经 SSH 同步，远程保留完整提交历史并将 origin 设为私有仓库，避免在计算节点存放 GitHub 凭据。
+- 安装调整：PyTorch 源下载未锁定的 Pillow 12.3 极慢，且随后会被项目要求的 Pillow 13.0 替换；主动停止该安装，保留日志与已下载缓存。改为先从 PyTorch 源安装 torch/torchvision wheel（`--no-deps`），再从 PyPI 一并解析其运行依赖和项目锁定依赖，最后执行 `pip check`。版本不变。
 - 下一步：完成依赖和数据准备，提交首次作业脚本供用户审阅。
 
 P0/P1 实现验收、P2 试跑与正式研究结果分别记录。

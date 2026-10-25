@@ -7,8 +7,10 @@ if [[ ! -e .venv ]]; then
     "$PYTHON_BIN" -m venv .venv
 fi
 .venv/bin/python -c 'import sys; assert sys.prefix != sys.base_prefix; assert (3, 11) <= sys.version_info[:2] < (3, 13)'
-.venv/bin/python -m pip install -r requirements-torch.txt --index-url "${TORCH_INDEX_URL:-https://download.pytorch.org/whl/cu128}"
-.venv/bin/python -m pip install -r requirements.txt
+# Fetch only platform wheels here; resolve their runtime dependencies together
+# with the project pins on PyPI rather than the slower PyTorch mirror.
+.venv/bin/python -m pip install --no-deps -r requirements-torch.txt --index-url "${TORCH_INDEX_URL:-https://download.pytorch.org/whl/cu128}"
+.venv/bin/python -m pip install -r requirements-torch.txt -r requirements.txt
 .venv/bin/python -m pip install --no-deps -e .
 .venv/bin/python -m pip check
 .venv/bin/python -c 'import torch; print(torch.__version__, torch.version.cuda); print("CUDA visible:", torch.cuda.is_available())'
