@@ -7,6 +7,9 @@
 - 本地验证：29 项 pytest 通过，10.42 秒；Git Bash shell 语法检查通过。
 - 初次测试：27 通过、2 项 tmp_path fixture 错误，原因是沙盒临时目录不可写；使用项目忽略目录 `--basetemp=data/pytest-p3-20261025-1` 后全部通过。首次 Bash 语法检查被 Windows 命名对象权限阻止，在授权环境中执行只读语法检查通过。
 - HPC 实测：CPU 2 核环境启动；镜像 Python 3.10.13 / torch 2.3.1+cu121，准备独立 Python 3.12；持久化 SSD 可用约 41 TB；GitHub、Hugging Face、PyTorch 下载站可达。
+- 本地端到端预演：代码 `8d02692`；`configs/rq1_hpc_smoke.yaml`，ImageNet 固定子集前 50 张，全部 35 组，19.9 秒；k=197 预测一致率 100%、最大读取/恒等误差均为 0；没有非有限输出。记录在 `experiments/2026-10-25_hpc_local_smoke/`，明确标为 local rehearsal，不视为远程验收或正式研究结果。
+- 本地 ready preflight：通过，权重 SHA-256 `1e747b4a8d0df2cfbd3c450e8c97685d867448ab0c2ddbfb34b6885f5cb23e5b`；记录在 `experiments/2026-10-25_hpc_local_preflight/`。
+- 代码已推送到私有仓库；以同一分支的 Git bundle 经 SSH 同步，远程保留完整提交历史并将 origin 设为私有仓库，避免在计算节点存放 GitHub 凭据。
 - 下一步：完成依赖和数据准备，提交首次作业脚本供用户审阅。
 
 P0/P1 实现验收、P2 试跑与正式研究结果分别记录。

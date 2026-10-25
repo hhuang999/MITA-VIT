@@ -13,7 +13,9 @@
 
 ## 需要审阅的首次作业
 
-脚本：`hpc/first_job.sh`。在准备好数据的单 GPU 开发环境内执行：
+脚本：`hpc/first_job.sh`。资源选择：同一集群与镜像，CPU 4 核 + A800 MIG 10 GB（1 个 GPU 实例），复用相同持久化挂载。平台已列出此规格，实际是否可分配以启动时为准；不自动申请多卡。选择依据是本地 8 GB 显卡已完成同样 batch=32 的完整流程。
+
+在准备好数据的 GPU 开发环境内执行：
 
 ```bash
 bash hpc/first_job.sh experiments/2026-10-25_hpc_first
@@ -40,4 +42,6 @@ bash hpc/run.sh rq1 experiments/2026-10-25_rq1_imagenet
 
 - 本地 29 项 pytest 通过（含 CPU/CUDA 核心探针与新增子集前缀、持久化数据路径测试）。
 - Git Bash 对 setup / first_job / run / download_data 的语法检查通过。
-- 远程依赖、数据验收与本地端到端预演结果在完成后补充；当前不能据上述单元测试宣称远程 GPU 已验收。
+- 本地完整预演：`experiments/2026-10-25_hpc_local_smoke/`，代码 `8d02692`，50 张 × 35 组，耗时 19.9 秒（不含启动与载入）；读取与 k=197 的最大输出误差均为 0，恒等预测一致率 100%。PNG/PDF 已生成并检查。
+- 本地 ready preflight 通过，数据 50,000 张、固定子集 5,000 张与模型 revision 均通过检查。远程 GPU 兼容性仍须审批后的首次作业验收。
+- 粗略预算：首次作业预留 5 分钟；正式实验预留 1 小时。本地 500 张试跑约 171 秒，按数量外推约 29 分钟；HPC 实际耗时取决于 MIG 调度、磁盘与 GPU 性能，以首次作业实测为准。

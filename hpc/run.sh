@@ -9,8 +9,6 @@ if [[ ! -f "$entry" ]]; then
     echo "$entry has not been implemented; see docs/progress.md" >&2
     exit 1
 fi
-export HF_HOME="${HF_HOME:-$PWD/checkpoints/huggingface}"
-export TORCH_HOME="${TORCH_HOME:-$PWD/checkpoints/torch}"
 output="${2:?Provide a new experiment output directory}"
 [[ ! -e "$output" ]] || { echo "Output already exists: $output" >&2; exit 2; }
 export HF_HUB_OFFLINE=1

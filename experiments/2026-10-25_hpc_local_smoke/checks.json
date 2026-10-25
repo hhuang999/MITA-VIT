@@ -1,0 +1,10 @@
+{
+  "n_images": 50,
+  "identity_agreement": 1.0,
+  "max_read_logit_error": 0.0,
+  "max_identity_logit_error": 0.0,
+  "acc_original": 0.8,
+  "identity_seconds": 1.6199296999839135,
+  "settings_completed": 35,
+  "elapsed_seconds": 19.89096970000537
+}
