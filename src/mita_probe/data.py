@@ -1,6 +1,7 @@
 """Imagenette validation images with labels in the pretrained ImageNet-1k space."""
 
 from pathlib import Path
+import json
 
 import numpy as np
 from timm.data import create_transform, resolve_model_data_config
@@ -54,3 +55,14 @@ class ImageNetValidation(Dataset):
 
 def subset_indices(n_total: int, n_images: int, seed: int = 0) -> list[int]:
     return np.random.default_rng(seed).choice(n_total, n_images, replace=False).tolist()
+
+
+def experiment_indices(n_total: int, n_images: int, seed: int, saved: Path | None) -> list[int]:
+    if saved is None:
+        return subset_indices(n_total, n_images, seed)
+    indices = json.loads(saved.read_text(encoding="utf-8"))
+    if indices != subset_indices(n_total, 5000, seed):
+        raise ValueError("Saved indices must match the fixed seed-0 5,000-image sample")
+    if not 1 <= n_images <= len(indices):
+        raise ValueError("Requested sample must fit within the fixed 5,000-image pool")
+    return indices[:n_images]

@@ -15,3 +15,16 @@ def configure_runtime() -> Path:
     os.environ.setdefault("HF_HOME", str(ROOT / "checkpoints" / "huggingface"))
     os.environ.setdefault("TORCH_HOME", str(ROOT / "checkpoints" / "torch"))
     return ROOT
+
+
+def data_root() -> Path:
+    """Allow a persistent data volume without moving the repository."""
+    configure_runtime()
+    return Path(os.environ.get("MITA_DATA_ROOT", ROOT / "data")).resolve()
+
+
+def project_path(path: str) -> Path:
+    relative = Path(path)
+    if not relative.is_absolute() and relative.parts[0] == "data":
+        return data_root().joinpath(*relative.parts[1:])
+    return ROOT / relative

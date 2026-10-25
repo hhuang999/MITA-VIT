@@ -10,13 +10,15 @@ import timm
 import torch
 
 from .baselines import random_readsets
+from .assets import MODEL_NAME, MODEL_REPO, MODEL_REVISION
 from .grouping import grid_landmarks, kmeans_landmarks
 from .probe import ReadingPattern, execution_mask, read_patterns
 
 
 def load_model(device: str = "cpu", pretrained: bool = True):
     return timm.create_model(
-        "deit_small_patch16_224.fb_in1k", pretrained=pretrained
+        MODEL_NAME, pretrained=pretrained,
+        pretrained_cfg_overlay={"hf_hub_id": f"{MODEL_REPO}@{MODEL_REVISION}"},
     ).eval().to(device)
 
 

@@ -9,7 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from mita_probe.runtime import configure_runtime
+from mita_probe.runtime import configure_runtime, data_root, project_path
 
 ROOT = configure_runtime()
 
@@ -19,7 +19,8 @@ import torch
 import yaml
 from torch.utils.data import DataLoader, Subset
 
-from mita_probe.data import ImageNetValidation, Imagenette1k, subset_indices
+from mita_probe.assets import MODEL_REVISION
+from mita_probe.data import ImageNetValidation, Imagenette1k, experiment_indices
 from mita_probe.io import load_config, source_commit, write_csv, write_json
 from mita_probe.metrics import agreement, kl_divergence
 from mita_probe.models import execute_attention, load_model, read_attention
@@ -73,14 +74,12 @@ def run(config, output, commit):
     torch.use_deterministic_algorithms(True)
     device = config["device"]
     model = load_model(device)
-    dataset = (Imagenette1k(ROOT / "data", model) if config["dataset"] == "imagenette"
-               else ImageNetValidation(ROOT / "data/imagenet_val", model))
-    expected_indices = subset_indices(len(dataset), config["n_images"], config["subset_seed"])
-    indices = expected_indices
-    if config["indices"]:
-        indices = json.loads((ROOT / config["indices"]).read_text())
-        if indices != expected_indices:
-            raise ValueError("Saved indices do not match the fixed seed-0 sample")
+    dataset = (Imagenette1k(data_root(), model) if config["dataset"] == "imagenette"
+               else ImageNetValidation(data_root() / "imagenet_val", model))
+    indices = experiment_indices(
+        len(dataset), config["n_images"], config["subset_seed"],
+        project_path(config["indices"]) if config["indices"] else None,
+    )
     write_json(output / "indices.json", indices)
     loader = DataLoader(Subset(dataset, indices), batch_size=config["batch_size"],
                         shuffle=False, num_workers=config["num_workers"])
@@ -92,10 +91,11 @@ def run(config, output, commit):
         "explanation_source": "original model, frozen for execution in all 12 layers",
         "random_rng": "independent generator per (k, seed), continuous across batches",
         "indices_sha256": hashlib.sha256((output / "indices.json").read_bytes()).hexdigest(),
-        "checkpoint_revision": (ROOT / "checkpoints/huggingface/hub/models--timm--deit_small_patch16_224.fb_in1k/refs/main").read_text().strip(),
+        "checkpoint_revision": MODEL_REVISION,
+        "purpose": config.get("purpose", "rq1"),
     }
     if config["dataset"] == "imagenet_val":
-        metadata["dataset_manifest"] = json.loads((ROOT / "data/imagenet_manifest.json").read_text())
+        metadata["dataset_manifest"] = json.loads((data_root() / "imagenet_manifest.json").read_text())
     write_json(output / "metadata.json", metadata)
     started = time.perf_counter()
     original_batches, identity_rows = [], []

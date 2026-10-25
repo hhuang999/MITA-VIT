@@ -1,5 +1,14 @@
 # 实验日志
 
+## 2026-10-25 p3_adaptation
+
+- 目的：迁移到按需 HPC 开发环境，准备首次 GPU 作业审阅。未启动远程 GPU 推理或正式 RQ1。
+- 分支：`feature/hpc-adaptation`；锁定已接受的数据与模型 revision，支持持久化数据路径，新增固定 5,000 张前缀的 50 张验收配置。
+- 本地验证：29 项 pytest 通过，10.42 秒；Git Bash shell 语法检查通过。
+- 初次测试：27 通过、2 项 tmp_path fixture 错误，原因是沙盒临时目录不可写；使用项目忽略目录 `--basetemp=data/pytest-p3-20261025-1` 后全部通过。首次 Bash 语法检查被 Windows 命名对象权限阻止，在授权环境中执行只读语法检查通过。
+- HPC 实测：CPU 2 核环境启动；镜像 Python 3.10.13 / torch 2.3.1+cu121，准备独立 Python 3.12；持久化 SSD 可用约 41 TB；GitHub、Hugging Face、PyTorch 下载站可达。
+- 下一步：完成依赖和数据准备，提交首次作业脚本供用户审阅。
+
 P0/P1 实现验收、P2 试跑与正式研究结果分别记录。
 
 ## 2026-10-25 imagenet_download
