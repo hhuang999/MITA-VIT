@@ -1,5 +1,13 @@
 # 实验日志
 
+## 2026-10-25 hpc_gpu_queue
+
+- 目的：执行用户已审阅并确认的首次 GPU 验收，通过后运行正式 RQ1。
+- 设置：复用 `mita-p3-env`、原镜像和持久化挂载；资源改为已批准的 CPU 4 核 + A800 MIG 10 GB 单实例。应用接受配置，生成作业 `97895`。
+- 结果：环境由“启动中”转为“等待”；平台返回 `Job's MIG GPU resource requirements not satisfied: 1 host`。尚无 SSH 连接，尚未运行实验；这不是探针或 CUDA 测试失败。
+- 记录：`experiments/2026-10-25_hpc_queue/status.json` 保存平台返回的资源配置和排队原因，不含凭据。
+- 下一步：保留原申请等待；已询问用户是否允许尝试其他单 GPU 规格（优先 MIG 20 GB），尚未改变资源。首轮验收通过前不会启动正式 RQ1。
+
 ## 2026-10-25 p3_adaptation
 
 - 目的：迁移到按需 HPC 开发环境，准备首次 GPU 作业审阅。未启动远程 GPU 推理或正式 RQ1。

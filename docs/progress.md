@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-用户已确认检查点 3，进入 P3 HPC 适配；独立分支 `feature/hpc-adaptation`。CPU 环境、完整数据与脚本准备已完成，CPU 开发环境已停止；首次 GPU 作业提交用户审阅，确认后执行 GPU 验收和 ImageNet 5,000 张正式 RQ1。
+用户已审阅并确认首次 GPU 作业与验收后的 ImageNet 5,000 张正式 RQ1；在 `feature/hpc-adaptation` 分支继续执行。已申请 A800 MIG 10 GB / CPU 4 核，作业 `97895` 等待资源；调度器报告 MIG 资源条件无法满足。尚未执行首次 GPU 验收或正式实验。
 
 ## 任务
 
@@ -16,7 +16,7 @@
 | 文献 PDF 与 BibTeX | 完成 | 交接 §2.6 的 14 篇；PDF 可解析，保留 SHA-256 与原始 BibTeX |
 | GPU 真实图片推理与 pytest | 完成 | 离线预训练权重推理、1 项结构/前向测试；不是 RQ 结果 |
 | 私有仓库与首个提交 | 完成 | [hhuang999/MITA-VIT](https://github.com/hhuang999/MITA-VIT)，已确认 private；main 已推送并跟踪 origin/main |
-| HPC 环境与脚本适配 | GPU 验收待审阅 | 独立 Python 3.12.15、固定依赖与 pip check 通过；完整 50,000 张及固定 5,000 张解码通过；CPU 环境已停止 |
+| HPC 环境与脚本适配 | GPU 排队中 | 首次作业已获确认；作业 97895 等待 A800 MIG 10 GB，CPU 环境与完整资产已验收 |
 | P1 核心探针实现 | 完成 | grid/k-means、读取与固定说明书执行、随机对照、指标、Imagenette 加载 |
 | P1 单元与集成测试 | 完成 | 22 项通过，包含 CPU/CUDA、手算、平均性质、k=197 恒等、无 NaN、作用域和恢复 |
 | P1 真实数据验收与讲解 | 完成 | Imagenette 3,925 张，准确率 80.28%；读取与 k=197 全层执行输出误差均为 0；讲解见 checkpoint_2.md |
@@ -25,7 +25,7 @@
 
 ## 需要用户决定或帮忙的事
 
-- P3：审阅 `docs/hpc_first_job_review.md` 与 `hpc/first_job.sh`，确认后进行 GPU 验收，通过后才运行正式 RQ1。
+- 原定 10 GB 资源正在排队；已询问是否允许尝试其他单 GPU 规格（优先 MIG 20 GB），未收到确认前保留原申请。
 
 ## 已完成的里程碑
 
