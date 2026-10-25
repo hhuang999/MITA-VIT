@@ -33,13 +33,16 @@ def main() -> None:
 
         revision = HfApi().dataset_info("ILSVRC/imagenet-1k", token=True).sha
         print(f"Downloading ImageNet validation at revision {revision}", flush=True)
-        snapshot_download(
+        snapshot = Path(snapshot_download(
             "ILSVRC/imagenet-1k", repo_type="dataset", revision=revision, token=True,
             allow_patterns=["data/validation-*.parquet"], max_workers=4,
-        )
+        ))
+        shards = sorted((snapshot / "data").glob("validation-*.parquet"))
+        if len(shards) != 14:
+            raise ValueError("Expected 14 ImageNet validation Parquet shards")
         data = load_dataset(
-            "ILSVRC/imagenet-1k", split="validation", token=True,
-            revision=revision, data_files={"validation": "data/validation-*.parquet"},
+            "parquet", split="validation",
+            data_files={"validation": [str(path) for path in shards]},
             cache_dir=str(args.root / "imagenet_cache"),
         )
         if len(data) != 50000:
