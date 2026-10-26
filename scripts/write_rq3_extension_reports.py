@@ -104,7 +104,7 @@ def extension():
 
 ## 1. 一句话结论
 
-原 RQ3 的背景峰值与预注册高范数 token 高度重合，去掉这些位置可以改善定位，但“读得多”“落在物体上”和“维持预测”是三个不同的性质；必须结合下面的固定预算执行检验与模型对照判断。
+原 RQ3 的背景峰值与预注册高范数 token 高度重合，但这些位置未显示出更强的预测重要性：k16全层共同样本中，基准一致率73.02% [71.52,74.48]，去汇聚点73.07% [71.69,74.59]，去前景仅7.93% [7.03,8.84]。读取频繁、空间定位与保持预测是不同的性质。
 
 ## 2. 这个实验回答什么问题
 
@@ -157,7 +157,7 @@ B5 使用 timm DINOv2-S/14 与 reg4，224输入、16×16 patch、相同 resize24
     text += '''
 ### B3 哪类读取对保持预测最重要？
 
-![固定预算因果检验](../../experiments/2026-10-26_rq3_causal/B3/causal_interventions.png)
+![固定预算因果检验](../../figures/rq3_causal_2026-10-26.png)
 
 柱图使用跨干预共同可执行图片。下面同时列“各自可执行”与“共同样本”，一致率参照为原模型在同一Pet图片上的ImageNet类别预测，不把Pet品种标签当1000类准确率。
 
@@ -169,7 +169,14 @@ B5 使用 timm DINOv2-S/14 与 reg4，224输入、16×16 patch、相同 resize24
               estimate(causal[(causal.k == k) & (causal.scope == scope) & (causal.method == method) & (causal.support == support) & (causal.metric == 'drop_from_baseline')].iloc[0]),
               estimate(causal[(causal.k == k) & (causal.scope == scope) & (causal.method == method) & (causal.support == support) & (causal.metric == 'removed_per_set')].iloc[0], False)]
              for k in [16, 32] for scope in ['last4', 'all12'] for method in ['baseline', 'sink', 'foreground', 'background', 'random']])
-    text += '\n随机一致率 − 去汇聚点一致率，正数表示去汇聚点比等数量随机删除更有破坏性：\n\n'
+    text += '''
+在四个 (k,范围) 设置的共同可执行样本上，删除前景造成最大下降：k16最后四层下降47.10pp [45.13,48.99]，全层下降65.08pp [63.31,66.71]；k32分别下降42.51pp [40.64,44.36]和69.26pp [67.59,70.99]。汇聚点删除没有降低一致率的明确证据；k16最后四层反而提高1.21pp [0.48,1.94]。这不等于原模型从不使用高范数信息，只说明在当前冻结读取集合和补选规则下，它们不是不可替代的读取位置。
+
+普通背景删除在k16最后四层提高5.03pp [3.96,6.05]，而k32全层下降1.70pp [0.36,2.92]，因此不能笼统宣称“背景完全无用”。
+
+随机一致率 − 去汇聚点一致率，正数表示去汇聚点比等数量随机删除更有破坏性：
+
+'''
     text += table(['k', '范围', '配对差值 pp [95% CI]'],
                   [[r.k, r.scope, estimate(r)] for _, r in contrasts.iterrows()])
     text += '\n随机五种子逐一结果（% [95% CI]）：\n\n' + table(
