@@ -1,0 +1,26 @@
+{
+  "passed": 21,
+  "checks": {
+    "all_3669_images": true,
+    "observe_exact_identity": true,
+    "12_blocks": true,
+    "finite_positive_norms": true,
+    "spatial_shape": true,
+    "prefix_shape": true,
+    "finite_cls": true,
+    "count_conservation_16": true,
+    "count_conservation_32": true,
+    "numpy_torch_sink_definition_2": true,
+    "numpy_torch_sink_definition_3": true,
+    "numpy_torch_sink_definition_5": true,
+    "heatmap_recalculation_16_fg_mass": true,
+    "heatmap_recalculation_16_pointing": true,
+    "heatmap_recalculation_32_fg_mass": true,
+    "heatmap_recalculation_32_pointing": true,
+    "peak_frequencies_sum_one": true,
+    "per_image_composition_conservation": true,
+    "all_layer_values_finite": true,
+    "no_duplicate_composition": true,
+    "raw_sha256_matches": true
+  }
+}

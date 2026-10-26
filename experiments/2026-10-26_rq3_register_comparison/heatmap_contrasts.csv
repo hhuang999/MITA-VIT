@@ -1,0 +1,17 @@
+k,method,metric,contrast,mean,low,high,n
+16,cls,fg_mass,register_minus_no_register,0.04012238113180297,0.03932453594466388,0.040896874999293835,3669
+16,cls,pointing,register_minus_no_register,0.006541291905151268,-0.0002725538293813028,0.013355137639683837,3669
+16,gaussian,fg_mass,register_minus_no_register,0.0,0.0,0.0,3669
+16,gaussian,pointing,register_minus_no_register,0.0,0.0,0.0,3669
+16,random,fg_mass,register_minus_no_register,0.0,0.0,0.0,3669
+16,random,pointing,register_minus_no_register,0.0,0.0,0.0,3669
+16,selection,fg_mass,register_minus_no_register,0.031215984109772478,0.03063734060541226,0.03187014202838442,3669
+16,selection,pointing,register_minus_no_register,0.17170891251022077,0.15643908421913327,0.18806214227309895,3669
+32,cls,fg_mass,register_minus_no_register,0.04012238113180297,0.03932453594466388,0.040896874999293835,3669
+32,cls,pointing,register_minus_no_register,0.006541291905151268,-0.0002725538293813028,0.013355137639683837,3669
+32,gaussian,fg_mass,register_minus_no_register,0.0,0.0,0.0,3669
+32,gaussian,pointing,register_minus_no_register,0.0,0.0,0.0,3669
+32,random,fg_mass,register_minus_no_register,0.0,0.0,0.0,3669
+32,random,pointing,register_minus_no_register,0.0,0.0,0.0,3669
+32,selection,fg_mass,register_minus_no_register,0.028338478581380538,0.027807385937837974,0.02887353009289784,3669
+32,selection,pointing,register_minus_no_register,0.17606977378032163,0.1599822840010902,0.1924298173889343,3669

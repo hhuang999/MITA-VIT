@@ -1,0 +1,71 @@
+alignment_images: 5
+alignment_seed: 0
+baselines:
+- cls_attention
+- center_gaussian
+batch_size: 32
+bootstrap_resamples: 1000
+boundary_label: 3
+confidence_level: 0.95
+dataset: oxford_iiit_pet
+device: cuda
+dino_revision: 4610ca143709d58a633b6397a74412c2c3842454
+example_images: 3
+execution_scopes:
+- last4
+- all12
+foreground_threshold: 0.5
+gaussian_sigma_fraction: 0.25
+grouping: grid
+heatmap_layers:
+- 9
+- 10
+- 11
+- 12
+histogram_bins: 160
+histogram_log10_limits:
+- -3
+- 5
+k:
+- 16
+- 32
+kmeans_init: grid
+kmeans_iterations: 10
+layers:
+- 1
+- 2
+- 3
+- 4
+- 5
+- 6
+- 7
+- 8
+- 9
+- 10
+- 11
+- 12
+m: 16
+mode: observe
+model: deit_small_patch16_224.fb_in1k
+model_alias: register
+num_workers: 0
+output_root: experiments
+preregistration_commit: a03c99c
+primary_k: 16
+primary_sink_threshold: 3
+random_seeds:
+- 0
+- 1
+- 2
+- 3
+- 4
+readset: ours
+register_revision: c04b5193082a8d5b0c4856c7937384a48136c5de
+rq: rq3
+sink_thresholds:
+- 2
+- 3
+- 5
+smoke_images: 0
+split: test
+subset_seed: 0

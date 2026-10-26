@@ -1,0 +1,18 @@
+2026-10-26 21:09:20,577 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-26 21:09:20,583 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-26 21:09:20,850 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch14_reg4_dinov2.lvd142m@c04b5193082a8d5b0c4856c7937384a48136c5de)
+2026-10-26 21:09:20,852 [timm/vit_small_patch14_reg4_dinov2.lvd142m@c04b5193082a8d5b0c4856c7937384a48136c5de] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-26 21:09:20,866 Resized position embedding: (37, 37) to (16, 16).
+2026-10-26 21:09:27,348 register observe 320/3669, 6.2s
+2026-10-26 21:09:33,997 register observe 640/3669, 12.9s
+2026-10-26 21:09:40,225 register observe 960/3669, 19.1s
+2026-10-26 21:09:46,037 register observe 1280/3669, 24.9s
+2026-10-26 21:09:52,822 register observe 1600/3669, 31.7s
+2026-10-26 21:09:59,891 register observe 1920/3669, 38.7s
+2026-10-26 21:10:06,700 register observe 2240/3669, 45.6s
+2026-10-26 21:10:13,748 register observe 2560/3669, 52.6s
+2026-10-26 21:10:20,675 register observe 2880/3669, 59.5s
+2026-10-26 21:10:27,594 register observe 3200/3669, 66.4s
+2026-10-26 21:10:34,474 register observe 3520/3669, 73.3s
+2026-10-26 21:10:37,708 register observe 3669/3669, 76.6s
+2026-10-26 21:10:46,524 Complete 85.4s; observe error 0
