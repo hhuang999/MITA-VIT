@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-10-25T17:05:38.663Z",
+  "states": [
+    {
+      "environment": "mita-p3-env",
+      "status": "退出",
+      "job_id": "97903",
+      "resource": "集群 AI-X86_NVIDIA | 节点(组) mig | 4核 | GPU卡1张(NVIDIAA800-SXM4-80GB) | Mig 40G"
+    }
+  ],
+  "compute_started": false
+}
