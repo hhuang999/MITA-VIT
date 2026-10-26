@@ -1,0 +1,17 @@
+{
+  "sources": [
+    "experiments\\2026-10-26_rq1_imagenet",
+    "experiments\\2026-10-26_rq1_k128_retry"
+  ],
+  "n_predictions": 210000,
+  "n_images": 5000,
+  "same_identity_predictions": true,
+  "identity_agreement": 1.0,
+  "acc_original": 0.7962,
+  "paired_comparison": "mita_probe.evaluate.compare_runs; grid minus control seed 0",
+  "group_counts": "from original-model Q, independent of k; observed in k=128 pass",
+  "minimum_k_at_90_percent": {
+    "grid": 128,
+    "kmeans": 128
+  }
+}

@@ -1,0 +1,11 @@
+2026-10-26 18:34:17,283 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-26 18:34:17,290 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-26 18:35:51,879 Identity passed: {'n_images': 5000, 'identity_agreement': 1.0, 'max_read_logit_error': 0.0, 'max_identity_logit_error': 0.0, 'acc_original': 0.7962, 'identity_seconds': 88.51880240000173}
+2026-10-26 18:37:07,973 grid k=128 seed=0: agree=0.9508 KL=0.0308; 76.1s
+2026-10-26 18:38:24,425 random k=128 seed=0: agree=0.8462 KL=0.2646; 76.5s
+2026-10-26 18:39:42,780 random k=128 seed=1: agree=0.8380 KL=0.2684; 78.4s
+2026-10-26 18:41:00,339 random k=128 seed=2: agree=0.8424 KL=0.2704; 77.6s
+2026-10-26 18:42:22,106 random k=128 seed=3: agree=0.8494 KL=0.2643; 81.8s
+2026-10-26 18:43:44,846 random k=128 seed=4: agree=0.8450 KL=0.2697; 82.7s
+2026-10-26 18:45:24,413 kmeans k=128 seed=0: agree=0.9638 KL=0.0180; 99.6s
+2026-10-26 18:45:24,674 RQ1 complete: 7 settings, 661.3 seconds

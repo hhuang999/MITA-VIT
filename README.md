@@ -2,7 +2,7 @@
 
 把预训练 ViT 每层每个注意力头概括成“16 块区域各读取 k 个 token”，再通过限制读取集合检验预测是否保持。核心模型是 DeiT-S/16，研究问题依次为概括的忠实性（RQ1）、逐层差异（RQ2）和与物体前景的对应（RQ3）。
 
-P2 的完整 RQ1 试跑已完成：Imagenette 500 张、35 组设置，grid 在 k=64 时一致率为 88.2%，随机对照为 51.88%，K-means 为 86.8%。用户已确认进入 P3 HPC 适配，首次 GPU 作业待审阅；见 [首次作业审阅](docs/hpc_first_job_review.md)。试跑曲线与核心实现讲解分别见 [检查点 3](docs/checkpoint_3.md)、[检查点 2](docs/checkpoint_2.md)。
+ImageNet 正式 RQ1 的原五点已完成，当前在独立分支 `feature/overnight-rq1-rq2-rq3` 推进用户授权的 k=128 补充、RQ2 与 RQ3。最新状态以 [进度](docs/progress.md)和[实验日志](docs/experiment_log.md)为准。此前试跑与核心实现讲解见 [检查点 3](docs/checkpoint_3.md)、[检查点 2](docs/checkpoint_2.md)。
 
 本地环境已通过验收，项目已同步到 [MITA-VIT 私有仓库](https://github.com/hhuang999/MITA-VIT)。默认分支为 `main`。
 
@@ -52,7 +52,7 @@ P0 单图推理记录位于 `experiments/2026-10-24_environment/environment.json
 
 ## 目录与文档
 
-`src/mita_probe/` 为可编辑安装的包，`scripts/` 放命令入口，`configs/` 保存研究设置；`tests/` 放测试，`hpc/` 放远程环境脚本。`configs/validate_p1.yaml` 可用于实现验收；RQ1 入口已实现，RQ2/RQ3 随后续阶段实现。
+`src/mita_probe/` 为可编辑安装的包，`scripts/` 放命令入口，`configs/` 保存研究设置；`tests/` 放测试，`hpc/` 放远程环境脚本。RQ1、RQ2、RQ3 入口均已实现；`configs/validate_p1.yaml` 保留用于早期实现验收。
 
 P2 完整试跑使用 Imagenette 500 张，包含 35 组设置及 k=197 恒等检查。先提交代码，再指定新的输出目录；入口拒绝覆盖已有实验：
 
@@ -62,6 +62,21 @@ P2 完整试跑使用 Imagenette 500 张，包含 35 组设置及 k=197 恒等�
 ```
 
 `results.csv` 每行对应一个方法/k/种子；`predictions.csv` 保留逐图结果；`summary.csv` 汇总方法均值及随机种子标准差；`contrasts.csv` 保存 grid 减随机对照的配对 bootstrap 95% 区间。图只读 CSV。区间按图片重采样，随机对照先对 5 个种子求平均，不把种子视为额外图片。
+
+用户授权的后续入口如下。运行前提交源代码，并把示例输出名换成尚不存在的新目录；这些命令不会覆盖已有结果：
+
+```powershell
+.\.venv\Scripts\python.exe scripts/run_rq1.py --config configs/identity_200.yaml --output experiments/NEW_identity_200
+.\.venv\Scripts\python.exe scripts/run_rq1.py --config configs/rq1_k128.yaml --output experiments/NEW_rq1_k128
+.\.venv\Scripts\python.exe scripts/run_rq2.py --config configs/rq2.yaml --output experiments/NEW_rq2
+.\.venv\Scripts\python.exe scripts/plot_rq2.py experiments/NEW_rq2
+.\.venv\Scripts\python.exe scripts/check_pet_alignment.py --output experiments/NEW_pet_alignment
+# Inspect the five alignment overlays before running the full Pet test set.
+.\.venv\Scripts\python.exe scripts/run_rq3.py --config configs/rq3.yaml --output experiments/NEW_rq3
+.\.venv\Scripts\python.exe scripts/plot_rq3.py experiments/NEW_rq3
+```
+
+`scripts/analyze_rq1.py` 合并原五点和 k=128，不重新运行模型；`mita_probe.evaluate.compare_runs` 按图片 ID 配对并核对原预测。RQ2 的层号在结果中是 1–12，`layer_index` 为 0–11。RQ3 图片与 trimap 共用 resize/crop 几何，边界和 CLS 从空间指标中排除。`scripts/audit_overnight.py` 可复算结果完整性和区间，分析报告记录具体命令及计算来源。
 
 - [研究设计](docs/research_design.md)：方法公式与实验依据。
 - [研究叙事](docs/research_narrative.md)：保留所有【待填】。
@@ -111,6 +126,6 @@ bash hpc/download_data.sh imagenet
 
 本轮实际使用可分配的 2×A800 / CPU 16 核规格，研究脚本使用单 GPU。首次验收记录为 `experiments/2026-10-26_hpc_first/`，29 项测试通过，恒等误差为 0。固定 CUDA 随机种子不保证不同 GPU 上的采样序列相同；本轮保存了 4060/A800 诊断，复现实验应同时保留 GPU 型号、PyTorch 版本、batch 和种子设置。
 
-`bash hpc/run.sh rq1 experiments/YYYY-MM-DD_rq1_formal` 使用正式配置（ImageNet 5,000 张）；首次脚本不自动调用它。RQ2/RQ3 入口尚未实现。原有连通测试保留为 `hpc/train_smoke.py`。
+`bash hpc/run.sh rq1 experiments/YYYY-MM-DD_rq1_formal` 使用正式配置（ImageNet 5,000 张）；首次脚本不自动调用它。RQ2/RQ3 可在相同项目环境中直接调用 `scripts/run_rq2.py` / `scripts/run_rq3.py`，参数与上述本地命令相同，将解释器换成 `.venv/bin/python`，先运行 preflight、pytest，并检查 Pet 对齐图。原有连通测试保留为 `hpc/train_smoke.py`。
 
 代码在私有 GitHub 分支保存。可通过本地 push / HPC pull 同步；本轮使用同一已提交分支的 Git bundle 经 SSH 传送，远程保留完整 Git 历史与 GitHub origin，不在计算节点保存 GitHub 凭据。远程结果小文件经检查后回传、提交并推送；数据不从本地上传。用完停止开发环境以释放资源。

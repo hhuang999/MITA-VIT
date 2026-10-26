@@ -1,0 +1,13 @@
+k,contrast,difference,ci_low,ci_high,n_images
+4,grid_minus_kmeans_seed0,0.0602,0.046595000000000004,0.07300499999999999,5000
+4,grid_minus_random_seed0,0.2476,0.2354,0.259005,5000
+8,grid_minus_kmeans_seed0,0.0194,0.004790000000000009,0.034,5000
+8,grid_minus_random_seed0,0.4668,0.453595,0.48041,5000
+16,grid_minus_kmeans_seed0,-0.02,-0.031424999999999974,-0.008,5000
+16,grid_minus_random_seed0,0.6016,0.586795,0.6166050000000001,5000
+32,grid_minus_kmeans_seed0,-0.0266,-0.0362,-0.0174,5000
+32,grid_minus_random_seed0,0.5108,0.496195,0.525205,5000
+64,grid_minus_kmeans_seed0,-0.0134,-0.0208,-0.006,5000
+64,grid_minus_random_seed0,0.2922,0.279195,0.3066,5000
+128,grid_minus_kmeans_seed0,-0.013,-0.0186,-0.007795000000000004,5000
+128,grid_minus_random_seed0,0.1046,0.0936,0.11460499999999998,5000
