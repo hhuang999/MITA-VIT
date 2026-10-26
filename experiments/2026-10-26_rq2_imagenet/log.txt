@@ -1,0 +1,19 @@
+2026-10-26 18:47:58,216 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-26 18:47:58,223 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-26 18:48:40,653 All 24 settings: 320/5000 images; 38.4s
+2026-10-26 18:49:18,939 All 24 settings: 640/5000 images; 76.7s
+2026-10-26 18:49:57,310 All 24 settings: 960/5000 images; 115.1s
+2026-10-26 18:50:35,016 All 24 settings: 1280/5000 images; 152.8s
+2026-10-26 18:51:13,159 All 24 settings: 1600/5000 images; 190.9s
+2026-10-26 18:51:51,306 All 24 settings: 1920/5000 images; 229.1s
+2026-10-26 18:52:29,017 All 24 settings: 2240/5000 images; 266.8s
+2026-10-26 18:53:06,826 All 24 settings: 2560/5000 images; 304.6s
+2026-10-26 18:53:44,699 All 24 settings: 2880/5000 images; 342.5s
+2026-10-26 18:54:23,136 All 24 settings: 3200/5000 images; 380.9s
+2026-10-26 18:55:01,105 All 24 settings: 3520/5000 images; 418.9s
+2026-10-26 18:55:39,693 All 24 settings: 3840/5000 images; 457.5s
+2026-10-26 18:56:18,468 All 24 settings: 4160/5000 images; 496.2s
+2026-10-26 18:56:57,293 All 24 settings: 4480/5000 images; 535.1s
+2026-10-26 18:57:36,513 All 24 settings: 4800/5000 images; 574.3s
+2026-10-26 18:58:01,010 All 24 settings: 5000/5000 images; 598.8s
+2026-10-26 18:58:02,869 RQ2 complete: {'n_images': 5000, 'settings_completed': 24, 'identity_agreement': 1.0, 'max_read_logit_error': 0.0, 'max_identity_logit_error': 0.0, 'elapsed_seconds': 600.6475718000002}

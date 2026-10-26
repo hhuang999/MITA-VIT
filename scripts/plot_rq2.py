@@ -22,8 +22,9 @@ def main():
         ax.plot(values.layer, values.agree*100, marker=marker, color=color, label=f"k = {k}")
         ax.fill_between(values.layer, values.agree_ci_low*100, values.agree_ci_high*100,
                         color=color, alpha=.18)
+    lower = max(0, 5 * ((frame.agree_ci_low.min()*100 - 3) // 5))
     ax.set(xticks=range(1, 13), xlabel="Replaced layer (one layer at a time)",
-           ylabel="Prediction agreement (%)", ylim=(0, 102))
+           ylabel="Prediction agreement (%)", ylim=(lower, 100.5))
     ax.set_title(f"RQ2 | ImageNet validation, {frame.n_images.iloc[0]:,} images", loc="left")
     ax.grid(axis="y", color="#dddddd")
     ax.legend(frameon=False)

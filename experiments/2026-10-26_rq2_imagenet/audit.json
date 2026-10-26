@@ -1,0 +1,598 @@
+{
+  "n_checks": 148,
+  "all_passed": true,
+  "checks": [
+    {
+      "check": "same fixed image IDs, labels and original predictions",
+      "passed": true
+    },
+    {
+      "check": "full-image identity is exact",
+      "passed": true
+    },
+    {
+      "check": "expected settings",
+      "passed": true
+    },
+    {
+      "check": "no duplicate image-setting rows",
+      "passed": true
+    },
+    {
+      "check": "(8, 1): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 1): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 1): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 1): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(8, 2): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 2): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 2): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 2): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(8, 3): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 3): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 3): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 3): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(8, 4): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 4): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 4): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 4): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(8, 5): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 5): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 5): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 5): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(8, 6): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 6): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 6): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 6): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(8, 7): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 7): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 7): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 7): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(8, 8): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 8): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 8): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 8): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(8, 9): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 9): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 9): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 9): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(8, 10): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 10): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 10): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 10): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(8, 11): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 11): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 11): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 11): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(8, 12): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(8, 12): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(8, 12): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(8, 12): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 1): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 1): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 1): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 1): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 2): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 2): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 2): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 2): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 3): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 3): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 3): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 3): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 4): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 4): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 4): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 4): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 5): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 5): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 5): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 5): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 6): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 6): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 6): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 6): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 7): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 7): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 7): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 7): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 8): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 8): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 8): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 8): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 9): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 9): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 9): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 9): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 10): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 10): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 10): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 10): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 11): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 11): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 11): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 11): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "(32, 12): complete sample",
+      "passed": true
+    },
+    {
+      "check": "(32, 12): agreement from predictions",
+      "passed": true
+    },
+    {
+      "check": "(32, 12): finite KL",
+      "passed": true
+    },
+    {
+      "check": "(32, 12): fixed labels/original",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=1: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=1: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=2: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=2: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=3: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=3: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=4: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=4: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=5: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=5: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=6: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=6: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=7: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=7: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=8: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=8: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=9: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=9: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=10: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=10: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=11: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=11: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=12: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=8,l=12: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=1: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=1: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=2: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=2: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=3: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=3: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=4: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=4: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=5: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=5: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=6: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=6: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=7: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=7: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=8: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=8: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=9: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=9: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=10: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=10: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=11: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=11: index mapping",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=12: recomputed agreement and CI",
+      "passed": true
+    },
+    {
+      "check": "k=32,l=12: index mapping",
+      "passed": true
+    }
+  ]
+}
