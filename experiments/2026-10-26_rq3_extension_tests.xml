@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="2" skipped="0" tests="44" time="11.161" timestamp="2026-10-26T20:47:11.787692+08:00" hostname="HHBbook16p"><testcase classname="tests.test_environment" name="test_deit_small_architecture_and_cpu_forward" time="0.407" /><testcase classname="tests.test_evaluate" name="test_compare_runs_aligns_images_not_row_order" time="0.023" /><testcase classname="tests.test_evaluate" name="test_compare_runs_rejects_incomparable_results[duplicate]" time="0.010" /><testcase classname="tests.test_evaluate" name="test_compare_runs_rejects_incomparable_results[missing]" time="0.010" /><testcase classname="tests.test_evaluate" name="test_compare_runs_rejects_incomparable_results[original]" time="0.010" /><testcase classname="tests.test_hpc" name="test_hpc_smoke_uses_formal_sample_prefix_and_full_sweep" time="0.039"><error message="failed on setup with &quot;OSError: could not create numbered dir with prefix pytest- in C:\Users\hhuan\AppData\Local\Packages\sandbox.{0d64f29b-0af2-46c8-ac54-db09094f710c}\AC\Temp\pytest-of-hhuan after 10 tries&quot;">cls = &lt;class '_pytest.runner.CallInfo'&gt;
+func = &lt;function call_and_report.&lt;locals&gt;.&lt;lambda&gt; at 0x000001DF593B54E0&gt;
+when = 'setup'
+reraise = (&lt;class '_pytest.outcomes.Exit'&gt;, &lt;class 'KeyboardInterrupt'&gt;)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -&gt; CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+&gt;           result: TResult | None = func()
+                                     ^^^^^^
+
+.venv\Lib\site-packages\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\_pytest\runner.py:250: in &lt;lambda&gt;
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+.venv\Lib\site-packages\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+.venv\Lib\site-packages\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+.venv\Lib\site-packages\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+.venv\Lib\site-packages\_pytest\runner.py:536: in setup
+    col.setup()
+.venv\Lib\site-packages\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+.venv\Lib\site-packages\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+.venv\Lib\site-packages\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+.venv\Lib\site-packages\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+.venv\Lib\site-packages\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pluggy\_execution.py:64: in run_old_style_hookwrapper
+    return result.get_result()
+           ^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pluggy\_execution.py:49: in run_old_style_hookwrapper
+    res = yield
+          ^^^^^
+.venv\Lib\site-packages\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+.venv\Lib\site-packages\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+.venv\Lib\site-packages\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+.venv\Lib\site-packages\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/hhuan/AppData/Local/Packages/sandbox.{0d64f29b-0af2-46c8-ac54-db09094f710c}/AC/Temp/pytest-of-hhuan')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -&gt; Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+&gt;           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\hhuan\AppData\Local\Packages\sandbox.{0d64f29b-0af2-46c8-ac54-db09094f710c}\AC\Temp\pytest-of-hhuan after 10 tries
+
+.venv\Lib\site-packages\_pytest\pathlib.py:239: OSError</error></testcase><testcase classname="tests.test_hpc" name="test_persistent_data_volume_applies_to_images_and_saved_indices" time="0.039"><error message="failed on setup with &quot;OSError: could not create numbered dir with prefix pytest- in C:\Users\hhuan\AppData\Local\Packages\sandbox.{0d64f29b-0af2-46c8-ac54-db09094f710c}\AC\Temp\pytest-of-hhuan after 10 tries&quot;">cls = &lt;class '_pytest.runner.CallInfo'&gt;
+func = &lt;function call_and_report.&lt;locals&gt;.&lt;lambda&gt; at 0x000001DF593B56C0&gt;
+when = 'setup'
+reraise = (&lt;class '_pytest.outcomes.Exit'&gt;, &lt;class 'KeyboardInterrupt'&gt;)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -&gt; CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+&gt;           result: TResult | None = func()
+                                     ^^^^^^
+
+.venv\Lib\site-packages\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\_pytest\runner.py:250: in &lt;lambda&gt;
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+.venv\Lib\site-packages\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+.venv\Lib\site-packages\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+.venv\Lib\site-packages\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+.venv\Lib\site-packages\_pytest\runner.py:536: in setup
+    col.setup()
+.venv\Lib\site-packages\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+.venv\Lib\site-packages\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+.venv\Lib\site-packages\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+.venv\Lib\site-packages\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+.venv\Lib\site-packages\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pluggy\_execution.py:64: in run_old_style_hookwrapper
+    return result.get_result()
+           ^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pluggy\_execution.py:49: in run_old_style_hookwrapper
+    res = yield
+          ^^^^^
+.venv\Lib\site-packages\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+.venv\Lib\site-packages\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+.venv\Lib\site-packages\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+.venv\Lib\site-packages\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/hhuan/AppData/Local/Packages/sandbox.{0d64f29b-0af2-46c8-ac54-db09094f710c}/AC/Temp/pytest-of-hhuan')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -&gt; Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+&gt;           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\hhuan\AppData\Local\Packages\sandbox.{0d64f29b-0af2-46c8-ac54-db09094f710c}\AC\Temp\pytest-of-hhuan after 10 tries
+
+.venv\Lib\site-packages\_pytest\pathlib.py:239: OSError</error></testcase><testcase classname="tests.test_metrics_data" name="test_agreement_compares_predictions_not_labels_and_kl_direction" time="0.026" /><testcase classname="tests.test_metrics_data" name="test_paired_bootstrap_and_seed_averaging" time="0.054" /><testcase classname="tests.test_metrics_data" name="test_subset_sampling_is_shared_reproducible_and_without_replacement" time="0.008" /><testcase classname="tests.test_metrics_data" name="test_imagenette_target_remapping_uses_wordnet_ids" time="0.008" /><testcase classname="tests.test_models" name="test_read_only_and_all_keys_match_original_and_restore_hooks[False]" time="0.476" /><testcase classname="tests.test_models" name="test_read_only_and_all_keys_match_original_and_restore_hooks[True]" time="0.434" /><testcase classname="tests.test_models" name="test_layer_scope_frozen_sets_and_manual_attention_reference" time="0.344" /><testcase classname="tests.test_models" name="test_cls_excluded_from_pooling_but_routed_and_selectable" time="0.224" /><testcase classname="tests.test_models" name="test_cuda_sparse_controls_and_all_keys[grid-ours]" time="0.656" /><testcase classname="tests.test_models" name="test_cuda_sparse_controls_and_all_keys[kmeans-ours]" time="0.428" /><testcase classname="tests.test_models" name="test_cuda_sparse_controls_and_all_keys[grid-random]" time="0.278" /><testcase classname="tests.test_models" name="test_hooks_are_removed_when_forward_raises" time="0.217" /><testcase classname="tests.test_models" name="test_group_count_diagnostics_preserve_summaries_and_count_all_queries" time="0.273" /><testcase classname="tests.test_models" name="test_cls_attention_capture_matches_full_attention_and_does_not_change_logits" time="0.258" /><testcase classname="tests.test_models" name="test_control_paths_are_read_only_then_execute[kmeans-ours]" time="0.398" /><testcase classname="tests.test_models" name="test_control_paths_are_read_only_then_execute[grid-random]" time="0.344" /><testcase classname="tests.test_pet" name="test_trimap_boundaries_and_half_foreground_threshold" time="0.006" /><testcase classname="tests.test_pet" name="test_foreground_ratio_excludes_cls_and_invalid_and_keeps_repeats" time="0.006" /><testcase classname="tests.test_pet" name="test_heatmap_mass_and_pointing_ignore_invalid_tokens" time="0.006" /><testcase classname="tests.test_pet" name="test_grid_background_windows_match_adaptive_pooling" time="0.006" /><testcase classname="tests.test_probe" name="test_hand_calculation" time="0.006" /><testcase classname="tests.test_probe" name="test_adaptive_windows_and_average_scores" time="0.010" /><testcase classname="tests.test_probe" name="test_all_keys_is_exact_identity_and_cls_can_be_read[grid]" time="0.008" /><testcase classname="tests.test_probe" name="test_all_keys_is_exact_identity_and_cls_can_be_read[kmeans]" time="0.014" /><testcase classname="tests.test_probe" name="test_every_valid_k_has_exactly_k_keys_and_finite_output" time="0.293" /><testcase classname="tests.test_probe" name="test_kmeans_matches_independent_lloyd_loop_and_handles_empty_clusters" time="0.020" /><testcase classname="tests.test_probe" name="test_random_sets_are_seeded_without_replacement_and_preserve_routes" time="0.011" /><testcase classname="tests.test_rq1" name="test_pilot_inherits_complete_sweep_and_only_overrides_dataset" time="0.010" /><testcase classname="tests.test_rq1" name="test_aggregation_pairs_image_ids_and_separates_seed_variation" time="0.053" /><testcase classname="tests.test_rq1" name="test_aggregation_rejects_invalid_pairing[duplicate]" time="0.019" /><testcase classname="tests.test_rq1" name="test_aggregation_rejects_invalid_pairing[missing]" time="0.019" /><testcase classname="tests.test_rq1" name="test_aggregation_rejects_invalid_pairing[different_ids]" time="0.036" /><testcase classname="tests.test_rq3_extension" name="test_sink_uses_midpoint_median_strict_threshold" time="0.008" /><testcase classname="tests.test_rq3_extension" name="test_category_refills_without_leakage_duplicates_and_preserves_routes" time="0.007"><failure message="TypeError: argsort() takes from 1 to 0 positional arguments but 1 were given">def test_category_refills_without_leakage_duplicates_and_preserves_routes():
+        scores = torch.tensor([[[[9., 8., 7., 6., 5., 4.]]]])
+        pattern = ReadingPattern(torch.tensor([[[[0, 1, 2]]]]), torch.zeros(1, 1, 6, dtype=torch.long))
+        forbidden = torch.tensor([[False, True, True, False, False, True]])
+&gt;       replaced, valid, dose = replace_category(pattern, scores, forbidden)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_rq3_extension.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pattern = ReadingPattern(readsets=tensor([[[[0, 1, 2]]]]), routes=tensor([[[0, 0, 0, 0, 0, 0]]]))
+scores = tensor([[[[9., 8., 7., 6., 5., 4.]]]])
+forbidden = tensor([[False,  True,  True, False, False,  True]])
+
+    def replace_category(pattern, scores, forbidden):
+        """Keep surviving reads; fill from original scores. Return feasibility per image.
+    
+        Infeasible images retain their original pattern for safe batched inference,
+        but callers MUST exclude their outputs and record the reason.
+        """
+        k = pattern.readsets.shape[-1]
+        blocked = forbidden[:, None, None, :].expand_as(scores)
+        selected_blocked = blocked.gather(-1, pattern.readsets)
+        eligible = (~forbidden).sum(-1).ge(k)
+&gt;       order = scores.masked_fill(blocked, -torch.inf).argsort(-1, descending=True, stable=True)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: argsort() takes from 1 to 0 positional arguments but 1 were given
+
+src\mita_probe\rq3_extension.py:51: TypeError</failure></testcase><testcase classname="tests.test_rq3_extension" name="test_random_dose_is_exact_never_refills_deleted_or_original_keys" time="0.007"><failure message="TypeError: argsort() takes from 1 to 0 positional arguments but 1 were given">def test_random_dose_is_exact_never_refills_deleted_or_original_keys():
+        scores = torch.arange(12.).reshape(1, 1, 1, 12).expand(2, 2, 3, 12)
+        reads = scores.topk(4, -1).indices
+        pattern = ReadingPattern(reads, torch.zeros(2, 2, 12, dtype=torch.long))
+        number = torch.tensor([0, 2, 4]).reshape(1, 1, 3).expand(2, 2, 3)
+&gt;       result = replace_random(pattern, scores, number, torch.Generator().manual_seed(0))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_rq3_extension.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+pattern = ReadingPattern(readsets=tensor([[[[11, 10,  9,  8],
+          [11, 10,  9,  8],
+          [11, 10,  9,  8]],
+
+        ..., 0, 0, 0, 0, 0, 0]],
+
+        [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]]))
+scores = tensor([[[[ 0.,  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11.],
+          [ 0.,  1.,  2.,  3.,  4.,  5.,  6., ...3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11.],
+          [ 0.,  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11.]]]])
+number = tensor([[[0, 2, 4],
+         [0, 2, 4]],
+
+        [[0, 2, 4],
+         [0, 2, 4]]])
+generator = &lt;torch._C.Generator object at 0x000001DF9B9453D0&gt;
+
+    def replace_random(pattern, scores, number, generator):
+        """Remove exactly number original members and replace from outside that set."""
+        k = pattern.readsets.shape[-1]
+        random_order = torch.rand(pattern.readsets.shape, device=scores.device,
+                                  generator=generator).argsort(-1)
+        remove = torch.zeros_like(pattern.readsets, dtype=torch.bool)
+        remove.scatter_(-1, random_order, torch.arange(k, device=scores.device) &lt; number[..., None])
+        original_mask = torch.zeros_like(scores, dtype=torch.bool).scatter_(-1, pattern.readsets, True)
+&gt;       replacements = scores.masked_fill(original_mask, -torch.inf).argsort(
+            -1, descending=True, stable=True)[..., :k]
+E       TypeError: argsort() takes from 1 to 0 positional arguments but 1 were given
+
+src\mita_probe\rq3_extension.py:67: TypeError</failure></testcase><testcase classname="tests.test_rq3_extension" name="test_cpu_heatmap_matches_hand_example_and_invalid_mask" time="0.005" /><testcase classname="tests.test_rq3_extension" name="test_register_prefix_exclusion_norm_timing_and_observe_identity" time="0.066" /></testsuite></testsuites>

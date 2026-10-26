@@ -24,9 +24,10 @@ def token_foreground(mask: torch.Tensor, patch_size=16):
 
 
 class PetSegmentation(Dataset):
-    def __init__(self, root, model):
+    def __init__(self, root, model, *, patch_size=16, preprocessing=None):
         self.dataset = OxfordIIITPet(root, split="test", target_types="segmentation", download=False)
-        self.preprocessing = resolve_model_data_config(model)
+        self.patch_size = patch_size
+        self.preprocessing = preprocessing or resolve_model_data_config(model)
         self.transform = create_transform(**self.preprocessing, is_training=False)
         self.resize, self.crop = self.transform.transforms[:2]
         if not isinstance(self.resize, Resize) or not isinstance(self.crop, CenterCrop):
@@ -44,7 +45,7 @@ class PetSegmentation(Dataset):
                          max_size=self.resize.max_size)
         mask = TF.center_crop(mask, self.crop.size)
         mask = torch.from_numpy(np.array(mask, dtype=np.int64))
-        foreground, valid = token_foreground(mask)
+        foreground, valid = token_foreground(mask, self.patch_size)
         return self.transform(image), rgb, mask, foreground, valid
 
     def __getitem__(self, index):

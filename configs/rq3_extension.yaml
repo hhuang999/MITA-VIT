@@ -1,0 +1,8 @@
+base: rq3.yaml
+sink_thresholds: [2, 3, 5]
+primary_sink_threshold: 3
+random_seeds: [0, 1, 2, 3, 4]
+execution_scopes: [last4, all12]
+histogram_log10_limits: [-3, 5]
+histogram_bins: 160
+preregistration_commit: a03c99c

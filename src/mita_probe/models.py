@@ -44,6 +44,7 @@ def read_attention(
     generator: torch.Generator | None = None,
     layers: tuple[int, ...] | None = None,
     grouping_counts: dict | None = None,
+    region_scores: dict | None = None,
 ):
     """Capture the latest original forward; leave this context before executing it.
 
@@ -55,9 +56,8 @@ def read_attention(
         raise ValueError("Use grid/kmeans grouping and ours/random reading sets")
     if readset == "random" and generator is None:
         raise ValueError("Random reading sets require a seeded torch.Generator")
-    if model.num_prefix_tokens != 1:
-        raise ValueError("This probe expects one CLS token")
-    if not 1 <= k_top <= model.patch_embed.num_patches + 1:
+    prefix = model.num_prefix_tokens
+    if not 1 <= k_top <= model.patch_embed.num_patches + prefix:
         raise ValueError("k_top must lie between 1 and the number of tokens")
     if not 1 <= m_side <= min(model.patch_embed.grid_size):
         raise ValueError("m_side must fit within the patch grid")
@@ -73,11 +73,13 @@ def read_attention(
             ).permute(2, 0, 3, 1, 4)
             queries, keys, _ = qkv.unbind(0)
             queries, keys = attention.q_norm(queries), attention.k_norm(keys)
-            patches = queries[:, :, 1:]
+            patches = queries[:, :, prefix:]
             landmarks = grid_landmarks(patches, model.patch_embed.grid_size, (m_side, m_side))
             if grouping == "kmeans":
                 landmarks = kmeans_landmarks(patches, landmarks)
             pattern = read_patterns(queries, keys, landmarks, k_top, attention.scale)
+            if region_scores is not None:
+                region_scores[layer] = (landmarks * attention.scale) @ keys.transpose(-2, -1)
             if grouping_counts is not None:
                 distances = (patches.square().sum(-1, keepdim=True)
                              + landmarks.square().sum(-1).unsqueeze(-2)
@@ -145,7 +147,7 @@ def capture_cls_attention(model):
                                     attention.head_dim).permute(2, 0, 3, 1, 4).unbind(0)
         q, keys = attention.q_norm(q), attention.k_norm(keys)
         weights = ((q[:, :, :1] * attention.scale) @ keys.transpose(-2, -1)).softmax(-1)
-        captured["heatmap"] = weights[:, :, 0, 1:].mean(1)
+        captured["heatmap"] = weights[:, :, 0, model.num_prefix_tokens:].mean(1)
 
     handle = attention.qkv.register_forward_hook(hook)
     try:
