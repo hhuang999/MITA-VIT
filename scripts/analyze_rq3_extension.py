@@ -143,7 +143,7 @@ def stage_a(source, output, data):
         x = np.sqrt(bins[:-1]*bins[1:])
         ax.plot(x, [v['mean'] for v in intervals]); ax.set_xscale('log')
         ax.fill_between(x, [v['low'] for v in intervals], [v['high'] for v in intervals], alpha=.2)
-        ax.set_title(f'Block {li+1} input'); ax.set_xlim(1, 1000)
+        ax.set_title(f'Block {li+1} input'); ax.set_xlim(bins[0], bins[-1])
         for bi, interval in enumerate(intervals):
             histogram.append(dict(layer=li+1, bin_left=bins[bi], bin_right=bins[bi+1], **interval))
     fig.supxlabel('Patch L2 norm (log scale; fixed bins)'); fig.supylabel('Fraction of patches per bin')
