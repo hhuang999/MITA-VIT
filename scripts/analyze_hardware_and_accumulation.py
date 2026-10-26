@@ -7,7 +7,8 @@ import numpy as np
 import pandas as pd
 
 from mita_probe.evaluate import compare_runs
-from mita_probe.io import write_json
+from mita_probe.io import write_json, load_config
+from mita_probe.rq1 import mean_interval
 
 ROOT = Path(__file__).resolve().parents[1]
 EXP = ROOT / 'experiments'
@@ -28,10 +29,25 @@ def main():
     assert len(new) == 175000 and new.groupby(['method', 'k', 'seed']).ngroups == 35
     assert not new.duplicated(['index', 'method', 'k', 'seed']).any()
     assert np.isfinite(new.kl).all() and identity.agree.eq(1).all()
+    config = load_config(EXP / '2026-10-26_rq1_rtx4060/config.yaml')
+    settings = pd.read_csv(EXP / '2026-10-26_rq1_rtx4060/results.csv')
+    settings['method'] = np.where(settings.readset == 'random', 'random', settings.grouping)
+    checks = []
     rows = []
     for (method, k, seed), frame in new.groupby(['method', 'k', 'seed']):
         reference = old[(old.method == method) & (old.k == k) & (old.seed == seed)]
         rows.append(dict(method=method, k=k, seed=seed, **compare_runs(frame, reference)))
+        assert len(frame) == 5000 and set(frame['index']) == set(identity['index'])
+        assert np.array_equal(frame.agree, (frame.original == frame.executed).astype(int))
+        assert frame.kl.min() > -1e-10
+        row = settings[(settings.method == method) & (settings.k == k) & (settings.seed == seed)].iloc[0]
+        low, high = mean_interval(frame.agree.to_numpy(), config)
+        assert np.allclose([frame.agree.mean(), low, high, frame.kl.mean()],
+                           [row.agree, row.agree_ci_low, row.agree_ci_high, row.kl], atol=1e-12)
+        checks.append(dict(method=method, k=k, seed=seed, samples=5000,
+                           exact_reference_pairing=True, agreement_recomputed=True,
+                           agreement_ci_recomputed=True, finite_nonnegative_kl=True))
+    write_json(output / 'rq1_setting_audit.json', dict(all_passed=True, settings=checks))
     pd.DataFrame(rows).to_csv(output / 'hardware_paired_differences.csv', index=False)
     single = pd.read_csv(EXP / '2026-10-26_rq2_imagenet/predictions.csv')
     products = []
