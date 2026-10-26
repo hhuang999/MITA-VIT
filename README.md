@@ -6,6 +6,10 @@ RQ1（含用户指定 k=128）、RQ2 与 RQ3 均已完成，结果位于独立�
 
 [综合总结](docs/analysis/overnight_2026-10-26.md)汇总三项结果、待确认决定及下一步。最终 PNG/PDF 副本位于 `figures/`；正式运行的原始结果保持在各自 `experiments/` 目录中。核心发现是预算与多层组合影响忠实性，层差异温和；Pet 热图未优于中心高斯，不支持可靠物体定位的主张。
 
+用户随后授权的 RQ3 扩展已在 `feature/rq3-diagnosis-extension` 完成：[A1–A5 诊断](docs/analysis/rq3_diagnosis.md)、[B1–B5 结果与图4方案](docs/analysis/rq3_v2.md)。高范数位置主导空间热图强峰，但固定预算执行检验发现前景删除影响最大，汇聚点删除未比匹配数量随机删除更有破坏性。DINOv2寄存器对照改善了空间定位；两个checkpoint分别训练，不视为同权重纯开关实验。
+
+复现入口为 `scripts/run_rq3_extension.py`（`--mode observe/causal`、`--model deit/dino/register`），`scripts/analyze_rq3_extension.py --stage A/B1/B2/B3/B4`，`scripts/compare_rq3_registers.py`。定义与固定权重revision见 `configs/rq3_extension.yaml` 和 decisions.md E01–E07；大矩阵在各次实验的 ignored `raw/observations.npz`，可由固定版本重算。
+
 本地环境已通过验收，项目已同步到 [MITA-VIT 私有仓库](https://github.com/hhuang999/MITA-VIT)。默认分支为 `main`。
 
 ## 本地快速开始
