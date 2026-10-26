@@ -23,6 +23,36 @@ def mean_interval(values, config):
     return np.quantile(means, [tail, 1 - tail]).tolist()
 
 
+def validate_completed_settings(predictions, results, identity, config):
+    """Accept only whole, ordered, image-paired settings for a continuation run."""
+    keys = ['method', 'k', 'seed']
+    if predictions.empty or predictions.duplicated(keys + ['index']).any():
+        raise ValueError('Resume requires nonempty, unique image-setting rows')
+    expected = set(settings(config))
+    completed = set()
+    for (method, k, seed), frame in predictions.groupby(keys, sort=False):
+        key = (method, int(k), int(seed))
+        if key not in expected or len(frame) != config['n_images']:
+            raise ValueError('Resume requires complete authorized settings')
+        for field in ['index', 'target', 'original']:
+            if not np.array_equal(frame[field], identity[field]):
+                raise ValueError('Resume images, order, labels and original predictions must match')
+        if not np.isfinite(frame.kl).all() or not np.array_equal(
+                frame.agree, (frame.original == frame.executed).astype(int)):
+            raise ValueError('Invalid saved prediction metrics')
+        completed.add(key)
+    saved = set()
+    for row in results:
+        method = 'random' if row['readset'] == 'random' else row['grouping']
+        key = (method, int(row['k']), int(row['seed']))
+        if key in saved:
+            raise ValueError('Duplicate saved setting summary')
+        saved.add(key)
+    if saved != completed:
+        raise ValueError('Saved summaries and predictions contain different settings')
+    return completed
+
+
 def aggregate_predictions(predictions: pd.DataFrame, config: dict):
     """Align by image ID; never treat random seeds as extra independent images."""
     summaries, contrasts = [], []

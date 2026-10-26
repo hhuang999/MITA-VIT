@@ -24,7 +24,7 @@ from mita_probe.data import ImageNetValidation, Imagenette1k, experiment_indices
 from mita_probe.io import load_config, source_commit, write_csv, write_json
 from mita_probe.metrics import agreement, kl_divergence
 from mita_probe.models import execute_attention, load_model, read_attention
-from mita_probe.rq1 import aggregate_predictions, mean_interval, settings
+from mita_probe.rq1 import aggregate_predictions, mean_interval, settings, validate_completed_settings
 
 
 def validate_config(config):
@@ -50,6 +50,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=ROOT / "configs/rq1_pilot.yaml")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--resume-from", type=Path)
     args = parser.parse_args()
     config = load_config(args.config)
     validate_config(config)
@@ -62,13 +63,13 @@ def main():
         handlers=[logging.FileHandler(output / "log.txt", encoding="utf-8"), logging.StreamHandler()],
     )
     try:
-        run(config, output, commit)
+        run(config, output, commit, args.resume_from)
     except Exception:
         logging.exception("RQ1 run failed")
         raise
 
 
-def run(config, output, commit):
+def run(config, output, commit, resume_from=None):
     import json
 
     torch.set_num_threads(2)
@@ -98,6 +99,17 @@ def run(config, output, commit):
     }
     if config["dataset"] == "imagenet_val":
         metadata["dataset_manifest"] = json.loads((data_root() / "imagenet_manifest.json").read_text())
+    if resume_from is not None:
+        resume_from = ROOT / resume_from
+        if load_config(resume_from / 'config.yaml') != config or config.get('collect_grouping_counts'):
+            raise ValueError('Continuation requires identical configuration and no count-histogram collection')
+        previous = json.loads((resume_from / 'metadata.json').read_text(encoding='utf-8'))
+        for field in ['torch', 'timm', 'device', 'preprocessing', 'dtype', 'indices_sha256', 'checkpoint_revision']:
+            # JSON converts tuples in preprocessing to lists.
+            if json.loads(json.dumps(metadata[field])) != previous[field]:
+                raise ValueError(f'Continuation mismatch: {field}')
+        metadata['continued_from'] = str(resume_from.relative_to(ROOT))
+        metadata['previous_git_commit'] = previous['git_commit']
     write_json(output / "metadata.json", metadata)
     started = time.perf_counter()
     original_batches, identity_rows = [], []
@@ -138,14 +150,27 @@ def run(config, output, commit):
         logging.info("200-image prerequisite complete; no sweep requested")
         return
     results = []
+    completed = set()
+    previous_predictions = None
+    if resume_from is not None:
+        previous_predictions = pd.read_csv(resume_from / 'predictions.csv')
+        results = pd.read_csv(resume_from / 'results.csv').to_dict('records')
+        completed = validate_completed_settings(previous_predictions, results, pd.DataFrame(identity_rows), config)
+        logging.info('Validated and retained %d completed settings from %s', len(completed), resume_from)
+        write_csv(output / 'results.csv', results)
     count_histograms = {}
     fields = ["method", "k", "seed", "index", "target", "original", "executed", "agree",
               "kl", "original_correct", "executed_correct"]
     with (output / "predictions.csv").open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
+        if previous_predictions is not None:
+            writer.writerows(previous_predictions.to_dict('records'))
+            stream.flush()
         with torch.inference_mode():
             for method, k, seed in settings(config):
+                if (method, k, seed) in completed:
+                    continue
                 setting_start = time.perf_counter()
                 generator = torch.Generator(device=device).manual_seed(seed) if method == "random" else None
                 grouping, readset = ("kmeans" if method == "kmeans" else "grid"), ("random" if method == "random" else "ours")
@@ -203,7 +228,8 @@ def run(config, output, commit):
             for (layer, kind), histogram in count_histograms.items()
             for count, frequency in enumerate(histogram.tolist())
         ])
-    checks.update({"settings_completed": len(results), "elapsed_seconds": time.perf_counter() - started})
+    checks.update({"settings_completed": len(results), "settings_reused": len(completed),
+                   "elapsed_seconds": time.perf_counter() - started})
     write_json(output / "checks.json", checks)
     logging.info("RQ1 complete: %d settings, %.1f seconds", len(results), checks["elapsed_seconds"])
 

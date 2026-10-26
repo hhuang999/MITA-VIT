@@ -12,6 +12,7 @@ from mita_probe.rq1 import mean_interval
 
 ROOT = Path(__file__).resolve().parents[1]
 EXP = ROOT / 'experiments'
+LOCAL_RUN = EXP / '2026-10-26_rq1_rtx4060_continued'
 
 
 def estimate(value, low, high):
@@ -22,15 +23,15 @@ def main():
     output = EXP / '2026-10-26_hardware_accumulation'
     output.mkdir(exist_ok=False)
     old = pd.read_csv(EXP / '2026-10-26_rq1_imagenet/predictions.csv')
-    new = pd.read_csv(EXP / '2026-10-26_rq1_rtx4060/predictions.csv')
-    identity = pd.read_csv(EXP / '2026-10-26_rq1_rtx4060/identity_predictions.csv').sort_values('index')
+    new = pd.read_csv(LOCAL_RUN / 'predictions.csv')
+    identity = pd.read_csv(LOCAL_RUN / 'identity_predictions.csv').sort_values('index')
     expected = pd.read_csv(EXP / '2026-10-26_rq1_imagenet/identity_predictions.csv').sort_values('index')
     pd.testing.assert_frame_equal(identity.reset_index(drop=True), expected.reset_index(drop=True))
     assert len(new) == 175000 and new.groupby(['method', 'k', 'seed']).ngroups == 35
     assert not new.duplicated(['index', 'method', 'k', 'seed']).any()
     assert np.isfinite(new.kl).all() and identity.agree.eq(1).all()
-    config = load_config(EXP / '2026-10-26_rq1_rtx4060/config.yaml')
-    settings = pd.read_csv(EXP / '2026-10-26_rq1_rtx4060/results.csv')
+    config = load_config(LOCAL_RUN / 'config.yaml')
+    settings = pd.read_csv(LOCAL_RUN / 'results.csv')
     settings['method'] = np.where(settings.readset == 'random', 'random', settings.grouping)
     checks = []
     rows = []
@@ -104,7 +105,9 @@ def main():
 
 ## 复现与交付
 
-同硬件35组在 `2026-10-26_rq1_rtx4060`，六点合并在 `2026-10-26_rq1_same_hardware`，硬件差值/乘积/检查在 `2026-10-26_hardware_accumulation`。原报告保留，是否将新同硬件曲线替换为论文主图由用户审阅后决定。没有启动HPC。
+同硬件35组完整结果在 `2026-10-26_rq1_rtx4060_continued`：首次进程在24组完成后随会话中断停止，原目录 `2026-10-26_rq1_rtx4060` 完整保留。接续前重新做5000张恒等检查，严格验证配置/软件/硬件/权重/图片顺序/原预测，再复制24个完整设置并只计算剩余11组；每个(k,seed)独立初始化随机生成器，未续用半截随机流。results.csv保留各组自己的原git commit与运行来源。
+
+六点合并在 `2026-10-26_rq1_same_hardware`，硬件差值/乘积/检查在 `2026-10-26_hardware_accumulation`。原报告保留，是否将新同硬件曲线替换为论文主图由用户审阅后决定。没有启动HPC。
 '''
     (ROOT / 'docs/analysis/hardware_and_accumulation.md').write_text(report, encoding='utf-8')
     write_json(output / 'checks.json', dict(same_images_labels_original=True, identity_agreement=1,

@@ -1,0 +1,27 @@
+2026-10-26 21:14:25,218 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-26 21:14:25,226 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-26 21:15:50,199 Identity passed: {'n_images': 5000, 'identity_agreement': 1.0, 'max_read_logit_error': 0.0, 'max_identity_logit_error': 0.0, 'acc_original': 0.7962, 'identity_seconds': 81.96927460000006}
+2026-10-26 21:16:49,845 grid k=4 seed=0: agree=0.2526 KL=3.5111; 59.6s
+2026-10-26 21:17:53,172 random k=4 seed=0: agree=0.0062 KL=5.3975; 63.3s
+2026-10-26 21:18:59,077 random k=4 seed=1: agree=0.0062 KL=5.3833; 65.9s
+2026-10-26 21:20:04,023 random k=4 seed=2: agree=0.0052 KL=5.4189; 64.9s
+2026-10-26 21:21:08,470 random k=4 seed=3: agree=0.0054 KL=5.3915; 64.4s
+2026-10-26 21:22:12,072 random k=4 seed=4: agree=0.0038 KL=5.3854; 63.6s
+2026-10-26 21:23:37,046 kmeans k=4 seed=0: agree=0.1924 KL=3.9660; 85.0s
+2026-10-26 21:24:50,425 grid k=8 seed=0: agree=0.4862 KL=2.2084; 73.4s
+2026-10-26 21:26:03,978 random k=8 seed=0: agree=0.0206 KL=5.0020; 73.6s
+2026-10-26 21:27:19,931 random k=8 seed=1: agree=0.0194 KL=5.0123; 76.0s
+2026-10-26 21:28:30,171 random k=8 seed=2: agree=0.0184 KL=5.0101; 70.2s
+2026-10-26 21:29:43,309 random k=8 seed=3: agree=0.0192 KL=4.9729; 73.1s
+2026-10-26 21:30:55,577 random k=8 seed=4: agree=0.0194 KL=5.0194; 72.3s
+2026-10-26 21:32:29,104 kmeans k=8 seed=0: agree=0.4666 KL=2.5214; 93.5s
+2026-10-26 21:33:45,358 grid k=16 seed=0: agree=0.6940 KL=1.1044; 76.3s
+2026-10-26 21:34:55,725 random k=16 seed=0: agree=0.0950 KL=4.1022; 70.4s
+2026-10-26 21:36:05,721 random k=16 seed=1: agree=0.0956 KL=4.1068; 70.0s
+2026-10-26 21:37:17,450 random k=16 seed=2: agree=0.0908 KL=4.1123; 71.7s
+2026-10-26 21:38:27,101 random k=16 seed=3: agree=0.0920 KL=4.1168; 69.7s
+2026-10-26 21:39:37,053 random k=16 seed=4: agree=0.0970 KL=4.0738; 70.0s
+2026-10-26 21:41:09,886 kmeans k=16 seed=0: agree=0.7140 KL=1.1199; 92.8s
+2026-10-26 21:42:22,644 grid k=32 seed=0: agree=0.8124 KL=0.3951; 72.8s
+2026-10-26 21:43:40,156 random k=32 seed=0: agree=0.3008 KL=2.6453; 77.5s
+2026-10-26 21:45:36,282 random k=32 seed=1: agree=0.3100 KL=2.6227; 116.1s

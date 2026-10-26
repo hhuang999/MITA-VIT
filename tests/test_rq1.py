@@ -52,3 +52,18 @@ def test_aggregation_rejects_invalid_pairing(problem):
         frame.loc[(frame.method == "random") & (frame["index"] == 17), "index"] = 99
     with pytest.raises(ValueError):
         aggregate_predictions(frame, config)
+
+
+def test_continuation_accepts_only_complete_identical_ordered_settings():
+    from mita_probe.rq1 import validate_completed_settings
+    identity = pd.DataFrame({'index': [17, 3], 'target': [2, 4], 'original': [2, 5]})
+    predictions = identity.assign(method='grid', k=4, seed=0, executed=[2, 5], agree=1, kl=0.)
+    results = [{'grouping': 'grid', 'readset': 'ours', 'k': 4, 'seed': 0}]
+    config = {'k': [4], 'methods': ['grid', 'random', 'kmeans'], 'random_seeds': [0], 'n_images': 2}
+    assert validate_completed_settings(predictions, results, identity, config) == {('grid', 4, 0)}
+    for broken in [predictions.iloc[:1], predictions.iloc[::-1], predictions.assign(original=99),
+                   pd.concat([predictions, predictions]), predictions.assign(agree=0)]:
+        with pytest.raises(ValueError):
+            validate_completed_settings(broken, results, identity, config)
+    with pytest.raises(ValueError):
+        validate_completed_settings(predictions, [], identity, config)
