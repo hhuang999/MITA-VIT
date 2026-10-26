@@ -263,7 +263,7 @@ def stage_b3(source, output):
     for (k, scope), group in frame.groupby(['k', 'scope']):
         baseline = group[group.method == 'baseline'].set_index('index').agree.sort_index()
         average = group.groupby(['index', 'method']).agree.mean().unstack().sort_index()
-        common = average.notna().all(1)
+        common = average.notna().all(axis=1)
         for method in average.columns:
             values = average[method].to_numpy()
             for support, mask in [('available', np.isfinite(values)), ('common', common.to_numpy())]:
@@ -308,7 +308,9 @@ def main():
     parser.add_argument('--stage', choices=['A', 'B1', 'B2', 'B3', 'B4'], required=True)
     args = parser.parse_args()
     output = args.source / args.stage
-    output.mkdir(exist_ok=False)
+    if output.exists() and any(output.iterdir()):
+        raise FileExistsError(f'Refusing to overwrite analysis: {output}')
+    output.mkdir(exist_ok=True)
     if args.stage == 'B3':
         stage_b3(args.source, output)
     else:

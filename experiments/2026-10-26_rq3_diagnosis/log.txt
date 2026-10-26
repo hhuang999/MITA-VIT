@@ -1,0 +1,15 @@
+2026-10-26 20:51:58,712 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-26 20:51:58,719 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-26 20:52:04,204 deit observe 320/3669, 5.2s
+2026-10-26 20:52:09,659 deit observe 640/3669, 10.7s
+2026-10-26 20:52:14,474 deit observe 960/3669, 15.5s
+2026-10-26 20:52:19,860 deit observe 1280/3669, 20.9s
+2026-10-26 20:52:25,598 deit observe 1600/3669, 26.6s
+2026-10-26 20:52:31,059 deit observe 1920/3669, 32.1s
+2026-10-26 20:52:36,636 deit observe 2240/3669, 37.7s
+2026-10-26 20:52:42,754 deit observe 2560/3669, 43.8s
+2026-10-26 20:52:48,759 deit observe 2880/3669, 49.8s
+2026-10-26 20:52:54,342 deit observe 3200/3669, 55.4s
+2026-10-26 20:53:00,341 deit observe 3520/3669, 61.4s
+2026-10-26 20:53:03,174 deit observe 3669/3669, 64.2s
+2026-10-26 20:53:07,291 Complete 68.3s; observe error 0
