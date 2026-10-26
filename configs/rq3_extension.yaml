@@ -6,3 +6,5 @@ execution_scopes: [last4, all12]
 histogram_log10_limits: [-3, 5]
 histogram_bins: 160
 preregistration_commit: a03c99c
+dino_revision: 4610ca143709d58a633b6397a74412c2c3842454
+register_revision: c04b5193082a8d5b0c4856c7937384a48136c5de

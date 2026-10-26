@@ -15,7 +15,6 @@ import pandas as pd
 import timm
 import torch
 import yaml
-from huggingface_hub import HfApi
 from timm.data import resolve_model_data_config
 from torch.utils.data import DataLoader, Subset
 
@@ -71,7 +70,7 @@ def run(args, config, output, commit):
     else:
         name = ('vit_small_patch14_reg4_dinov2.lvd142m' if args.model == 'register'
                 else 'vit_small_patch14_dinov2.lvd142m')
-        revision = HfApi().model_info(f'timm/{name}').sha
+        revision = config[f'{args.model}_revision']
         model = timm.create_model(name, pretrained=True, img_size=224,
             pretrained_cfg_overlay={'hf_hub_id': f'timm/{name}@{revision}'}).eval().to('cuda')
         actual = resolve_model_data_config(model)
