@@ -92,5 +92,160 @@ k=32 的全部逐层峰值对应及三阈值结果保存在 [sink_summary.csv](.
     (ROOT / 'docs/analysis/rq3_diagnosis.md').write_text(text, encoding='utf-8')
 
 
+def extension():
+    composition = pd.read_csv(D / 'B1/composition.csv')
+    heat = pd.read_csv(D / 'B2/heatmaps.csv')
+    causal = pd.read_csv(EXP / '2026-10-26_rq3_causal/B3/causal_summary.csv')
+    contrasts = pd.read_csv(EXP / '2026-10-26_rq3_causal/B3/causal_contrasts.csv')
+    stratified = pd.read_csv(D / 'B4/stratified_heatmaps.csv')
+    registers = pd.read_csv(EXP / '2026-10-26_rq3_register_comparison/heatmaps.csv')
+    register_contrasts = pd.read_csv(EXP / '2026-10-26_rq3_register_comparison/heatmap_contrasts.csv')
+    text = '''# RQ3 v2：读取位置、预测作用与寄存器对照
+
+## 1. 一句话结论
+
+原 RQ3 的背景峰值与预注册高范数 token 高度重合，去掉这些位置可以改善定位，但“读得多”“落在物体上”和“维持预测”是三个不同的性质；必须结合下面的固定预算执行检验与模型对照判断。
+
+## 2. 这个实验回答什么问题
+
+本轮是在设计书 §6.4 之上、用户明确授权的 A1–A5/B1–B5 扩展：说明书看到了什么、是否真的使用、是否符合寄存器缓解高范数 patch 的机制假设。原 RQ1/RQ2 与原 RQ3 的 CSV、设置和结论原文保留；诊断没有发现需要改写原 RQ3 的方向/对齐 bug，见 [诊断报告](rq3_diagnosis.md)。
+
+## 3. 设置
+
+Pet test 全部 3,669 张；网格 m=16，主 k=16、稳健性 k=32。DeiT-S 的 resize248/center crop224、mask 最近邻、patch 非边界前景像素比例≥0.5保持原样。汇聚点为每图每层 block 输入（norm1前）patch L2 范数严格大于中位数3倍；2/5倍敏感性结果均保留。规则在 a03c99c 的 E01–E07 中运行前固定。
+
+B1 三类空间 token 互斥（汇聚点优先），unknown/CLS/register 单列，以全部读取次数为分母。空间热图排除 prefix 和 unknown。B2 主 selection 排除最后四层汇聚点并集，CLS 排除最后层汇聚点；这改变了空间评价的候选位置，不改变模型输出，也不使改造后的热图自动拥有执行忠实性。
+
+B3 从原模型固定区域打分、读取集合和路由，只在9–12层或全部12层执行。删除目标后依原始排名补入非目标、不重复的 token，保持 k。前景干预包括前景汇聚点，背景干预不含汇聚点；随机对照在每个集合随机删除相同数量（seed0–4），补选原集合外最高分位置。某类非目标位置不足 k 时按预注册记不可执行，绝不改变 k。报告完整基准、各自可执行样本及跨类别共同样本；五个随机种子先逐图平均。这里的因果效应是相对固定预算执行基准的额外变化，不等同于直接消融原模型全部注意力。
+
+B4 使用变换后前景像素质心，距中心除以224，三分位阈值0.073663/0.129310，样本数1221/1220/1221；7张裁剪后无前景，不分组。分组不依模型或热图。
+
+B5 使用 timm DINOv2-S/14 与 reg4，224输入、16×16 patch、相同 resize248/crop224/归一化，observe-only。CLS与4个register不参与区域池化，但可以被选为key并分别计数。checkpoint revision固定在配置与metadata。两个模型是分别训练的权重，因此对照检验一致性，不能表述为在同一模型权重上只开关寄存器。[无寄存器模型](https://huggingface.co/timm/vit_small_patch14_dinov2.lvd142m)、[reg4模型](https://huggingface.co/timm/vit_small_patch14_reg4_dinov2.lvd142m)、[寄存器原论文](https://arxiv.org/abs/2309.16588)。
+
+所有区间均为图片 bootstrap 1,000次、seed0、95%，差值同步配对图片；不把层/head/区域/随机种子当独立图片。各图独立运行于本地RTX4060、FP32、batch32；HPC未重启。
+
+## 4. 结果
+
+### B1 哪些层开始改变读取成分？
+
+![逐层成分与定位](../../experiments/2026-10-26_rq3_diagnosis/B1/layer_composition.png)
+
+第5层开始检出高范数 patch，第6层开始普遍出现；k16 的 pointing 同时明显下降。第9层总体前景质量较高，但峰值被少数高范数位置主导；第12层普通背景读取重新增加。以下成分表分母包含CLS，因而与排除CLS后的前景质量不同。
+
+'''
+    for k in [16, 32]:
+        f = composition[(composition.k == k) & (composition.threshold == 3)]
+        text += f'\n#### k={k}，主阈值逐层表（均为 % [95% CI]）\n\n' + table(
+            ['层', '前景非汇聚', '普通背景', '汇聚点', 'CLS', 'unknown', '前景质量', 'pointing'],
+            [[l] + [estimate(f[(f.layer == l) & (f.metric == metric)].iloc[0])
+                    for metric in ['foreground', 'background', 'sink', 'cls', 'unknown', 'fg_mass', 'pointing']]
+             for l in range(1, 13)])
+    text += '''
+2/5倍阈值完整结果见 [composition.csv](../../experiments/2026-10-26_rq3_diagnosis/B1/composition.csv)。它们只影响汇聚点分类，不改变原始读取集合。
+
+### B2 汇聚点是否遮住了物体？
+
+主设置去汇聚点后的 selection pointing 为42.71% [41.13,44.26]，高于原图18.21% [16.95,19.38]，但仍低于随机50.94% [49.30,52.58]。k32达到61.22% [59.61,62.61]，说明读取预算会影响去除强峰后留下的空间信息。不能据此将主设置换成k32。
+
+'''
+    for t in [3, 2, 5]:
+        text += f'\n#### 阈值 {t} 倍；% [95% CI]\n\n' + table(
+            ['k', '方法', '前景质量', 'pointing', 'n'],
+            [[k, method, estimate(heat[(heat.threshold == t) & (heat.k == k) & (heat.method == method) & (heat.metric == 'fg_mass')].iloc[0]),
+              estimate(heat[(heat.threshold == t) & (heat.k == k) & (heat.method == method) & (heat.metric == 'pointing')].iloc[0]), 3669]
+             for k in [16, 32] for method in ['selection', 'selection_no_sink', 'cls', 'cls_no_sink', 'gaussian', 'random']])
+    text += '''
+### B3 哪类读取对保持预测最重要？
+
+![固定预算因果检验](../../experiments/2026-10-26_rq3_causal/B3/causal_interventions.png)
+
+柱图使用跨干预共同可执行图片。下面同时列“各自可执行”与“共同样本”，一致率参照为原模型在同一Pet图片上的ImageNet类别预测，不把Pet品种标签当1000类准确率。
+
+'''
+    for support in ['available', 'common']:
+        text += f'\n#### {support} 样本\n\n' + table(
+            ['k', '范围', '设置', 'n', '一致率 % [95% CI]', '相对基准下降 pp [95% CI]', '每集合删除数 [95% CI]'],
+            [[k, scope, method, int((r := causal[(causal.k == k) & (causal.scope == scope) & (causal.method == method) & (causal.support == support) & (causal.metric == 'agreement')].iloc[0]).n), estimate(r),
+              estimate(causal[(causal.k == k) & (causal.scope == scope) & (causal.method == method) & (causal.support == support) & (causal.metric == 'drop_from_baseline')].iloc[0]),
+              estimate(causal[(causal.k == k) & (causal.scope == scope) & (causal.method == method) & (causal.support == support) & (causal.metric == 'removed_per_set')].iloc[0], False)]
+             for k in [16, 32] for scope in ['last4', 'all12'] for method in ['baseline', 'sink', 'foreground', 'background', 'random']])
+    text += '\n随机一致率 − 去汇聚点一致率，正数表示去汇聚点比等数量随机删除更有破坏性：\n\n'
+    text += table(['k', '范围', '配对差值 pp [95% CI]'],
+                  [[r.k, r.scope, estimate(r)] for _, r in contrasts.iterrows()])
+    text += '\n随机五种子逐一结果（% [95% CI]）：\n\n' + table(
+        ['k', '范围', '种子', '一致率'], [[r.k, r.scope, r.method, estimate(r)]
+        for _, r in causal[causal.method.str.startswith('random_seed')].iterrows()])
+    text += '''
+以上“下降”允许为负：某种替换也可能比执行基准更接近原模型。前景、背景和汇聚点删除剂量不同，因此跨类别比较是该操作的总体影响，不能直接换算成每个token的固有重要性；只有汇聚点与随机对照明确匹配删除数量。
+
+### B4 中心偏置控制
+
+最偏心三分之一中，高斯的 pointing 仍领先；因此不能仅用“Pet 都在中心”解释原热图低于机会水平。质心偏心不保证物体避开中心，大物体可能质心偏移但仍覆盖中央token。
+
+'''
+    for group in ['centered', 'middle', 'offcenter']:
+        f = stratified[stratified.group == group]
+        text += f'\n#### {group}\n\n' + table(['k', '方法', 'n', '前景质量 % [95% CI]', 'pointing % [95% CI]'],
+            [[k, method, int((r := f[(f.k == k) & (f.method == method) & (f.metric == 'fg_mass')].iloc[0]).n), estimate(r),
+              estimate(f[(f.k == k) & (f.method == method) & (f.metric == 'pointing')].iloc[0])]
+             for k in [16, 32] for method in ['selection', 'selection_no_sink', 'cls', 'cls_no_sink', 'gaussian', 'random']])
+    text += '''
+### B5 有无寄存器的模型对照
+
+![两个DINOv2模型](../../experiments/2026-10-26_rq3_register_comparison/register_comparison.png)
+
+'''
+    text += table(['模型', 'k', '方法', '前景质量 % [95% CI]', 'pointing % [95% CI]'],
+        [[model, k, method, estimate(registers[(registers.model == model) & (registers.k == k) & (registers.method == method) & (registers.metric == 'fg_mass')].iloc[0]),
+          estimate(registers[(registers.model == model) & (registers.k == k) & (registers.method == method) & (registers.metric == 'pointing')].iloc[0])]
+         for model in ['dino', 'register'] for k in [16, 32] for method in ['selection', 'cls', 'gaussian', 'random']])
+    text += '\n寄存器模型 − 无寄存器模型的配对差值：\n\n' + table(
+        ['k', '方法', '指标', '差值 pp [95% CI]'],
+        [[r.k, r.method, r.metric, estimate(r)] for _, r in register_contrasts.iterrows()])
+    text += '''
+每个模型的A2位置前十/频率、A3逐层范数、A4三阈值和B1逐层成分分别保存在 [DINOv2](../../experiments/2026-10-26_rq3_dino/) 与 [reg4](../../experiments/2026-10-26_rq3_register/)。寄存器按1–4分别计数，总寄存器读取比例也用逐图之和重新bootstrap。224分辨率为用户指定，checkpoint默认518的绝对位置嵌入由timm插值；不得把此处与DeiT不同patch网格的空间指标差异全归因于训练方式。
+
+## 5. 和预期对照
+
+“最强位置等于物体位置”的预期被否定；高范数位置可以频繁被读取，同时空间定位较差。B2只恢复一部分前景峰值，B3/B5的解释必须依据实际对照。RQ3扩展本身不重新定义设计书A/B/C，它深化空间与功能的区分，原RQ1/RQ2分型保留。不能为了更完整的故事把所有高范数位置都称为已经证实的全局信息汇聚器。
+
+## 6. 可信度检查
+
+44项测试通过；DeiT采集observe误差0，32张B3前置k197恒等误差0；ImageNet此前200/5000张恒等结果保留。正式B3每批输出有限，并检查全量样本数、相同参照预测、缺失与可执行规则一致、随机删除数量匹配。DINOv2只报告observe特征不变，不把384维特征argmax解释成类别。
+
+A的逐图指标与原RQ3最大差异1.84×10⁻⁷；五张叠图视觉核对通过。抽样CI用图片为单位，随机种子均值的CI反映图片抽样不确定性，不包括训练种子或checkpoint选择不确定性。未作多重比较校正。大矩阵缓存与权重留本地ignored目录，CSV/配置/日志/图已提交；源commit、checkpoint revision与缓存SHA256记录在各目录。
+
+## 7. 异常与可能原因
+
+| 观察/限制 | 可能原因 | 如何验证 |
+| --- | --- | --- |
+| 转置提高pointing但降低selection质量 | 热点位置与物体构图不均匀，单一分数不足以判断方向 | 对照已保存的五张原图/标签/热图及patch行优先索引；本轮未发现方向bug |
+| 去汇聚点后主设置仍低于随机pointing | 普通背景强峰仍存在；k16覆盖不足 | 比较B1最后层普通背景、B2两k与B3类别干预；下一步可按层看干预，不在本轮追加 |
+| 少数B3干预不可执行 | 非目标token不足k，固定预算约束无法同时满足 | 查看coverage.csv与逐图reason，复算对应mask剩余token数量 |
+| B4有7张无质心 | 原eval裁剪后前景全部消失 | 查看groups.csv中group=-1的原始trimap与224裁剪；不补造质心 |
+| 不同模型对照不等于纯register开关 | checkpoint训练权重不同，224位置插值与原始训练分辨率不同 | 若需严格训练因果结论，应做相同训练设置的受控模型实验，超出本轮 |
+
+前置代码测试发现stable argsort参数调用错误，正式实验前已修复并通过测试。一次分析过早启动，等待采集结束后重试；没有丢弃负结果、改阈值或重选示例。
+
+## 8. 下一步选项与图4版面
+
+1. **推荐：图4采用“机制证据”三面板。** 左：逐层前景/普通背景/汇聚点成分；中：主k16的B3两执行范围及等数量随机对照；右：DINOv2两模型的空间指标与prefix读取分配。完整k32、敏感性、位置/范数图放附录。目的：在4页内把“看到了什么→是否有用→跨模型一致性”连起来；排版约1–2小时，不新增实验。
+2. **图4采用“图像案例”版。** 上：固定三例的原图、原热图、去汇聚点图；下：B3主结果和偏心组三方法小表。DINOv2放附录。目的：优先让读者直观看懂定位与功能不同；约1–2小时，代价是主文的寄存器证据较少。
+
+需要用户决定的是采用哪种主文叙事和版面，以及是否将上述干预约束作为正式方法定义。未改研究叙事稿的【待填】。
+
+## 9. 可以写进论文的句子与三个问题
+
+> 在Oxford-IIIT Pet上，原读取热图的背景强峰与高范数patch显著重合：98.66% [98.31,99.02]的峰值属于最后四层高范数位置的并集。移除这些位置使k16的pointing从18.21% [16.95,19.38]升至42.71% [41.13,44.26]，但仍不足以恢复可靠的物体定位。
+
+下面的功能与寄存器结论应结合B3/B5数值补入最终叙事，不能仅凭上述空间变化推断。
+'''
+    (ROOT / 'docs/analysis/rq3_v2.md').write_text(text, encoding='utf-8')
+
+
 if __name__ == '__main__':
-    diagnosis()
+    import sys
+    if '--final' in sys.argv:
+        extension()
+    else:
+        diagnosis()
