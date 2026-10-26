@@ -1,0 +1,2 @@
+Final report sections, UTF-8 status, principal values, links and eight exported figure files verified.
+No model inference run during finalization.

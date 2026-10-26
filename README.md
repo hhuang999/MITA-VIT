@@ -4,6 +4,8 @@
 
 RQ1（含用户指定 k=128）、RQ2 与 RQ3 均已完成，结果位于独立分支 `feature/overnight-rq1-rq2-rq3`。三份正式分析见 [RQ1](docs/analysis/rq1.md)、[RQ2](docs/analysis/rq2.md)、[RQ3](docs/analysis/rq3.md)；运行来源、进度及中断重跑记录见 [进度](docs/progress.md)和[实验日志](docs/experiment_log.md)。此前试跑与核心实现讲解见 [检查点 3](docs/checkpoint_3.md)、[检查点 2](docs/checkpoint_2.md)。
 
+[综合总结](docs/analysis/overnight_2026-10-26.md)汇总三项结果、待确认决定及下一步。最终 PNG/PDF 副本位于 `figures/`；正式运行的原始结果保持在各自 `experiments/` 目录中。核心发现是预算与多层组合影响忠实性，层差异温和；Pet 热图未优于中心高斯，不支持可靠物体定位的主张。
+
 本地环境已通过验收，项目已同步到 [MITA-VIT 私有仓库](https://github.com/hhuang999/MITA-VIT)。默认分支为 `main`。
 
 ## 本地快速开始
