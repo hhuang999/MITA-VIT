@@ -1,0 +1,42 @@
+{
+  "git_commit": "9b4f219a6bc6700255e13a28e14c534edc64b7af",
+  "checkpoint_revision": "91327a9c99f98fe6b524cd4d397b7226b80e1365",
+  "timestamp": "2026-10-26T20:57:17.556129+08:00",
+  "torch": "2.7.0+cu128",
+  "timm": "1.0.30",
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "n_images": 3669,
+  "num_prefix_tokens": 1,
+  "grid_size": [
+    14,
+    14
+  ],
+  "preprocessing": {
+    "input_size": [
+      3,
+      224,
+      224
+    ],
+    "interpolation": "bicubic",
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ],
+    "crop_pct": 0.9,
+    "crop_mode": "center"
+  },
+  "example_indices": [
+    2335,
+    1874,
+    989,
+    1129,
+    3117
+  ],
+  "preregistration_commit": "a03c99c"
+}
