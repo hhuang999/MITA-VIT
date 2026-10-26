@@ -1,0 +1,5 @@
+2026-10-26 20:50:43,029 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-26 20:50:44,146 HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+2026-10-26 20:50:44,150 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-26 20:50:45,283 deit observe 32/32, 0.8s
+2026-10-26 20:50:45,323 Complete 0.8s; observe error 0
