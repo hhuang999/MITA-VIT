@@ -78,6 +78,22 @@ def main():
             left = maps[(maps.method == method) & (maps.k == 16)].sort_values("index")
             right = maps[(maps.method == method) & (maps.k == 32)].sort_values("index")
             check(f"{method}: identical across k", np.array_equal(left[["fg_mass", "pointing"]].to_numpy(), right[["fg_mass", "pointing"]].to_numpy()))
+        check("undefined background rows correspond to no background source region",
+              np.array_equal(backgrounds.fg_ratio.isna(), backgrounds.n_background_regions.eq(0)))
+        examples = pd.read_csv(run / "example_maps.csv")
+        for index, example in examples.groupby("index"):
+            example = example.sort_values("token")
+            valid = example.valid.to_numpy().astype(bool)
+            foreground = example.foreground.to_numpy().astype(bool)
+            for method in ["selection", "cls_attention"]:
+                weights = example[method].to_numpy()
+                mass = weights[valid & foreground].sum() / weights[valid].sum()
+                peak = np.where(valid, weights, -np.inf).argmax()
+                saved = maps[(maps["index"] == index) & (maps.k == 16) & (maps.method == method)].iloc[0]
+                check(f"example {index} {method}: independent NumPy mass",
+                      np.isclose(mass, saved.fg_mass, atol=1e-6))
+                check(f"example {index} {method}: independent NumPy pointing",
+                      int(foreground[peak]) == saved.pointing)
         summary = pd.read_csv(run / "results.csv")
         for row in summary.itertuples():
             values = layers[(layers.k == row.k) & (layers.layer == row.layer)].fg_ratio.dropna().to_numpy()

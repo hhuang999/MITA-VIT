@@ -2,7 +2,7 @@
 
 把预训练 ViT 每层每个注意力头概括成“16 块区域各读取 k 个 token”，再通过限制读取集合检验预测是否保持。核心模型是 DeiT-S/16，研究问题依次为概括的忠实性（RQ1）、逐层差异（RQ2）和与物体前景的对应（RQ3）。
 
-ImageNet 正式 RQ1 的原五点已完成，当前在独立分支 `feature/overnight-rq1-rq2-rq3` 推进用户授权的 k=128 补充、RQ2 与 RQ3。最新状态以 [进度](docs/progress.md)和[实验日志](docs/experiment_log.md)为准。此前试跑与核心实现讲解见 [检查点 3](docs/checkpoint_3.md)、[检查点 2](docs/checkpoint_2.md)。
+RQ1（含用户指定 k=128）、RQ2 与 RQ3 均已完成，结果位于独立分支 `feature/overnight-rq1-rq2-rq3`。三份正式分析见 [RQ1](docs/analysis/rq1.md)、[RQ2](docs/analysis/rq2.md)、[RQ3](docs/analysis/rq3.md)；运行来源、进度及中断重跑记录见 [进度](docs/progress.md)和[实验日志](docs/experiment_log.md)。此前试跑与核心实现讲解见 [检查点 3](docs/checkpoint_3.md)、[检查点 2](docs/checkpoint_2.md)。
 
 本地环境已通过验收，项目已同步到 [MITA-VIT 私有仓库](https://github.com/hhuang999/MITA-VIT)。默认分支为 `main`。
 
