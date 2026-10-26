@@ -1,0 +1,9 @@
+{
+  "status": "stopped_by_user_compute_location_change",
+  "date": "2026-10-26",
+  "reason": "User requested no further local GPU work; continue on HPC only.",
+  "completed_new_settings": 0,
+  "identity_check_completed": false,
+  "parent_results_preserved": true,
+  "next_execution_target": "HPC NVIDIA A800-SXM4-80GB"
+}
