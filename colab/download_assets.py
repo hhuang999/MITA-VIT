@@ -20,6 +20,10 @@ if destination.exists():
 destination.write_bytes(credential.read_bytes())
 destination.chmod(0o600)
 python = str(ROOT / '.venv/bin/python')
+asset_env = os.environ.copy()
+# Public model downloads need no token. The gated ImageNet script explicitly
+# requests token=True, so only its authenticated requests use the credential.
+asset_env['HF_HUB_DISABLE_IMPLICIT_TOKEN'] = '1'
 commands = [
     [python, 'scripts/download_models.py'],
     [python, 'scripts/download_data.py', 'imagenet'],
@@ -32,7 +36,8 @@ with (checks / 'assets.log').open('x') as log:
         print('Running:', ' '.join(command), flush=True)
         log.write('Running: ' + ' '.join(command) + '\n')
         log.flush()
-        result = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
+        result = subprocess.run(command, cwd=ROOT, env=asset_env,
+                                stdout=log, stderr=subprocess.STDOUT)
         if result.returncode:
             raise RuntimeError('Asset preparation failed; inspect and redact log before sharing')
 original = json.loads((ROOT / 'experiments/2026-10-25_imagenet_download/verification.json').read_text())
