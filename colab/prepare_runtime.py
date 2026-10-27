@@ -10,7 +10,10 @@ ROOT = Path('/content/MITA_vit')
 if ROOT.exists():
     raise FileExistsError('Preserve the existing checkout; inspect before retrying')
 bundle = os.environ.get('MITA_SOURCE_BUNDLE', '/content/mita-source.bundle')
-subprocess.run(['git', 'clone', bundle, str(ROOT)], check=True)
+command = ['git', 'clone']
+if os.environ.get('MITA_SOURCE_REF'):
+    command += ['--branch', os.environ['MITA_SOURCE_REF']]
+subprocess.run(command + [bundle, str(ROOT)], check=True)
 os.chdir(ROOT)
 if (3, 11) <= sys.version_info[:2] < (3, 13):
     subprocess.run([sys.executable, '-m', 'venv', '.venv'], check=True)

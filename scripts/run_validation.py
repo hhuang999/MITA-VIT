@@ -77,6 +77,55 @@ def run(args, config, output, commit):
                   identity_agreement=1., random_sets_checked=0, max_single_layer_error=0.,
                   equivalence_images=0)
     started, offset, identities, equivalence = time.perf_counter(), 0, [], []
+    # Finish every acceptance check before any formal setting is executed.
+    reference_logits = []
+    with torch.inference_mode():
+        for batch in loader:
+            images = batch[0].cuda()
+            labels = [-1]*len(images) if args.stage == 'v01' else batch[1].tolist()
+            original = model(images)
+            with read_attention(model, k_top=197) as full:
+                observed = model(images)
+            with (execute_online(model, 197) if args.stage == 'v03' else execute_attention(model, full)):
+                identity = model(images)
+            checks['max_observe_error'] = max(checks['max_observe_error'], (observed-original).abs().max().item())
+            checks['max_identity_error'] = max(checks['max_identity_error'], (identity-original).abs().max().item())
+            assert torch.equal(observed, original)
+            assert torch.equal(identity.argmax(-1), original.argmax(-1))
+            assert checks['max_identity_error'] < 1e-5
+            for i, index in enumerate(indices[offset:offset+len(images)]):
+                identities.append(dict(index=index, target=labels[i], original=int(original[i].argmax()),
+                                       identity=int(identity[i].argmax()), agree=1))
+            reference_logits.append(original.cpu())
+            offset += len(images)
+        if args.stage == 'v03':
+            eq_loader = DataLoader(Subset(dataset, indices[:config['equivalence_images']]),
+                                   batch_size=32, num_workers=0, shuffle=False)
+            for batch in eq_loader:
+                images = batch[0].cuda()
+                for k in config['k']:
+                    with read_attention(model, k_top=k) as frozen:
+                        model(images)
+                    for layer in range(1, 13):
+                        with execute_attention(model, {layer: frozen[layer]}):
+                            expected = model(images)
+                        with execute_online(model, k, layers=(layer,)) as online:
+                            actual = model(images)
+                        error = (actual-expected).abs().max().item()
+                        assert error == 0
+                        assert torch.equal(online[layer].readsets, frozen[layer].readsets)
+                        assert torch.equal(online[layer].routes, frozen[layer].routes)
+                        equivalence.append(dict(k=k, layer=layer, n=len(images), max_error=error))
+                        checks['max_single_layer_error'] = max(checks['max_single_layer_error'], error)
+            checks['equivalence_images'] = min(config['equivalence_images'], len(indices))
+    import pandas as pd
+    pd.DataFrame(identities).to_csv(output / 'identity_predictions.csv', index=False)
+    if equivalence:
+        pd.DataFrame(equivalence).to_csv(output / 'equivalence.csv', index=False)
+    write_json(output / 'preflight.json', checks)
+    logging.info('Preflight passed before formal inference: %s', checks)
+    reference_logits = torch.cat(reference_logits)
+    offset = 0
     with (output / 'predictions.csv').open('x', newline='') as stream, \
             (output / 'patterns.csv').open('x', newline='') as pattern_stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
@@ -90,18 +139,7 @@ def run(args, config, output, commit):
                 ids = indices[offset:offset + len(images)]
                 labels = [-1]*len(images) if args.stage == 'v01' else batch[1].tolist()
                 original = model(images)
-                with read_attention(model, k_top=197) as full:
-                    observed = model(images)
-                with (execute_online(model, 197) if args.stage == 'v03' else execute_attention(model, full)):
-                    identity = model(images)
-                checks['max_observe_error'] = max(checks['max_observe_error'], (observed-original).abs().max().item())
-                checks['max_identity_error'] = max(checks['max_identity_error'], (identity-original).abs().max().item())
-                assert torch.equal(observed, original)
-                assert torch.equal(identity.argmax(-1), original.argmax(-1))
-                assert checks['max_identity_error'] < 1e-5
-                for i, index in enumerate(ids):
-                    identities.append(dict(index=index, target=labels[i], original=int(original[i].argmax()),
-                                           identity=int(identity[i].argmax()), agree=1))
+                assert torch.equal(original.cpu(), reference_logits[offset:offset+len(images)])
 
                 def record(executed, k, setting, scope='', category='', seed=-1, eligible=None, dose=None):
                     assert torch.isfinite(executed).all()
@@ -168,22 +206,6 @@ def run(args, config, output, commit):
                                 with execute_attention(model, {layer: frozen[layer] for layer in layers}):
                                     record(model(images), k, setting)
                         else:
-                            n_eq = max(0, min(len(images), config['equivalence_images']-offset))
-                            if n_eq:
-                                eq_images = images[:n_eq]
-                                with read_attention(model, k_top=k) as eq_frozen:
-                                    model(eq_images)
-                                for layer in range(1, 13):
-                                    with execute_attention(model, {layer: eq_frozen[layer]}):
-                                        expected = model(eq_images)
-                                    with execute_online(model, k, layers=(layer,)) as eq_online:
-                                        actual = model(eq_images)
-                                    error = (actual-expected).abs().max().item()
-                                    assert error == 0
-                                    assert torch.equal(eq_online[layer].readsets, eq_frozen[layer].readsets)
-                                    assert torch.equal(eq_online[layer].routes, eq_frozen[layer].routes)
-                                    equivalence.append(dict(k=k, layer=layer, n=n_eq, max_error=error))
-                                checks['max_single_layer_error'] = max(checks['max_single_layer_error'], error)
                             with execute_online(model, k) as online:
                                 record(model(images), k, 'online_all12')
                             for layer in range(1, 13):
@@ -198,11 +220,6 @@ def run(args, config, output, commit):
                 pattern_stream.flush()
                 if offset % 320 == 0 or offset == len(indices):
                     logging.info('%s %d/%d images; %.1fs', args.stage, offset, len(indices), time.perf_counter()-started)
-    import pandas as pd
-    pd.DataFrame(identities).to_csv(output / 'identity_predictions.csv', index=False)
-    if equivalence:
-        pd.DataFrame(equivalence).to_csv(output / 'equivalence.csv', index=False)
-        checks['equivalence_images'] = min(config['equivalence_images'], len(indices))
     checks.update(settings_completed={'v01': 76, 'v02': 57, 'v03': 3}[args.stage],
                   elapsed_seconds=time.perf_counter()-started)
     write_json(output / 'checks.json', checks)

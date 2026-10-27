@@ -1,5 +1,11 @@
 # 实验日志
 
+## 2026-10-27 V01–V03前置测试与Colab准备
+
+- 本地禁用CUDA后完整pytest49项通过（10.93秒）；无本地GPU运行。已分配L4 `mita-validation-20261027`，开始时余额24.95 CU。
+- 首次部署的bundle只含分支引用，clone未自动检出工作树，pip因此找不到requirements-torch.txt。尚无实验前向或依赖安装成功记录；保留原setup.log。修复为显式指定源码分支，已有实例从新增bundle检出提交，验收另存 `2026-10-27_validation_environment_ready`。
+- 代码复核将全部k197和V03全部200张单层等价验收移至正式设置之前，避免边验收边运行。配置与指标不变。
+
 ## 2026-10-27 V00最高点并列检查
 
 - 用户已批准V00–V03，预注册d956f42；实现cdd3955。设置CUDA_VISIBLE_DEVICES为空，在本地CPU运行 `scripts/analyze_v00.py`；无模型前向。三份原缓存SHA256匹配，三模型×两k×四热图共24设置、88056条逐图记录，原first-argmax逐项复现。
