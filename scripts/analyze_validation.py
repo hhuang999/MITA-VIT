@@ -78,7 +78,12 @@ def analyze_v01(frame, identity, output):
     previous = pd.read_csv(EXP/'2026-10-26_rq3_causal/predictions.csv')
     old_original = previous.groupby('index').original.first().sort_index()
     assert identity.original.equals(old_original)
-    stats, seed_stats, contrasts, coverage = [], [], [], []
+    stats, seed_stats, contrasts, coverage, anchors, dispersion = [], [], [], [], [], []
+    for (k, scope, setting), part in frame[frame.setting != 'random_patch'].groupby(['k','scope','setting']):
+        old = previous[(previous.k==k)&(previous.scope==scope)&(previous.method==setting)]
+        ids = set(part.loc[part.eligible==1,'index']) & set(old.loc[old.eligible==1,'index'])
+        anchors.append(dict(k=k,scope=scope,setting=setting,
+            **compare_runs(part[part['index'].isin(ids)],old[old['index'].isin(ids)])))
     for k in [16, 32]:
         for scope in ['last4', 'all12']:
             part = frame[(frame.k == k) & (frame.scope == scope)]
@@ -110,11 +115,17 @@ def analyze_v01(frame, identity, output):
                     for seed, group in random.groupby('seed'):
                         seed_stats.append({**meta, 'seed':int(seed),
                             **bootstrap(group.set_index('index').sort_index().agree.to_numpy()[mask])})
+                    seed_means = [group.set_index('index').sort_index().agree.to_numpy()[mask].mean()
+                                  for _, group in random.groupby('seed')]
+                    dispersion.append({**meta, 'n_seeds':5,
+                                       'seed_std':float(np.std(seed_means,ddof=1))})
     stats, contrasts = pd.DataFrame(stats), pd.DataFrame(contrasts)
     stats.to_csv(output/'summary.csv', index=False)
     contrasts.to_csv(output/'paired_contrasts.csv', index=False)
     pd.DataFrame(coverage).to_csv(output/'coverage.csv', index=False)
     pd.DataFrame(seed_stats).to_csv(output/'seed_results.csv', index=False)
+    pd.DataFrame(dispersion).to_csv(output/'seed_dispersion.csv', index=False)
+    pd.DataFrame(anchors).to_csv(output/'anchor_differences.csv', index=False)
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5), sharey=True)
     for ax, scope in zip(axes, ['last4', 'all12']):
         for j, k in enumerate([16,32]):
@@ -138,7 +149,8 @@ def analyze_v01(frame, identity, output):
     body = '![匹配对照](../../experiments/2026-10-27_v01_colab/analysis/matched_controls.png)\n\n'
     body += table(contrasts, ['k','scope','category','population'],
                   {'target_drop':100,'random_drop':100,'extra_drop_vs_random':100,'dose':1})
-    body += '\n完整基准、目标、随机的绝对一致率与KL区间见summary.csv；逐种子见seed_results.csv，覆盖见coverage.csv。\n'
+    body += ('\n完整基准、目标、随机的绝对一致率与KL区间见summary.csv；逐种子见seed_results.csv，'
+             '种子标准差见seed_dispersion.csv，覆盖见coverage.csv。新旧基准/类别干预在共同可执行图片上的配对核对见anchor_differences.csv。\n')
     return conclusion, body, ('CLS只禁止删除；原集合外的CLS仍可依排名补入。随机与类别补选的候选规则不同，'
         '结果是本次固定预算替换干预的效应，不能当作单token固有重要性或原模型直接消融效应。')
 
