@@ -4,15 +4,20 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import shutil
 
 ROOT = Path('/content/MITA_vit')
 if ROOT.exists():
     raise FileExistsError('Preserve the existing checkout; inspect before retrying')
 subprocess.run(['git', 'clone', '/content/mita-source.bundle', str(ROOT)], check=True)
 os.chdir(ROOT)
-if not (3, 11) <= sys.version_info[:2] < (3, 13):
-    raise RuntimeError('Use Python 3.11/3.12; do not silently change the environment')
-subprocess.run([sys.executable, '-m', 'venv', '.venv'], check=True)
+if (3, 11) <= sys.version_info[:2] < (3, 13):
+    subprocess.run([sys.executable, '-m', 'venv', '.venv'], check=True)
+else:
+    # Current Colab kernels use 3.13; keep the project on its supported 3.12.
+    if not shutil.which('uv'):
+        subprocess.run([sys.executable, '-m', 'pip', 'install', 'uv'], check=True)
+    subprocess.run(['uv', 'venv', '--python', '3.12', '--seed', '.venv'], check=True)
 python = str(ROOT / '.venv/bin/python')
 env = os.environ.copy()
 env['PYTHONUNBUFFERED'] = '1'
