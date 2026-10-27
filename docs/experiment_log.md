@@ -1,5 +1,11 @@
 # 实验日志
 
+## 2026-10-27 V00最高点并列检查
+
+- 用户已批准V00–V03，预注册d956f42；实现cdd3955。设置CUDA_VISIBLE_DEVICES为空，在本地CPU运行 `scripts/analyze_v00.py`；无模型前向。三份原缓存SHA256匹配，三模型×两k×四热图共24设置、88056条逐图记录，原first-argmax逐项复现。
+- DeiT k16 selection并列期望−原pointing为+0.0136pp，95% CI [−0.0954,+0.1226]；24个差值区间均含0，不支持索引顺序造成低pointing。原指标保留，新报告 `docs/analysis/v00_ties.md`。
+- 新增4项CPU单测全部通过，覆盖并列/无效像素、保留CLS的剂量匹配、层集合和现场模式单层等价/全token恒等/退出恢复。
+
 ## 2026-10-27 Colab结果CPU分析与最终验收
 
 - 分析代码d5bd5d5；设置 `CUDA_VISIBLE_DEVICES=''`，依次运行 `scripts/analyze_rq1.py`、带 `--confidence-bands` 的 `scripts/make_figures.py`、`scripts/analyze_colab_rq1.py`，均成功。新输出为 `2026-10-27_rq1_colab_combined`、`2026-10-27_colab_hardware_audit` 和 `docs/analysis/rq1_colab_verification.md`。

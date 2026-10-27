@@ -1,0 +1,11 @@
+{
+  "git_commit": "cdd39551e0c38ca4f01ba72d836f81a095cf5057",
+  "cache_sha256": {
+    "deit": "459c19b7aa942ce00775c95a07a4a09082b8485f7113dfe88826b2297cde8f04",
+    "dino": "52840b3be59925f0fd34119e7a95d00ce3ef15ba3636f5b04866f3161027a5ba",
+    "register": "12b6b53e9be3abc5be25ee1ce6428c137757759c8277bf318315949044b513c8"
+  },
+  "n_images": 3669,
+  "settings": 24,
+  "first_argmax_matches_original": true
+}
