@@ -1,0 +1,13 @@
+base: rq2.yaml
+plan: docs/overnight_validation_plan_2026-10-27.md
+authorization: user_approved_v00_v03_2026_10_27
+k: [8, 32, 64]
+depths: [3, 6, 9, 12]
+pet_k: [16, 32]
+pet_images: 3669
+scopes: [last4, all12]
+categories: [sink, foreground, background]
+random_seeds: [0, 1, 2, 3, 4]
+sink_threshold: 3
+equivalence_images: 200
+bootstrap_seed: 0
