@@ -49,7 +49,9 @@ def save_figure(fig, output, name):
 
 def audit_run(stage):
     run = RUNS[stage]
-    frame = pd.read_csv(run/'predictions.csv').fillna({'scope':'', 'category':'', 'reason':''})
+    frame = pd.read_csv(run/'predictions.csv', dtype={
+        'scope':'string', 'category':'string', 'reason':'string'}).fillna({
+        'scope':'', 'category':'', 'reason':''})
     identity = pd.read_csv(run/'identity_predictions.csv').sort_values('index').set_index('index')
     n = 3669 if stage == 'v01' else 5000
     expected = {'v01':76, 'v02':57, 'v03':3}[stage]
