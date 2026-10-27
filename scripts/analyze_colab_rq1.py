@@ -136,6 +136,19 @@ Colab {metadata['device']}；PyTorch {metadata['torch']}、timm {metadata['timm'
     report += '\n### 方法配对差值\n\n差值=网格−对照，随机取seed0；使用 `evaluate.compare_runs`。\n\n| k | 对比 | 差值 pp [95% CI] |\n| --- | --- | --- |\n'
     for _, row in contrasts.iterrows():
         report += f'| {int(row.k)} | {row.contrast} | {interval(row.difference, row.ci_low, row.ci_high)} |\n'
+    groups = pd.read_csv(MERGED / 'group_size_summary.csv')
+    report += ('\n### K-means每组query数量\n\n'
+               '组大小从原模型Q统计，与k无关；本次在k128运行中收集。'
+               '欧氏聚类的patch分配与最终点积路由（含CLS）分别列出。\n\n'
+               '| 层 | 分配方式 | 最小 | 中位数 | 最大 | 空组比例 % |\n'
+               '| --- | --- | --- | --- | --- | --- |\n')
+    for _, row in groups.iterrows():
+        kind = '点积路由（含CLS）' if row.kind == 'dot_product_routes_including_cls' else '欧氏patch聚类'
+        report += (f'| {int(row.layer)} | {kind} | {int(row.minimum)} | {row["median"]:.1f} | '
+                   f'{int(row.maximum)} | {row.empty_fraction * 100:.2f} |\n')
+    report += ('\n较大的组必须共享同一读取集合；在k=4时这可能限制对不同query的表达。'
+               '欧氏聚类与点积路由目标不一致也可能产生不均衡；这些是与组大小相容的解释，'
+               '并非本实验已经分离证明的原因。表中是全体组的描述性分布。\n')
     report += f"\n### 跨硬件复核\n\n差值=新{metadata['device']}−旧结果；k≤64旧结果来自A800，k128来自4060。\n\n| k | 方法 | seed | 旧硬件 | 差值 pp [95% CI] |\n| --- | --- | --- | --- | --- |\n"
     for row in differences:
         report += (f"| {row['k']} | {row['method']} | {row['seed']} | {row['reference_device']} | "
