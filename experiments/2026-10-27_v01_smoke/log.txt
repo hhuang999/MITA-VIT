@@ -1,0 +1,5 @@
+2026-10-27 15:15:05,411 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-27 15:15:05,413 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-27 15:15:07,171 Preflight passed before formal inference: {'n_images': 16, 'max_observe_error': 0.0, 'max_identity_error': 0.0, 'identity_agreement': 1.0, 'random_sets_checked': 0, 'max_single_layer_error': 0.0, 'equivalence_images': 0}
+2026-10-27 15:15:10,337 v01 16/16 images; 4.6s
+2026-10-27 15:15:10,337 Complete: {'n_images': 16, 'max_observe_error': 0.0, 'max_identity_error': 0.0, 'identity_agreement': 1.0, 'random_sets_checked': 737280, 'max_single_layer_error': 0.0, 'equivalence_images': 0, 'settings_completed': 76, 'elapsed_seconds': 4.563406223000129}
