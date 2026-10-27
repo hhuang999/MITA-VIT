@@ -229,11 +229,12 @@ def analyze_v03(frame, identity, output):
     equivalence=pd.read_csv(RUNS['v03']/'equivalence.csv')
     assert equivalence.groupby(['k','layer']).n.sum().eq(200).all()
     assert equivalence.groupby(['k','layer']).ngroups==36 and equivalence.max_error.eq(0).all()
-    rows,contrasts=[],[]
+    rows,contrasts,kl_contrasts=[],[],[]
     for k in [8,32,64]:
         online=frame[frame.k==k]
         base=frozen[(frozen.k==k)&(frozen.setting=='all12')]
         contrasts.append(dict(k=k,**compare_runs(online,base)))
+        kl_contrasts.append(dict(k=k,**compare_runs(online,base,metric='kl')))
         for method,part in [('frozen',base),('online',online)]:
             for metric in ['agree','kl']:
                 rows.append(dict(k=k,method=method,metric=metric,**bootstrap(part[metric])))
@@ -241,6 +242,8 @@ def analyze_v03(frame, identity, output):
     assert len(pattern)==5000*3*12 and not pattern.duplicated(['index','k','layer']).any()
     assert pattern[['readset_overlap','route_changed']].ge(0).all().all()
     assert pattern[['readset_overlap','route_changed']].le(1).all().all()
+    first = pattern[pattern.layer == 1]
+    assert first.readset_overlap.eq(1).all() and first.route_changed.eq(0).all()
     pstats=[]
     for (k,layer),part in pattern.groupby(['k','layer']):
         for metric in ['readset_overlap','route_changed']:
@@ -248,6 +251,7 @@ def analyze_v03(frame, identity, output):
     summary=pd.DataFrame(rows)
     summary.to_csv(output/'summary.csv',index=False)
     pd.DataFrame(contrasts).to_csv(output/'paired_contrasts.csv',index=False)
+    pd.DataFrame(kl_contrasts).to_csv(output/'paired_kl_contrasts.csv',index=False)
     pd.DataFrame(pstats).to_csv(output/'pattern_changes.csv',index=False)
     fig,axes=plt.subplots(1,2,figsize=(11,4))
     for ax,metric,scale,label in zip(axes,['agree','kl'],[100,1],['Prediction agreement (%)','KL(original || executed)']):
