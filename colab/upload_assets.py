@@ -21,7 +21,8 @@ def upload(path):
                              'upload', '-s', 'mita-rq1-20261027', local, remote],
                             capture_output=True, text=True, timeout=300)
     if result.returncode:
-        print(result.stdout, flush=True)
+        # CLI network exceptions may contain proxy credentials in URL queries.
+        # Never echo their raw text into logs or the chat.
         raise RuntimeError(f'Upload failed for {path.name}; exit {result.returncode}')
     return path.name
 
@@ -29,10 +30,17 @@ def upload(path):
 pending = [path for path in paths if path.name not in completed]
 with ThreadPoolExecutor(max_workers=3) as pool:
     futures = [pool.submit(upload, path) for path in pending]
+    errors = []
     for future in as_completed(futures):
-        name = future.result()
+        try:
+            name = future.result()
+        except Exception as error:
+            errors.append(type(error).__name__)
+            continue
         with log_path.open('a') as stream:
             stream.write(name + '\n')
         completed.add(name)
         print(f'Uploaded {len(completed)}/{len(paths)}: {name}', flush=True)
+if errors:
+    raise RuntimeError(f'{len(errors)} uploads failed; confirmed parts are recorded for retry')
 print('All allowlisted assets uploaded. No credential files included.', flush=True)
