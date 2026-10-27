@@ -21,7 +21,9 @@ RUNS = {stage: EXP / f'2026-10-27_{stage}_colab' for stage in ['v01', 'v02', 'v0
 
 
 def fmt(row, scale=100):
-    return f'{scale*row["mean"]:.2f} [{scale*row["low"]:.2f}, {scale*row["high"]:.2f}]'
+    precision = 4 if scale == 1 else 2
+    return (f'{scale*row["mean"]:.{precision}f} '
+            f'[{scale*row["low"]:.{precision}f}, {scale*row["high"]:.{precision}f}]')
 
 
 def table(frame, keys, metrics):
