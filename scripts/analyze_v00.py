@@ -2,7 +2,10 @@
 
 import hashlib
 import json
+import os
 from pathlib import Path
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import numpy as np
 import pandas as pd

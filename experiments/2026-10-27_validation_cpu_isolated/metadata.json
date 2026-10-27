@@ -1,0 +1,8 @@
+{
+  "cuda_visible_devices": "-1",
+  "cuda_available_asserted_false": true,
+  "tests_passed": 46,
+  "cuda_tests_skipped": 3,
+  "elapsed_seconds": 9.28,
+  "no_local_gpu": true
+}

@@ -1,5 +1,10 @@
 # 实验日志
 
+## 2026-10-27 本地CUDA隔离疏漏与纠正
+
+- 检查发现本机Windows上CUDA_VISIBLE_DEVICES空字符串没有禁用CUDA：该值下torch.cuda.is_available()仍为True。首次本地完整pytest的49项通过包含3个CUDA单测，违反本轮禁止本地GPU要求；先前“无本地GPU”的记录有误，已更正元数据并向用户说明。V00缓存分析和统计代码没有GPU操作，正式V01–V03均在Colab运行。
+- 改为CUDA_VISIBLE_DEVICES=-1，先断言torch.cuda.is_available()为False再重跑CPU测试。新增scripts/test_cpu.py作为有前置断言的本地测试入口；两个新增分析入口在导入torch前明确设置-1。保留首次XML和失败隔离事实，不覆盖历史测试输出。
+
 ## 2026-10-27 23:26 V01完成、CPU分析与提交
 
 - Colab L4、源码d5f0b45，3669张×76设置=278844条预测，629.40秒；全量k197/observe误差0。169067520个随机读取集合逐项通过剂量、CLS保留及k不变检查。完整导出已取回，HF凭据扫描通过。
@@ -17,7 +22,7 @@
 
 ## 2026-10-27 V01–V03前置测试与Colab准备
 
-- 本地禁用CUDA后完整pytest49项通过（10.93秒）；无本地GPU运行。已分配L4 `mita-validation-20261027`，开始时余额24.95 CU。
+- 首次本地完整pytest49项通过（10.93秒），但空字符串隔离未生效、包含3个CUDA单测，见上方纠正记录。已分配L4 `mita-validation-20261027`，开始时余额24.95 CU。
 - 首次部署的bundle只含分支引用，clone未自动检出工作树，pip因此找不到requirements-torch.txt。尚无实验前向或依赖安装成功记录；保留原setup.log。修复为显式指定源码分支，已有实例从新增bundle检出提交，验收另存 `2026-10-27_validation_environment_ready`。
 - 代码复核将全部k197和V03全部200张单层等价验收移至正式设置之前，避免边验收边运行。配置与指标不变。
 
