@@ -1,6 +1,10 @@
 # Colab CLI 接入（2026-10-27）
 
-## 最终状态
+最新一次运行是已批准的V00–V03：单张L4 `mita-validation-20261027`，正式136设置全部完成并取回，实例已停止；当前服务器活动实例0、费率0、余额24.06 CU。结果见 [夜间补充验证总结](analysis/overnight_validation_2026-10-27.md)。下方是此前RQ1复核的记录。
+
+本地CPU隔离必须使用CUDA_VISIBLE_DEVICES=-1，并先确认torch.cuda.is_available()为False；空字符串在本机Windows没有生效，曾导致3个CUDA单测误跑，已记录并纠正。本地测试使用 `.venv/Scripts/python.exe scripts/test_cpu.py -q`，Colab完整测试仍用普通pytest以覆盖CUDA。
+
+## RQ1复核结束时的状态
 
 全部42组RQ1已在同一张NVIDIA L4完成，结果已取回并核验。会话 `mita-rq1-l4-20261027` 已停止，服务器确认0活动实例、0 assignments、0.00 CU/小时，余额24.95 CU。下文A100和分块传输段落为此前尝试的历史记录，不是当前资源状态。
 
@@ -11,7 +15,7 @@
 CPU分析命令如下，输出必须是尚不存在的新目录：
 
 ```powershell
-$env:CUDA_VISIBLE_DEVICES=''
+$env:CUDA_VISIBLE_DEVICES='-1'
 .venv/Scripts/python.exe scripts/analyze_rq1.py experiments/2026-10-27_rq1_colab experiments/2026-10-27_rq1_colab_k128 experiments/2026-10-27_rq1_colab_combined
 .venv/Scripts/python.exe scripts/make_figures.py experiments/2026-10-27_rq1_colab_combined --confidence-bands --title 'RQ1 | ImageNet, 5,000 images | NVIDIA L4'
 .venv/Scripts/python.exe scripts/analyze_colab_rq1.py

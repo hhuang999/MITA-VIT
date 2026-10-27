@@ -1,5 +1,7 @@
 # MITA-VIT
 
+2026-10-27夜间V00–V03已完成，见 [补充验证总结](docs/analysis/overnight_validation_2026-10-27.md)：匹配数量且保留CLS后，前景删除相对随机仍多损失53.99pp；k64单层明显比全层稳健；现场重算在k8反而下降13.18pp。完整区间、各项报告、图表、测试、执行异常及Colab停止证据均在总结中。
+
 把预训练 ViT 每层每个注意力头概括成“16 块区域各读取 k 个 token”，再通过限制读取集合检验预测是否保持。核心模型是 DeiT-S/16，研究问题依次为概括的忠实性（RQ1）、逐层差异（RQ2）和与物体前景的对应（RQ3）。
 
 RQ1（含用户指定 k=128）、RQ2 与 RQ3 均已完成，结果位于独立分支 `feature/overnight-rq1-rq2-rq3`。三份正式分析见 [RQ1](docs/analysis/rq1.md)、[RQ2](docs/analysis/rq2.md)、[RQ3](docs/analysis/rq3.md)；运行来源、进度及中断重跑记录见 [进度](docs/progress.md)和[实验日志](docs/experiment_log.md)。此前试跑与核心实现讲解见 [检查点 3](docs/checkpoint_3.md)、[检查点 2](docs/checkpoint_2.md)。
