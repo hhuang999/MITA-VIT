@@ -64,6 +64,16 @@ def main():
                      **compare_runs(frame, reference)})
         checks.append({'method': method, 'k': k, 'seed': seed, 'passed': True})
     pd.DataFrame(rows).to_csv(OUTPUT / 'hardware_paired_differences.csv', index=False)
+    random_means = []
+    for k in [4, 8, 16, 32, 64, 128]:
+        paired = []
+        for frame in [new, old]:
+            part = frame[(frame.method == 'random') & (frame.k == k)]
+            assert part.groupby('index').size().eq(5).all()
+            paired.append(part.groupby('index', as_index=False).agg(
+                agree=('agree', 'mean'), target=('target', 'first'), original=('original', 'first')))
+        random_means.append({'k': k, **compare_runs(*paired)})
+    pd.DataFrame(random_means).to_csv(OUTPUT / 'hardware_random_mean_differences.csv', index=False)
     single = pd.read_csv(EXP / '2026-10-26_rq2_imagenet/predictions.csv')
     products = []
     for k in [8, 32]:
@@ -88,23 +98,27 @@ def main():
     write_json(OUTPUT / 'checks.json', {'git_commit': commit, 'all_passed': True,
                'settings': checks, 'n_predictions': len(new), 'same_images_labels_original': True,
                'identity_agreement': 1, 'same_hardware_and_software': True})
-    write_report(identity, rows, products, metadata[0])
+    write_report(identity, rows, random_means, products, metadata[0])
     (OUTPUT / 'log.txt').write_text('All 42 settings audited; paired image bootstrap and RQ2 product checked.\n')
     print('All 42 Colab settings audited; report and paired differences saved.')
 
 
-def write_report(identity, differences, products, metadata):
+def write_report(identity, differences, random_means, products, metadata):
     summary = pd.read_csv(MERGED / 'summary.csv')
     provenance = json.loads((MERGED / 'provenance.json').read_text())
     contrasts = pd.read_csv(MERGED / 'paired_contrasts.csv')
     grid128 = summary[(summary.k == 128) & (summary.method == 'grid')].iloc[0]
     km128 = summary[(summary.k == 128) & (summary.method == 'kmeans')].iloc[0]
     random128 = summary[(summary.k == 128) & (summary.method == 'random')].iloc[0]
+    max_grid = max(abs(r['difference']) for r in differences if r['method'] == 'grid')
+    max_kmeans = max(abs(r['difference']) for r in differences if r['method'] == 'kmeans')
     report = f'''# RQ1 补充：Colab 统一硬件核对
 
 ## 1. 一句话结论
 
 同一张 {metadata['device']} 上完成全部42设置；k=128 时网格一致率 {grid128.agree:.2%}、K-means {km128.agree:.2%}、随机五种子均值 {random128.agree:.2%}。
+
+六个预算点中，与原结果相比网格的最大绝对变化为 {max_grid * 100:.2f} 个百分点，K-means为 {max_kmeans * 100:.2f} 个百分点；逐点配对区间和随机五种子均值的变化见下表。
 
 ## 2. 回答的问题
 
@@ -153,6 +167,9 @@ Colab {metadata['device']}；PyTorch {metadata['torch']}、timm {metadata['timm'
     for row in differences:
         report += (f"| {row['k']} | {row['method']} | {row['seed']} | {row['reference_device']} | "
                    f"{interval(row['difference'], row['ci_low'], row['ci_high'])} |\n")
+    report += '\n随机五种子先逐图取均值，再做跨硬件配对bootstrap：\n\n| k | 均值差 pp [95% CI] |\n| --- | --- |\n'
+    for row in random_means:
+        report += f"| {row['k']} | {interval(row['difference'], row['ci_low'], row['ci_high'])} |\n"
     report += '\n### RQ2 独立累积参照\n\n| k | 数量 | 估计 %（差值为pp）[95% CI] |\n| --- | --- | --- |\n'
     for row in products:
         report += f"| {row['k']} | {row['metric']} | {interval(row['mean'], row['low'], row['high'])} |\n"
