@@ -1,0 +1,20 @@
+2026-10-27 15:26:07,872 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-27 15:26:07,875 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-27 15:27:08,638 Preflight passed before formal inference: {'n_images': 5000, 'max_observe_error': 0.0, 'max_identity_error': 0.0, 'identity_agreement': 1.0, 'random_sets_checked': 0, 'max_single_layer_error': 0.0, 'equivalence_images': 0}
+2026-10-27 15:27:42,042 v02 320/5000 images; 93.5s
+2026-10-27 15:28:14,929 v02 640/5000 images; 126.4s
+2026-10-27 15:28:47,846 v02 960/5000 images; 159.3s
+2026-10-27 15:29:21,024 v02 1280/5000 images; 192.5s
+2026-10-27 15:29:54,287 v02 1600/5000 images; 225.7s
+2026-10-27 15:30:27,401 v02 1920/5000 images; 258.9s
+2026-10-27 15:31:00,666 v02 2240/5000 images; 292.1s
+2026-10-27 15:31:33,619 v02 2560/5000 images; 325.1s
+2026-10-27 15:32:06,700 v02 2880/5000 images; 358.2s
+2026-10-27 15:32:39,793 v02 3200/5000 images; 391.3s
+2026-10-27 15:33:12,727 v02 3520/5000 images; 424.2s
+2026-10-27 15:33:45,768 v02 3840/5000 images; 457.2s
+2026-10-27 15:34:18,726 v02 4160/5000 images; 490.2s
+2026-10-27 15:34:51,814 v02 4480/5000 images; 523.3s
+2026-10-27 15:35:25,038 v02 4800/5000 images; 556.5s
+2026-10-27 15:35:45,605 v02 5000/5000 images; 577.1s
+2026-10-27 15:35:45,605 Complete: {'n_images': 5000, 'max_observe_error': 0.0, 'max_identity_error': 0.0, 'identity_agreement': 1.0, 'random_sets_checked': 0, 'max_single_layer_error': 0.0, 'equivalence_images': 0, 'settings_completed': 57, 'elapsed_seconds': 577.0648239409998}
