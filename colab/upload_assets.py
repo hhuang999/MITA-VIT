@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import subprocess
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 ROOT = Path(__file__).resolve().parents[1]
 folder = ROOT / 'data/colab_transfer/assets'
@@ -11,9 +12,8 @@ prefix = '/mnt/' + ROOT.drive[0].lower() + ROOT.as_posix()[2:]
 cli = '/home/hhuan/.local/share/google-colab-cli-venv/bin/colab'
 log_path = folder / 'uploaded.txt'
 completed = set(log_path.read_text().splitlines()) if log_path.exists() else set()
-for index, path in enumerate(paths, 1):
-    if path.name in completed:
-        continue
+
+def upload(path):
     remote = ('/content/mita-assets-manifest.json' if path.name == 'manifest.json'
               else '/content/mita-' + path.name)
     local = prefix + '/' + path.relative_to(ROOT).as_posix()
@@ -23,7 +23,16 @@ for index, path in enumerate(paths, 1):
     if result.returncode:
         print(result.stdout, flush=True)
         raise RuntimeError(f'Upload failed for {path.name}; exit {result.returncode}')
-    with log_path.open('a') as stream:
-        stream.write(path.name + '\n')
-    print(f'Uploaded {index}/{len(paths)}: {path.name}', flush=True)
+    return path.name
+
+
+pending = [path for path in paths if path.name not in completed]
+with ThreadPoolExecutor(max_workers=3) as pool:
+    futures = [pool.submit(upload, path) for path in pending]
+    for future in as_completed(futures):
+        name = future.result()
+        with log_path.open('a') as stream:
+            stream.write(name + '\n')
+        completed.add(name)
+        print(f'Uploaded {len(completed)}/{len(paths)}: {name}', flush=True)
 print('All allowlisted assets uploaded. No credential files included.', flush=True)
