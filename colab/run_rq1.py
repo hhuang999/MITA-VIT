@@ -7,7 +7,7 @@ import subprocess
 
 ROOT = Path('/content/MITA_vit')
 os.chdir(ROOT)
-checks = ROOT / 'experiments/2026-10-27_colab_environment'
+checks = ROOT / 'experiments' / os.environ.get('MITA_ENV_RUN', '2026-10-27_colab_environment')
 assert (checks / 'exit_code.txt').read_text() == '0'
 preflight = json.loads((checks / 'preflight.json').read_text())
 assert preflight['passed'] and preflight['cuda_available']

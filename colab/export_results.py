@@ -2,11 +2,13 @@
 
 from pathlib import Path
 import tarfile
+import os
 
 ROOT = Path('/content/MITA_vit')
 destination = Path('/content/mita-colab-results.tar.gz')
 folders = [ROOT / 'experiments' / name for name in [
-    '2026-10-27_colab_environment', '2026-10-27_rq1_colab', '2026-10-27_rq1_colab_k128']]
+    os.environ.get('MITA_ENV_RUN', '2026-10-27_colab_environment'),
+    '2026-10-27_rq1_colab', '2026-10-27_rq1_colab_k128']]
 with tarfile.open(destination, 'x:gz') as archive:
     for folder in folders:
         for path in folder.iterdir():

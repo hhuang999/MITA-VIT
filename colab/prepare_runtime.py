@@ -9,7 +9,8 @@ import shutil
 ROOT = Path('/content/MITA_vit')
 if ROOT.exists():
     raise FileExistsError('Preserve the existing checkout; inspect before retrying')
-subprocess.run(['git', 'clone', '/content/mita-source.bundle', str(ROOT)], check=True)
+bundle = os.environ.get('MITA_SOURCE_BUNDLE', '/content/mita-source.bundle')
+subprocess.run(['git', 'clone', bundle, str(ROOT)], check=True)
 os.chdir(ROOT)
 if (3, 11) <= sys.version_info[:2] < (3, 13):
     subprocess.run([sys.executable, '-m', 'venv', '.venv'], check=True)
@@ -22,7 +23,7 @@ python = str(ROOT / '.venv/bin/python')
 env = os.environ.copy()
 env['PYTHONUNBUFFERED'] = '1'
 env['PIP_DISABLE_PIP_VERSION_CHECK'] = '1'
-checks = ROOT / 'experiments/2026-10-27_colab_environment'
+checks = ROOT / 'experiments' / os.environ.get('MITA_ENV_RUN', '2026-10-27_colab_environment')
 checks.mkdir(parents=True, exist_ok=False)
 
 commands = [
