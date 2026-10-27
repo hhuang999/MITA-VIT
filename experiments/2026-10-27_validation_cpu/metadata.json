@@ -1,0 +1,7 @@
+{
+  "cuda_visible_devices": "",
+  "tests_passed": 49,
+  "elapsed_seconds": 10.93,
+  "source_commit": "348b417",
+  "no_local_gpu": true
+}

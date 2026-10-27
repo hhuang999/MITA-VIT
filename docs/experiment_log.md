@@ -1,5 +1,7 @@
 # 实验日志
 
+- Colab修复后完整pytest49项通过（10.54秒），科学源码d5f0b45；环境preflight通过。固定ImageNet与模型准备正在进行，尚未开始正式V01–V03。首次部署失败日志与本地CPU测试XML已单独归档。
+
 ## 2026-10-27 V01–V03前置测试与Colab准备
 
 - 本地禁用CUDA后完整pytest49项通过（10.93秒）；无本地GPU运行。已分配L4 `mita-validation-20261027`，开始时余额24.95 CU。
