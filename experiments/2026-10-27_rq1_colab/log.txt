@@ -1,0 +1,39 @@
+2026-10-27 13:41:00,421 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-27 13:41:00,424 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-27 13:42:00,752 Identity passed: {'n_images': 5000, 'identity_agreement': 1.0, 'max_read_logit_error': 0.0, 'max_identity_logit_error': 0.0, 'acc_original': 0.7962, 'identity_seconds': 59.55566190200011}
+2026-10-27 13:42:52,409 grid k=4 seed=0: agree=0.2526 KL=3.5111; 51.7s
+2026-10-27 13:43:44,145 random k=4 seed=0: agree=0.0048 KL=5.3860; 51.7s
+2026-10-27 13:44:35,548 random k=4 seed=1: agree=0.0046 KL=5.3800; 51.4s
+2026-10-27 13:45:26,988 random k=4 seed=2: agree=0.0050 KL=5.3835; 51.4s
+2026-10-27 13:46:18,476 random k=4 seed=3: agree=0.0082 KL=5.3872; 51.5s
+2026-10-27 13:47:10,162 random k=4 seed=4: agree=0.0040 KL=5.3838; 51.7s
+2026-10-27 13:48:09,427 kmeans k=4 seed=0: agree=0.1924 KL=3.9660; 59.3s
+2026-10-27 13:49:00,719 grid k=8 seed=0: agree=0.4862 KL=2.2084; 51.3s
+2026-10-27 13:49:52,280 random k=8 seed=0: agree=0.0218 KL=4.9881; 51.6s
+2026-10-27 13:50:44,011 random k=8 seed=1: agree=0.0198 KL=4.9980; 51.7s
+2026-10-27 13:51:35,683 random k=8 seed=2: agree=0.0208 KL=4.9926; 51.7s
+2026-10-27 13:52:27,287 random k=8 seed=3: agree=0.0230 KL=5.0074; 51.6s
+2026-10-27 13:53:18,770 random k=8 seed=4: agree=0.0212 KL=5.0022; 51.5s
+2026-10-27 13:54:18,095 kmeans k=8 seed=0: agree=0.4666 KL=2.5214; 59.3s
+2026-10-27 13:55:09,392 grid k=16 seed=0: agree=0.6940 KL=1.1044; 51.3s
+2026-10-27 13:56:01,031 random k=16 seed=0: agree=0.0952 KL=4.1108; 51.6s
+2026-10-27 13:56:52,554 random k=16 seed=1: agree=0.0924 KL=4.0955; 51.5s
+2026-10-27 13:57:44,247 random k=16 seed=2: agree=0.0978 KL=4.1088; 51.7s
+2026-10-27 13:58:35,818 random k=16 seed=3: agree=0.0946 KL=4.0903; 51.6s
+2026-10-27 13:59:27,360 random k=16 seed=4: agree=0.0942 KL=4.0837; 51.5s
+2026-10-27 14:00:26,502 kmeans k=16 seed=0: agree=0.7140 KL=1.1199; 59.1s
+2026-10-27 14:01:17,963 grid k=32 seed=0: agree=0.8124 KL=0.3951; 51.5s
+2026-10-27 14:02:09,459 random k=32 seed=0: agree=0.2978 KL=2.6342; 51.5s
+2026-10-27 14:03:01,038 random k=32 seed=1: agree=0.3012 KL=2.6321; 51.6s
+2026-10-27 14:03:52,798 random k=32 seed=2: agree=0.3114 KL=2.6121; 51.8s
+2026-10-27 14:04:44,252 random k=32 seed=3: agree=0.3032 KL=2.6410; 51.5s
+2026-10-27 14:05:35,749 random k=32 seed=4: agree=0.3008 KL=2.6343; 51.5s
+2026-10-27 14:06:34,879 kmeans k=32 seed=0: agree=0.8390 KL=0.3279; 59.1s
+2026-10-27 14:07:26,207 grid k=64 seed=0: agree=0.8862 KL=0.1399; 51.3s
+2026-10-27 14:08:18,047 random k=64 seed=0: agree=0.5970 KL=1.1806; 51.8s
+2026-10-27 14:09:09,952 random k=64 seed=1: agree=0.6042 KL=1.1740; 51.9s
+2026-10-27 14:10:01,789 random k=64 seed=2: agree=0.5984 KL=1.1809; 51.8s
+2026-10-27 14:10:53,563 random k=64 seed=3: agree=0.6100 KL=1.1564; 51.8s
+2026-10-27 14:11:45,266 random k=64 seed=4: agree=0.5932 KL=1.1903; 51.7s
+2026-10-27 14:12:44,564 kmeans k=64 seed=0: agree=0.8996 KL=0.1054; 59.3s
+2026-10-27 14:12:45,584 RQ1 complete: 35 settings, 1904.4 seconds

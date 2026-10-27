@@ -1,0 +1,14 @@
+{
+  "verified_at": "2026-10-27T22:21:53.849012+08:00",
+  "session": "mita-rq1-l4-20261027",
+  "stop_succeeded": true,
+  "server_sessions": 0,
+  "active_assignments": 0,
+  "usage_rate_cu_per_hour": 0.0,
+  "balance_cu": 24.95,
+  "export_artifacts": 29,
+  "hf_credential_scan_passed": true,
+  "n_prediction_rows": 210000,
+  "n_settings": 42,
+  "hpc_started_this_round": false
+}
