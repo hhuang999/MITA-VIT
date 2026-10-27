@@ -22,11 +22,6 @@ python = str(ROOT / '.venv/bin/python')
 env = os.environ.copy()
 env['PYTHONUNBUFFERED'] = '1'
 env['PIP_DISABLE_PIP_VERSION_CHECK'] = '1'
-credential = Path('/content/mita-hf.env')
-if not credential.exists():
-    raise FileNotFoundError('Upload the HF-only credential file privately first')
-(ROOT / '.env').write_bytes(credential.read_bytes())
-(ROOT / '.env').chmod(0o600)
 checks = ROOT / 'experiments/2026-10-27_colab_environment'
 checks.mkdir(parents=True, exist_ok=False)
 
@@ -36,12 +31,8 @@ commands = [
     [python, '-m', 'pip', 'install', '-r', 'requirements-torch.txt', '-r', 'requirements.txt'],
     [python, '-m', 'pip', 'install', '--no-deps', '-e', '.'],
     [python, '-m', 'pip', 'check'],
-    [python, 'scripts/download_models.py'],
-    [python, 'scripts/download_data.py', 'imagenet'],
-    [python, 'scripts/verify_imagenet.py', '--skip-inference', '--output',
-     str(checks / 'data_verification.json')],
-    [python, 'scripts/hpc_preflight.py', '--stage', 'ready', '--output',
-     str(checks / 'preflight.json')],
+    [python, 'scripts/hpc_preflight.py', '--stage', 'environment', '--output',
+     str(checks / 'environment.json')],
     [python, '-m', 'pytest', '-q', '--basetemp', str(checks / 'pytest-tmp'),
      '--junitxml', str(checks / 'tests.xml')],
 ]
@@ -55,5 +46,5 @@ with (checks / 'setup.log').open('w') as log:
             (checks / 'exit_code.txt').write_text(str(result.returncode))
             raise RuntimeError(f'Setup failed; see setup.log: {command[:3]}')
 (checks / 'exit_code.txt').write_text('0')
-print('Environment, data verification, and tests passed.', flush=True)
+print('Environment and tests passed; uploaded assets must be verified separately.', flush=True)
 
