@@ -1,0 +1,9 @@
+{
+  "n_images": 3669,
+  "max_observe_error": 0.0,
+  "max_identity_error": 0.0,
+  "identity_agreement": 1.0,
+  "random_sets_checked": 0,
+  "max_single_layer_error": 0.0,
+  "equivalence_images": 0
+}
