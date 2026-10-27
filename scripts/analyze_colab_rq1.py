@@ -127,6 +127,12 @@ Colab NVIDIA A100-SXM4-40GB；PyTorch {metadata['torch']}、timm {metadata['timm
         report += (f'| {int(row.k)} | {row.method} | {interval(row.agree, row.agree_ci_low, row.agree_ci_high)} | '
                    f'{row.kl:.4f} [{row.kl_ci_low:.4f}, {row.kl_ci_high:.4f}] | {row.seed_std * 100:.3f} |\n')
     report += f"\n测试点中达到90%所需最小k：网格 {provenance['minimum_k_at_90_percent']['grid']}；K-means {provenance['minimum_k_at_90_percent']['kmeans']}。这不是未测试预算上的精确阈值。\n"
+    near = summary[(summary.method != 'random') & (summary.agree_ci_low <= .9)
+                   & (summary.agree_ci_high >= .9)]
+    if not near.empty:
+        labels = ', '.join(f'{r.method} k={int(r.k)}' for _, r in near.iterrows())
+        report += (f'\n{labels} 的95%区间跨过90%。上述最小k按样本均值定义；'
+                   '门槛附近少数预测变化即可改变该离散统计，不代表总体门槛已被精确确定。\n')
     report += '\n### 方法配对差值\n\n差值=网格−对照，随机取seed0；使用 `evaluate.compare_runs`。\n\n| k | 对比 | 差值 pp [95% CI] |\n| --- | --- | --- |\n'
     for _, row in contrasts.iterrows():
         report += f'| {int(row.k)} | {row.contrast} | {interval(row.difference, row.ci_low, row.ci_high)} |\n'
@@ -142,7 +148,7 @@ RQ2十二层的单层结果仍使用原RTX4060结果，没有重跑或改设置�
 
 ## 5. 和预期对照
 
-同硬件复算用于核对RQ1忠实性结论，不改变RQ3空间定位的独立证据。应结合RQ3 v2中前景干预的重要性、汇聚点干预的负结果和寄存器对照讨论整体研究叙事，不能用RQ1高一致率直接推导热图是物体解释。
+同硬件复算用于核对RQ1忠实性结论，不改变RQ3空间定位的独立证据。短预算的全层忠实性有限、单层差异温和，因此结合既有RQ2，仍最接近预案C，但不是“部分层可读、部分层完全不可读”的强分化。应结合RQ3 v2中前景干预的重要性、汇聚点干预的负结果和寄存器对照讨论整体研究叙事，不能用RQ1高一致率直接推导热图是物体解释。
 
 ## 6. 可信度检查
 
