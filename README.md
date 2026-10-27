@@ -8,6 +8,8 @@ RQ1（含用户指定 k=128）、RQ2 与 RQ3 均已完成，结果位于独立�
 
 用户随后授权的 RQ3 扩展已在 `feature/rq3-diagnosis-extension` 完成：[A1–A5 诊断](docs/analysis/rq3_diagnosis.md)、[B1–B5 结果与图4方案](docs/analysis/rq3_v2.md)。高范数位置主导空间热图强峰，但固定预算执行检验发现前景删除影响最大，汇聚点删除未比匹配数量随机删除更有破坏性。DINOv2寄存器对照改善了空间定位；两个checkpoint分别训练，不视为同权重纯开关实验。
 
+2026-10-27在 `feature/colab-rq1-verification` 完成同一张Colab L4的全部42组RQ1复算，见 [统一硬件报告与曲线](docs/analysis/rq1_colab_verification.md)。k128网格/K-means/随机五种子一致率为95.08%/96.38%/84.36%，原结论保持；报告还复核了RQ2的独立累积参照。45项测试、两次5000张恒等与42组统计审计通过。结果已取回，Colab已停止；[CLI接入与复现说明](docs/colab_setup.md)记录环境、运行入口和资源状态。
+
 复现入口为 `scripts/run_rq3_extension.py`（`--mode observe/causal`、`--model deit/dino/register`），`scripts/analyze_rq3_extension.py --stage A/B1/B2/B3/B4`，`scripts/compare_rq3_registers.py`。定义与固定权重revision见 `configs/rq3_extension.yaml` 和 decisions.md E01–E07；大矩阵在各次实验的 ignored `raw/observations.npz`，可由固定版本重算。
 
 本地环境已通过验收，项目已同步到 [MITA-VIT 私有仓库](https://github.com/hhuang999/MITA-VIT)。默认分支为 `main`。

@@ -1,5 +1,26 @@
 # Colab CLI 接入（2026-10-27）
 
+## 最终状态
+
+全部42组RQ1已在同一张NVIDIA L4完成，结果已取回并核验。会话 `mita-rq1-l4-20261027` 已停止，服务器确认0活动实例、0 assignments、0.00 CU/小时，余额24.95 CU。下文A100和分块传输段落为此前尝试的历史记录，不是当前资源状态。
+
+用户后来明确授权临时传输HF_TOKEN；据此使用HF-only文件在用户自己的L4实例下载固定ImageNet版本，校验14个源分片、模型和5000张索引哈希。令牌没有进入Git或日志；完成后停止实例。项目Python3.12.3、PyTorch2.7.0+cu128、timm1.0.30，45项测试通过；两次5000张k197一致率均100%、输出误差0。正式科学代码来源737f7d4，参数与原配置一致。
+
+运行入口为 `colab/run_rq1.py`，依次执行 `rq1.yaml` 和 `rq1_k128.yaml`；环境目录通过 `MITA_ENV_RUN=2026-10-27_colab_environment_retry` 指定。Windows控制使用项目Python调用 `colab/cli.py`，内部采用WSL `--exec` 并过滤URL查询凭据。运行时可用 `colab/snapshot_run.py` 只读取回检查点；完成后用 `colab/export_results.py` 导出实验小文件。
+
+CPU分析命令如下，输出必须是尚不存在的新目录：
+
+```powershell
+$env:CUDA_VISIBLE_DEVICES=''
+.venv/Scripts/python.exe scripts/analyze_rq1.py experiments/2026-10-27_rq1_colab experiments/2026-10-27_rq1_colab_k128 experiments/2026-10-27_rq1_colab_combined
+.venv/Scripts/python.exe scripts/make_figures.py experiments/2026-10-27_rq1_colab_combined --confidence-bands --title 'RQ1 | ImageNet, 5,000 images | NVIDIA L4'
+.venv/Scripts/python.exe scripts/analyze_colab_rq1.py
+```
+
+结果及复核报告见 [rq1_colab_verification.md](analysis/rq1_colab_verification.md)。原A800/4060结果保留，本地GPU未启用，本轮未启动HPC。
+
+## 安装与首次尝试（历史记录）
+
 用户要求改用 Colab，并亲自完成 Google 授权。官方 CLI 当前支持 Linux/macOS，因此安装在已有 Ubuntu WSL 中，不修改项目 `.venv`。
 
 - 官方项目：https://github.com/googlecolab/google-colab-cli
