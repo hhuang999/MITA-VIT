@@ -15,6 +15,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("run", type=Path)
     parser.add_argument("--title", default="RQ1 pilot | Imagenette, 500 images")
+    parser.add_argument("--confidence-bands", action="store_true",
+                        help="Show image-bootstrap 95%% intervals instead of random-seed SD bars")
     args = parser.parse_args()
     summary = pd.read_csv(args.run / "summary.csv")
     plt.rcParams.update({"font.size": 11, "axes.spines.top": False,
@@ -32,7 +34,10 @@ def main():
             scale = 100 if metric == "agree" else 1
             ax.plot(values.k, values[metric] * scale, label=label, color=color,
                     marker=marker, linewidth=2, markersize=6)
-            if metric == "agree" and method == "random":
+            if args.confidence_bands:
+                ax.fill_between(values.k, values[f"{metric}_ci_low"] * scale,
+                                values[f"{metric}_ci_high"] * scale, color=color, alpha=.15)
+            elif metric == "agree" and method == "random":
                 ax.errorbar(values.k, values.agree * 100, yerr=values.seed_std * 100,
                             color=color, fmt="none", capsize=4)
         ax.set_xscale("log", base=2)
@@ -44,7 +49,8 @@ def main():
         ax.set_axisbelow(True)
         if metric == "agree":
             ax.axhline(90, color="#999999", linestyle="--", linewidth=1)
-            ax.text(max(ticks), 91.5, "90% reference", ha="right", color="#666666", fontsize=9)
+            ax.text(ticks[len(ticks) // 2], 91.5, "90% reference", ha="center",
+                    color="#666666", fontsize=9)
             ax.set_ylim(0, 103)
         else:
             ax.set_ylim(bottom=0)
@@ -53,7 +59,8 @@ def main():
                   loc="upper left" if metric == "agree" else "upper right", fontsize=10)
         fig.get_layout_engine().set(rect=(0, .055, 1, .945))
         footer = ("All 12 layers | m = 16 | Frozen original-model summaries"
-                  + (" | Error bars: ±1 seed SD" if metric == "agree" else ""))
+                  + (" | Bands: 95% image-bootstrap CI" if args.confidence_bands
+                     else " | Error bars: ±1 seed SD" if metric == "agree" else ""))
         fig.text(.5, .015, footer, ha="center", fontsize=8, color="#555555")
         for extension in ["png", "pdf"]:
             fig.savefig(args.run / f"{filename}.{extension}", dpi=200)

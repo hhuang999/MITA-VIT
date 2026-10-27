@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-10-27T12:56:16.078210+00:00",
+  "git_commit": "9397db1e7b1bc6a81f864058d86d2349f508f7af",
+  "stage": "environment",
+  "platform": "Linux",
+  "python": "3.12.3",
+  "isolated_venv": true,
+  "packages": {
+    "torch": "2.7.0+cu128",
+    "torchvision": "0.22.0+cu128",
+    "timm": "1.0.30",
+    "datasets": "5.1.0",
+    "huggingface-hub": "2.3.0",
+    "numpy": "2.5.4"
+  },
+  "cuda_runtime": "12.8",
+  "cuda_available": true,
+  "data_free_gib": 58.23,
+  "model_revision": "91327a9c99f98fe6b524cd4d397b7226b80e1365",
+  "dataset_revision": "49e2ee26f3810fb5a7536bbf732a7b07389a47b5",
+  "gpu": {
+    "name": "NVIDIA A100-SXM4-40GB",
+    "memory_gib": 39.49
+  },
+  "nvidia_smi": "NVIDIA A100-SXM4-40GB, 580.82.07, 40960 MiB",
+  "errors": [],
+  "passed": true
+}
