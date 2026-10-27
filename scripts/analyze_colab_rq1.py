@@ -31,7 +31,7 @@ def main():
     for field in ['torch', 'timm', 'device', 'dtype', 'preprocessing', 'indices_sha256',
                   'checkpoint_revision', 'explanation_source', 'random_rng', 'git_commit']:
         assert metadata[0][field] == metadata[1][field], field
-    assert metadata[0]['device'] == 'NVIDIA A100-SXM4-40GB'
+    assert metadata[0]['device'].startswith('NVIDIA ')
     identity = pd.read_csv(BASE / 'identity_predictions.csv').sort_values('index').reset_index(drop=True)
     for path in [EXTRA, OLD_BASE, OLD_EXTRA]:
         other = pd.read_csv(path / 'identity_predictions.csv').sort_values('index').reset_index(drop=True)
@@ -104,7 +104,7 @@ def write_report(identity, differences, products, metadata):
 
 ## 1. 一句话结论
 
-同一张 A100 上完成全部42设置；k=128 时网格一致率 {grid128.agree:.2%}、K-means {km128.agree:.2%}、随机五种子均值 {random128.agree:.2%}。
+同一张 {metadata['device']} 上完成全部42设置；k=128 时网格一致率 {grid128.agree:.2%}、K-means {km128.agree:.2%}、随机五种子均值 {random128.agree:.2%}。
 
 ## 2. 回答的问题
 
@@ -112,7 +112,7 @@ def write_report(identity, differences, products, metadata):
 
 ## 3. 设置
 
-Colab NVIDIA A100-SXM4-40GB；PyTorch {metadata['torch']}、timm {metadata['timm']}。ImageNet固定5000张、m=16、k=4/8/16/32/64/128、随机种子0–4、FP32、batch32与冻结原模型说明书均不变。先跑原35组，再跑k128七组，两次各做5000张恒等验收。数据/权重逐文件SHA-256与本地一致，使用同一软件和硬件。
+Colab {metadata['device']}；PyTorch {metadata['torch']}、timm {metadata['timm']}。ImageNet固定5000张、m=16、k=4/8/16/32/64/128、随机种子0–4、FP32、batch32与冻结原模型说明书均不变。先跑原35组，再跑k128七组，两次各做5000张恒等验收。源Parquet、抽样文件和模型SHA-256与原实验一致，使用同一软件和硬件。
 
 区间为1000次图片bootstrap、seed0、95%。随机主曲线先逐图平均五种子；种子标准差单列，不等同于置信区间。同seed跨GPU不保证生成同一随机集合，因此跨硬件随机结果差异不能全部叫作浮点误差。
 
@@ -136,7 +136,7 @@ Colab NVIDIA A100-SXM4-40GB；PyTorch {metadata['torch']}、timm {metadata['timm
     report += '\n### 方法配对差值\n\n差值=网格−对照，随机取seed0；使用 `evaluate.compare_runs`。\n\n| k | 对比 | 差值 pp [95% CI] |\n| --- | --- | --- |\n'
     for _, row in contrasts.iterrows():
         report += f'| {int(row.k)} | {row.contrast} | {interval(row.difference, row.ci_low, row.ci_high)} |\n'
-    report += '\n### 跨硬件复核\n\n差值=新A100−旧结果；k≤64旧结果来自A800，k128来自4060。\n\n| k | 方法 | seed | 旧硬件 | 差值 pp [95% CI] |\n| --- | --- | --- | --- | --- |\n'
+    report += f"\n### 跨硬件复核\n\n差值=新{metadata['device']}−旧结果；k≤64旧结果来自A800，k128来自4060。\n\n| k | 方法 | seed | 旧硬件 | 差值 pp [95% CI] |\n| --- | --- | --- | --- | --- |\n"
     for row in differences:
         report += (f"| {row['k']} | {row['method']} | {row['seed']} | {row['reference_device']} | "
                    f"{interval(row['difference'], row['ci_low'], row['ci_high'])} |\n")
@@ -152,7 +152,7 @@ RQ2十二层的单层结果仍使用原RTX4060结果，没有重跑或改设置�
 
 ## 6. 可信度检查
 
-两次k=197在5000张上均为100%；原模型准确率为 {(identity.original == identity.target).mean():.2%}。两次与此前结果的图片ID、标签、原预测均逐项一致；42组各5000条，无重复/缺失，重算一致率/CI/KL通过。远程pytest与环境记录见 `2026-10-27_colab_environment`。
+两次k=197在5000张上均为100%；原模型准确率为 {(identity.original == identity.target).mean():.2%}。两次与此前结果的图片ID、标签、原预测均逐项一致；42组各5000条，无重复/缺失，重算一致率/CI/KL通过。远程pytest与环境记录见 `2026-10-27_colab_environment_retry`；此前A100只完成环境验收和部分传输，未进入正式推理。
 
 ## 7. 异常与可能原因
 
@@ -166,7 +166,7 @@ RQ2十二层的单层结果仍使用原RTX4060结果，没有重跑或改设置�
 
 ## 9. 可写进论文的句子
 
-“在同一张A100上使用固定5000张ImageNet图片复算全部读取预算后，k=128时网格与K-means说明书分别保持 {grid128.agree:.2%} 和 {km128.agree:.2%} 的原模型预测；随机读取集合为 {random128.agree:.2%}。”
+“在同一张{metadata['device']}上使用固定5000张ImageNet图片复算全部读取预算后，k=128时网格与K-means说明书分别保持 {grid128.agree:.2%} 和 {km128.agree:.2%} 的原模型预测；随机读取集合为 {random128.agree:.2%}。”
 
 “十二个单层一致率的独立乘积低于实际全层一致率，表明简单的独立失败累积模型不足以解释多层替换损失；该参照不构成误差来源的因果分解。”
 '''

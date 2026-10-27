@@ -15,6 +15,8 @@ if __name__ == '__main__':
     command = ['wsl', '-d', 'Ubuntu', '--exec',
                '/home/hhuan/.local/share/google-colab-cli-venv/bin/colab',
                '--auth', 'oauth2', *sys.argv[1:]]
+    if sys.argv[1:2] == ['new']:
+        command[4:4] = ['env', 'COLAB_CLI_REQUEST_TIMEOUT=180', 'COLAB_CLI_ASSIGN_RETRIES=1']
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                text=True, encoding='utf-8', errors='replace', bufsize=1)
     for line in process.stdout:
