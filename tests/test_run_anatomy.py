@@ -11,6 +11,7 @@ import timm
 import torch
 from torch.utils.data import Dataset, TensorDataset
 
+from mita_probe.dino_model import load_dino_model
 from mita_probe.io import load_config
 from mita_probe.mita_model import install, native_plan
 from mita_probe.models import load_model
@@ -48,12 +49,22 @@ def setup(tmp_path_factory):
     return config, deit, mita, data, tmp_path_factory
 
 
-def run_stage(setup, name, smoke=4):
+@pytest.fixture(scope='module')
+def dino_setup(setup):
+    config = load_config(ROOT / 'configs/anatomy_v2_dino.yaml')
+    config.update(batch_size=2, num_workers=0, random_seeds=[0, 1])
+    torch.manual_seed(0)
+    dino = load_dino_model(None, pretrained=False)
+    return config, dino, None, setup[3], setup[4]
+
+
+def run_stage(setup, name, smoke=4, model='deit'):
     config, deit, mita, data, factory = setup
-    output = factory.mktemp(name)
+    output = factory.mktemp(f'{model}_{name}')
     batches = runner.make_batches(config, {}, output / 'progress.json', time.perf_counter())
+    args = SimpleNamespace(smoke=smoke, model=model)
     with torch.inference_mode():
-        runner.STAGE_FUNCTIONS[name](SimpleNamespace(smoke=smoke), config, output, deit, mita, data, batches)
+        runner.STAGE_FUNCTIONS[name](args, config, output, deit, mita, data, batches)
     return output
 
 
@@ -97,6 +108,29 @@ def test_pet_composition_examples_and_deletion(setup):
     deletion = pd.read_csv(output / 'deletion.csv')
     assert len(deletion) == 2 * 4 * (1 + 3 * 3)
     assert (deletion.query("model == 'mita' and kind == 'baseline'").agree == 1).all()
+    union = pd.read_csv(output / 'union_composition.csv')
+    assert len(union) == len(comp) and union.union_size.between(1, 196).all()
+    parts = union[['sink', 'foreground', 'background', 'unknown']].sum(axis=1)
+    assert (parts - 1).abs().max() < 1e-5
+
+
+def test_dino_stages_without_mita(dino_setup):
+    config = dino_setup[0]
+    noise = pd.read_csv(run_stage(dino_setup, 'noise', model='dino') / 'predictions.csv')
+    assert set(noise.model) == {'dino'} and (noise.agree == 1).all()
+    rq2 = run_stage(dino_setup, 'rq2', model='dino')
+    assert len(pd.read_csv(rq2 / 'settings.csv')) == len(expand_rq2(config)) == 7 + 2 * 2 + 1
+    repro = pd.read_csv(run_stage(dino_setup, 'repro', model='dino') / 'predictions.csv')
+    assert len(repro) == 4
+    pet = run_stage(dino_setup, 'pet', model='dino')
+    assert set(pd.read_csv(pet / 'composition.csv').model) == {'dino'}
+    assert len(pd.read_csv(pet / 'deletion.csv')) == 4 * (1 + 3 * 3)
+    assert len(pd.read_csv(pet / 'union_composition.csv')) == 4 * 12 * 3
+
+
+def test_dino_rq1_single_layer_anatomy(dino_setup):
+    rows = pd.read_csv(run_stage(dino_setup, 'rq1', model='dino') / 'predictions.csv')
+    assert len(rows) == 4 * (12 * 11 + 2)
 
 
 def test_batches_resume_skips_completed(setup, tmp_path):
