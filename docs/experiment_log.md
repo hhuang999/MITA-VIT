@@ -1,5 +1,11 @@
 # 实验日志
 
+## 2026-10-28 中心对照（A14，本地 CPU）
+
+- 本地下载 Oxford-IIIT Pet 测试集（3,669 张）。脚本 `scripts/run_center_control.py`，代码 a70013b；只在 CPU 上前向三个模型以得到高范数 token，探针并集大小取自已有结果，无新 GPU 运行。64 张 smoke 后正式运行，约 15 分钟。
+- 第一次 smoke 因工作区有未提交的脚本，被 `source_commit` 拦下（设计如此），提交后重跑；smoke 目录已删除。
+- 结果：DeiT-S 不支持（−7.4 pp），DINO 支持但小（+1.2 pp），MiTA-DeiT-S −8.4 pp。图 `figures/figure6_center_control`。按探针视角写综合报告 `docs/analysis/probe_report.md`，并在 V2 报告中加更正说明。
+
 ## 2026-10-28 DINO ViT-S/16 补充运行（Colab L4，07:09–07:51 UTC）
 
 - 新实例 `mita-dino`，代码 5699c62；环境与 V2 相同。ImageNet 14 个分片哈希、5,000 张索引、Pet 3,669 张与 v1 一致；DINO 线性头 SHA-256 核对通过。

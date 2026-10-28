@@ -1,0 +1,12 @@
+{
+  "git_commit": "a70013bce3e0c7699f0c2b161ce973325b938d6c",
+  "images": 3669,
+  "device": "cpu",
+  "torch": "2.7.0+cpu",
+  "deit_full_union_rows": 46659,
+  "deit_full_union_sink_mismatch_rows": 28,
+  "mita_full_union_rows": 49738,
+  "mita_full_union_sink_mismatch_rows": 126,
+  "dino_full_union_rows": 47826,
+  "dino_full_union_sink_mismatch_rows": 0
+}
