@@ -60,7 +60,8 @@ def run_stage(setup, name, smoke=4):
 def test_rq1_single_layer_anatomy(setup):
     output = run_stage(setup, 'rq1')
     rows = pd.read_csv(output / 'predictions.csv')
-    assert len(rows) == 4 * 12 * 11 and set(rows.layer) == set(range(1, 13))
+    assert len(rows) == 4 * (12 * 11 + 2) and set(rows.layer) == set(range(1, 13))
+    assert set(rows.query('layer == 12').setting) >= {'L3_k8_v1_cls_routed', 'L3_k8_cls_own'}
     cover = pd.read_csv(output / 'coverage.csv')
     assert len(cover) == 4 * 12
     assert (cover['L1_k128_patch'] >= cover['L1_k4_patch']).all()

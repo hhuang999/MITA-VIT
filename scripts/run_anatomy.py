@@ -229,7 +229,12 @@ def stage_rq1(args, config, output, deit, mita, data, batches):
                             layer_rows[n][f'{name}_k{kk}_patch'] = patch[n]
                             layer_rows[n][f'{name}_k{kk}_cls'] = cls[n]
                 cover.write(layer_rows)
-                for name, spec in settings:
+                extra = []
+                if layer == config['rq1']['cls_check']['layer']:
+                    kc = config['rq1']['cls_check']['k']
+                    extra = [(f'L3_k{kc}_v1_cls_routed', dict(mode='L3', k=kc, routing='dot', cls='routed')),
+                             (f'L3_k{kc}_cls_own', dict(mode='L3', k=kc, routing='dot', cls='own'))]
+                for name, spec in settings + extra:
                     spec = resolve(dict(k=k_main) | spec, main)
                     plan = make_plan(spec, q, k, scale, grid, layer=layer, batch_start=start)
                     with execute(deit, {layer: plan}):
