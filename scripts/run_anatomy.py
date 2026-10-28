@@ -7,11 +7,11 @@ import logging
 import time
 from datetime import datetime
 from pathlib import Path
+from types import SimpleNamespace
 
 from mita_probe.runtime import configure_runtime, data_root, project_path
 ROOT = configure_runtime()
 
-import numpy as np
 import timm
 import torch
 import yaml
@@ -121,6 +121,13 @@ def run(args, config, output, commit):
         indices = indices[:args.smoke] if args.smoke else indices
         return dataset, indices
 
+    def pet():
+        dataset = PetSegmentation(data_root(), deit)
+        assert len(dataset) == config['pet']['images']
+        indices = list(range(len(dataset)))
+        return dataset, indices[:args.smoke] if args.smoke else indices
+
+    data = SimpleNamespace(imagenet=imagenet, pet=pet)
     STAGE_FUNCTIONS[args.stage](args, config, output, deit, mita, data, batches)
     write_json(output / 'checks.json', dict(complete=True, elapsed_seconds=time.perf_counter() - started,
                                             **json.loads((output / 'running_checks.json').read_text())))
