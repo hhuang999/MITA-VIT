@@ -20,6 +20,8 @@ main: {m_side: 4, k: 16, routing: spatial, cls: own, scoring: query, summary_sca
 rq1:
   k: [16]
   per_query_k: [16, 32]  # L1 at k and at k + m (equal slot budget for the sharing index)
+  # P4 check at the v1 budget: layer 12 only, k = 8, CLS routed (v1 setting) vs CLS own.
+  cls_check: {layer: 12, k: 8}
 
 # RQ2: all layers replaced at once. Each entry: mode, m_side, k, plus overrides of `main`.
 rq2:
