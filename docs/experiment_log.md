@@ -1,5 +1,11 @@
 # 实验日志
 
+## 2026-10-28 V2 代码与本地验收
+
+- 新增 `anatomy.py`、`settings.py`、`mita_model.py`、`scripts/run_anatomy.py`、`configs/anatomy_v2.yaml`。手算例子（设计书 §4.3）四种计算方式与文档一致；k = 197 稠密实现与 timm（融合/非融合）误差 < 1e-5；m = 196 按区域路由等于每 query top-k；MiTA 原生计算等于冻结执行（误差 0）；v1 读取结果逐位复现。
+- 6 个阶段在 CPU 随机权重和假数据上端到端跑通。第一次运行发现 `token_mask` 不兼容 v1 的 `ReadingPattern`（无 cls_set），已修正后重跑通过。
+- MiTA-DeiT-S 权重从官方 Google Drive 下载；首次用 `weights_only=False` 读取被权限检查拒绝，改为 weights_only 并只放行 `argparse.Namespace`。
+
 ## 2026-10-27 夜间验证最终交付
 
 - V00–V03全部完成；五份报告、17个相对文件链接、六份最终PNG/PDF、三项正式统计审计及Colab停止证据通过交付检查。旧科学报告/设计/叙事未改，无跟踪文件删除，新增交付文件未检出HF_TOKEN。
