@@ -1,0 +1,76 @@
+{
+  "P1": {
+    "value": {
+      "si_1_3": 0.6862219113515136,
+      "si_4_12": 0.8937786567389927,
+      "union_1_3": 0.6496597910940647,
+      "union_4_12": 0.34978956945240497
+    },
+    "holds": true
+  },
+  "P2": {
+    "value": {
+      "phi_c_9_12": 0.027804999999999996,
+      "phi_r_9_12": 0.034145
+    },
+    "holds": false
+  },
+  "P3": {
+    "value": {
+      "spatial_minus_dot_L3": -0.03480000000000005,
+      "spatial_minus_dot_L4": -0.03539999999999999
+    },
+    "holds": false
+  },
+  "P4": {
+    "value": {
+      "kl_routed": 0.7281432683621984,
+      "kl_own": 0.3111059215570142,
+      "agree_routed": 0.914,
+      "agree_own": 0.9264
+    },
+    "holds": false
+  },
+  "P5": {
+    "value": {
+      "l4_minus_l3_k16": 0.06840000000000002,
+      "l4_minus_l3_k128": -0.00759999999999994
+    },
+    "holds": false
+  },
+  "P6": {
+    "value": {
+      "L1_k16": 0.7652
+    },
+    "holds": false
+  },
+  "P7": {
+    "value": {
+      "coverage_rank_layer1": 5,
+      "agreement_rank_layer1": 7
+    },
+    "holds": false
+  },
+  "P8": {
+    "value": {
+      "fg_share_mita": 0.4157676093027386,
+      "fg_share_deit": 0.6266834327262913,
+      "sink_mita": 0.3003164510642933
+    },
+    "holds": false
+  },
+  "P9": {
+    "value": {
+      "l3_minus_l2": 0.6324,
+      "low": 0.617795,
+      "high": 0.6466
+    },
+    "holds": true
+  },
+  "P10": {
+    "value": {
+      "attention_minus_query_L3": 0.04500000000000004
+    },
+    "holds": true
+  }
+}

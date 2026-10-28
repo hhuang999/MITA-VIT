@@ -1,0 +1,9 @@
+UV_BUILD_CONSTRAINT=
+UV_SYSTEM_PYTHON=true
+UV_INSTALL_DIR=/usr/local/bin
+UV_BREAK_SYSTEM_PACKAGES=false
+UV_CONSTRAINT=
+6e054e8 Add V2 attention anatomy probes, MiTA-DeiT-S loader and stage runner
+2.7.0+cu128 1.0.30 NVIDIA L4
+d45434671d1096c6d7bfcba38407eb6a632049adf1b1137d8ea85fa638778ac2  checkpoints/mita/best_checkpoint.pth
+SETUP_DONE

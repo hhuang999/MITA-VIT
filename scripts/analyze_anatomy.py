@@ -18,7 +18,8 @@ V1_RQ2 = ROOT / 'experiments/2026-10-26_rq2_imagenet/results.csv'
 
 
 def load(directory, name):
-    frame = pd.read_csv(directory / name)
+    path = directory / name
+    frame = pd.read_csv(path if path.exists() else path.with_name(name + '.gz'))
     keys = [c for c in ['model', 'index', 'layer', 'setting', 'setting_id', 'seed', 'spec', 'category', 'kind']
             if c in frame]
     duplicated = frame.duplicated(keys).sum()  # a crash between a batch write and its progress record
@@ -103,6 +104,9 @@ def main():
     frontier = pd.DataFrame(frontier_rows)
     frontier.to_csv(out / 'rq2_frontier.csv', index=False)
 
+    config_k = sorted(specs['k'].dropna().unique().astype(int))
+    config_k = [k for k in config_k if k != 25]
+
     def all_layer(name, k=16, m_side=4):
         frame = per_image.query('name == @name and k == @k and m_side == @m_side').sort_values('index')
         assert len(frame) == n, (name, k, m_side)
@@ -113,6 +117,29 @@ def main():
                              L1_k16=all_layer('L1')))
     all_summary = anatomy_table(main, draws, upper='L1_k32')
     pd.DataFrame(rows_of(all_summary, layer='all')).to_csv(out / 'rq2_anatomy_all_layers.csv', index=False)
+
+    def paired(name_a, name_b, k=16, m_side=4, k_b=None, m_b=None):
+        a = all_layer(name_a, k, m_side)
+        b = all_layer(name_b, k if k_b is None else k_b, m_side if m_b is None else m_b)
+        return interval(a - b, draws)
+
+    contrasts = [('sharing cost: L3 region - L1 per-query', 'L3_spatial', 'L1', {}),
+                 ('readability cost: L3 region - L3 dot', 'L3_spatial', 'L3_dot', {}),
+                 ('CLS own - CLS routed (L3)', 'L3_spatial', 'ablate_cls_routed_L3', {}),
+                 ('CLS own - CLS routed (L4)', 'L4_spatial', 'ablate_cls_routed_L4', {}),
+                 ('attention - query scoring (L3)', 'ablate_attention_scoring_L3', 'L3_spatial', {}),
+                 ('attention - query scoring (L4)', 'ablate_attention_scoring_L4', 'L4_spatial', {}),
+                 ('standard - MiTA summary scale (L2)', 'ablate_standard_scale_L2', 'L2', {}),
+                 ('standard - MiTA summary scale (L4)', 'ablate_standard_scale_L4', 'L4_spatial', {}),
+                 ('MiTA default on DeiT: region/own - dot/routed', 'mita_default_spatial', 'mita_default_dot',
+                  dict(k=25, m_side=5))]
+    contrasts += [(f'summaries added: L4 - L3 (k={k})', 'L4_spatial', 'L3_spatial', dict(k=k))
+                  for k in config_k]
+    contrast_rows = []
+    for label, a, b, kw in contrasts:
+        mean, low, high = paired(a, b, **kw)
+        contrast_rows.append(dict(contrast=label, difference=mean, low=low, high=high))
+    pd.DataFrame(contrast_rows).to_csv(out / 'rq2_contrasts.csv', index=False)
 
     # v1 regression: L3, dot routing, CLS routed must reproduce the v1 grid line exactly.
     v1 = pd.read_csv(V1_SUMMARY).query("method == 'grid'").set_index('k')['agree']
@@ -169,6 +196,21 @@ def main():
     for model, frame in deletion.query("kind == 'baseline'").groupby('model'):
         deletion_rows.append(dict(model=model, category='baseline', n=len(frame), target=frame.agree.mean()))
     pd.DataFrame(deletion_rows).to_csv(out / 'pet_deletion.csv', index=False)
+
+    # Post-hoc (decision A12): union-based composition, each token counted once per layer.
+    union_dir = run('pet_union')
+    if any(union_dir.glob('union_composition.csv*')):
+        union_comp, _ = load(union_dir, 'union_composition.csv')
+        union_comp['fg_share'] = union_comp['foreground'] / union_comp[['foreground', 'background', 'sink']].sum(axis=1)
+        union_rows = []
+        for (model, spec, layer), frame in union_comp.groupby(['model', 'spec', 'layer']):
+            frame = frame.set_index('index').loc[pet_ids]
+            mean, low, high = interval(frame['fg_share'].fillna(0), pet_draws)
+            size, size_low, size_high = interval(frame['union_size'], pet_draws)
+            union_rows.append(dict(model=model, spec=spec, layer=layer, fg_share=mean, fg_share_low=low,
+                                   fg_share_high=high, union_size=size, union_size_low=size_low,
+                                   union_size_high=size_high, sink=frame['sink'].mean()))
+        pd.DataFrame(union_rows).to_csv(out / 'pet_union_composition_post_hoc.csv', index=False)
 
     # Frozen predictions (design v2 section 8).
     mean_of = lambda layers, quantity: np.mean([value(l, quantity) for l in layers])

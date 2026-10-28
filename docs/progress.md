@@ -93,3 +93,4 @@ RQ3完成后，RQ2独立累积参照也已完成。2026-10-26 22:08 后用户要
 - 2026-10-25：完成 ImageNet validation 下载和数据验收，数据位于 `data/imagenet_val/`；源版本、14 个哈希、标签与解码验证见 `experiments/2026-10-25_imagenet_download/verification.json`。正式 5,000 张 RQ1 与恒等验收留待 P4。
 
 - 2026-10-28：用户确认 V2 主线（`docs/research_design_v2.md`）。在云端会话从审阅快照（09dad4d）重建本地仓库，分支 `feature/anatomy-v2`；Python 3.12.3、PyTorch 2.7.0、timm 1.0.30；原 46 项 CPU 测试通过。新增解剖模块、MiTA-DeiT-S 加载、6 个运行阶段及 23 项新测试（CPU 全通过）；Colab CLI 已授权，尚未开实例。
+- 2026-10-28：V2 全部正式实验完成并分析，报告 `docs/analysis/v2_anatomy.md`，图 2–4 在 `figures/`。Colab 实例已停止。代码与结果只在本地 git（分支 `feature/anatomy-v2`），待用户连接 GitHub 后推送。

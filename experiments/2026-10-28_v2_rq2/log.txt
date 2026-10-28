@@ -1,0 +1,11 @@
+2026-10-28 03:27:21,845 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-28 03:27:21,848 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-28 03:29:54,599 rq2 640/5000 images; 152.6s
+2026-10-28 03:32:25,291 rq2 1280/5000 images; 303.2s
+2026-10-28 03:34:56,096 rq2 1920/5000 images; 454.0s
+2026-10-28 03:37:26,962 rq2 2560/5000 images; 604.9s
+2026-10-28 03:39:57,959 rq2 3200/5000 images; 755.9s
+2026-10-28 03:42:28,946 rq2 3840/5000 images; 906.9s
+2026-10-28 03:44:59,904 rq2 4480/5000 images; 1057.9s
+2026-10-28 03:47:03,650 rq2 5000/5000 images; 1181.6s
+2026-10-28 03:47:03,692 Complete: rq2
