@@ -1,0 +1,7 @@
+{
+  "max_pet_frozen_native_error": 0.0,
+  "models": [
+    "deit",
+    "mita"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "done": {
+    "noise_deit": 5000,
+    "noise_mita": 5000
+  }
+}

@@ -1,0 +1,18 @@
+95460f703ef5bd5d814c45a6ff52d9582207d01c Wed Oct 7 22:24:40 2026 +0800
+2.4.0+cu121 2.6.3
+/content/flash_env/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+/content/MiTA/mita/mixed_attention.py:86: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at ../aten/src/ATen/native/cuda/Indexing.cu:1185.)
+  max_lse_1d = max_lse_1d.index_reduce(
+num_expert: 25, kv_topk: 25
+{'trial': 0, 'scale': 0.04504344239830971, 'max_abs_fp16': 0.000244140625, 'max_abs_fp32': 0.06519043445587158, 'mean_abs_fp32': 0.00044012098805978894}
+num_expert: 25, kv_topk: 25
+{'trial': 1, 'scale': 0.16394107043743134, 'max_abs_fp16': 0.0009765625, 'max_abs_fp32': 0.4933832883834839, 'mean_abs_fp32': 0.0015776505460962653}
+num_expert: 25, kv_topk: 25
+{'trial': 2, 'scale': 0.5021070837974548, 'max_abs_fp16': 0.0035400390625, 'max_abs_fp32': 0.6158033013343811, 'mean_abs_fp32': 0.0016196437645703554}
+num_expert: 25, kv_topk: 25
+{'trial': 3, 'scale': 0.8518893718719482, 'max_abs_fp16': 0.0086669921875, 'max_abs_fp32': 2.007459878921509, 'mean_abs_fp32': 0.006543413735926151}
+num_expert: 25, kv_topk: 25
+{'trial': 4, 'scale': 1.161272644996643, 'max_abs_fp16': 0.0146484375, 'max_abs_fp32': 2.8184313774108887, 'mean_abs_fp32': 0.007110567297786474}
+MISMATCH
+FLASH_DONE

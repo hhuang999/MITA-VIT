@@ -17,7 +17,7 @@ plt.rcParams.update({'font.size': 9, 'axes.edgecolor': QUIET, 'axes.labelcolor':
                      'axes.grid': True, 'grid.color': '#e6e5e1', 'grid.linewidth': .6, 'legend.frameon': False})
 
 
-def band(ax, x, frame, color, label, style='-', marker='o'):
+def band(ax, x, frame, color, label=None, style='-', marker='o'):
     ax.plot(x, frame['mean'], style, color=color, lw=2, marker=marker, ms=4, label=label)
     ax.fill_between(x, frame['low'], frame['high'], color=color, alpha=.15, lw=0)
 
@@ -36,7 +36,7 @@ def figure2(analysis, noise, out):
     a.axhline(noise['deit'], color=QUIET, ls='--', lw=1)
     a.text(12.4, noise['deit'], 'shift-1px\nnoise floor', va='center', fontsize=7.5, color=QUIET)
     a.set_ylabel('agreement with original top-1')
-    a.set_title('Replacing one layer at a time (DeiT-S, m = 16 regions, k = 16 tokens)', loc='left', color=INK)
+    a.set_title('a. One layer at a time: shared top-16 sets keep 92-96% of predictions (DeiT-S, m = 16)', loc='left', color=INK, fontsize=9)
     a.legend(ncol=2, fontsize=7.5, loc='lower right')
     width = .27
     for offset, name, color, label in [(-width, 'phi_R', BLUE, 'routing share (shared tokens)'),
@@ -48,13 +48,14 @@ def figure2(analysis, noise, out):
                    fmt='none', ecolor=INK, elinewidth=.8, capsize=1.5)
     b.axhline(0, color=QUIET, lw=.8)
     b.set_ylabel('agreement points')
-    b.set_title('Shapley split of each layer above the random floor', loc='left', color=INK)
-    b.legend(fontsize=7.5, ncol=3, loc='upper left')
+    b.set_title('b. Routing outweighs compression in layers 1-11; query-specific reading sits in layers 1-3', loc='left', color=INK, fontsize=9)
+    b.legend(fontsize=7.5, ncol=1, loc='upper right')
     m = lambda name: cover.query('measure == @name').sort_values('layer')
     band(c, layers, m('L3_spatial_k16_patch'), BLUE, 'attention mass inside shared set (patches)')
     band(c, layers, m('L1_k16_patch'), INK, 'inside own top-16 (patches)', '--')
     band(c, layers, m('L3_spatial_k16_union'), AQUA, 'tokens used by any set (union / 197)', marker='s')
     c.set_ylabel('fraction')
+    c.set_title('c. Deep layers read few distinct tokens', loc='left', color=INK, fontsize=9)
     c.set_xlabel('layer')
     c.set_xticks(layers)
     c.legend(fontsize=7.5, ncol=1, loc='best')
@@ -88,46 +89,60 @@ def figure3(analysis, noise, out):
         ax.axhline(.9, color=QUIET, ls=':', lw=.8)
     a.legend(fontsize=7, loc='lower right')
     b.legend(fontsize=7, loc='lower right')
-    fig.suptitle('Replacing all 12 layers at once (DeiT-S, 5,000 ImageNet images)', x=.01, ha='left', color=INK, fontsize=10)
+    fig.suptitle('All 12 layers replaced: sharing costs little against per-query top-k; summaries help only at small k',
+                 x=.01, ha='left', color=INK, fontsize=9)
+    a.text(np.log2(4), noise['deit'] + .015, 'shift-1px noise floor', fontsize=7, color=QUIET)
+    a.text(np.log2(4), .9 - .045, '90%', fontsize=7, color=QUIET)
     fig.tight_layout()
     save(fig, out / 'figure3_frontier')
 
 
 def figure4(analysis, out, examples_dir=None):
     comp = pd.read_csv(analysis / 'pet_composition.csv')
+    union = pd.read_csv(analysis / 'pet_union_composition_post_hoc.csv')
     deletion = pd.read_csv(analysis / 'pet_deletion.csv')
-    fig, (a, b) = plt.subplots(1, 2, figsize=(7.2, 3.8), gridspec_kw=dict(width_ratios=[1.4, 1]))
+    fig, (a, u, b) = plt.subplots(1, 3, figsize=(7.4, 3.9), gridspec_kw=dict(width_ratios=[1.25, 1, .9]))
     layers = np.arange(1, 13)
-    for model, color, label in [('mita', ORANGE, 'MiTA-DeiT-S'), ('deit', BLUE, 'DeiT-S')]:
+    models = [('deit', BLUE, 'DeiT-S'), ('mita', ORANGE, 'MiTA-DeiT-S')]
+    area = comp.query("spec == 'm25_k25_clean'")['fg_area'].mean()
+    for model, color, label in models:
         frame = comp.query("model == @model and spec == 'm25_k25_clean'").sort_values('layer')
         band(a, layers, frame.rename(columns={'fg_share': 'mean', 'fg_share_low': 'low', 'fg_share_high': 'high'}),
-             color, f'{label}: foreground share', marker='o')
-        sink = frame['sink'] / frame[['sink', 'foreground', 'background']].sum(axis=1)
-        a.plot(layers, sink, ':', color=color, lw=1.5, label=f'{label}: high-norm share')
-    area = comp.query("spec == 'm25_k25_clean'")['fg_area'].mean()
-    a.axhline(area, color=QUIET, ls='--', lw=1)
-    a.text(12.3, area, f'foreground\narea {area:.0%}', va='center', fontsize=7.5, color=QUIET)
-    a.set_xticks(layers)
-    a.set_xlabel('layer')
-    a.set_ylabel('share of selected spatial tokens')
-    a.set_title('Where the top-25 sets land (Pet test, m = 25)', loc='left', color=INK)
-    a.legend(fontsize=7, loc='upper center', bbox_to_anchor=(.5, -.2), ncol=2)
+             color, f'{label}')
+        frame = union.query("model == @model and spec == 'm25_k25_clean'").sort_values('layer')
+        band(a, layers, frame.rename(columns={'fg_share': 'mean', 'fg_share_low': 'low', 'fg_share_high': 'high'}),
+             color, None, '--', 's')
+        band(u, layers, frame.rename(columns={'union_size': 'mean', 'union_size_low': 'low', 'union_size_high': 'high'}),
+             color, None)
+    a.axhline(area, color=QUIET, ls=':', lw=1)
+    a.text(12.3, area, f'object\narea\n{area:.0%}', va='center', fontsize=7, color=QUIET)
+    a.plot([], [], '-', color=QUIET, label='per selection')
+    a.plot([], [], '--', color=QUIET, label='once per token')
+    a.set_ylabel('object share of read spatial tokens')
+    a.set_title('a. Object share', loc='left', color=INK, fontsize=8.5)
+    u.set_ylabel('tokens read by any set (of 196)')
+    u.set_title('b. Distinct tokens read', loc='left', color=INK, fontsize=8.5)
+    for ax in (a, u):
+        ax.set_xticks([1, 4, 8, 12])
+        ax.set_xlabel('layer')
     cats = ['foreground', 'background', 'sink']
     x = np.arange(len(cats))
-    for offset, model, color, label in [(-.2, 'deit', BLUE, 'DeiT-S'), (.2, 'mita', ORANGE, 'MiTA-DeiT-S')]:
+    for offset, (model, color, label) in zip([-.2, .2], models):
         frame = deletion.query('model == @model').set_index('category').loc[cats]
-        b.bar(x + offset, frame['target_minus_random'], .4, color=color, label=label)
+        b.bar(x + offset, frame['target_minus_random'], .4, color=color)
         b.errorbar(x + offset, frame['target_minus_random'],
                    [frame['target_minus_random'] - frame['low'], frame['high'] - frame['target_minus_random']],
                    fmt='none', ecolor=INK, elinewidth=.8, capsize=2)
     b.axhline(0, color=QUIET, lw=.8)
-    b.set_xticks(x, ['object', 'background', 'high-norm'])
-    b.set_ylabel('agreement: removed - matched random')
-    b.set_title('Remove one kind from every set', loc='left', color=INK)
-    b.legend(fontsize=7, loc='upper center', bbox_to_anchor=(.5, -.2), ncol=2)
-    fig.tight_layout()
+    b.set_xticks(x, ['object', 'back-\nground', 'high-\nnorm'])
+    b.set_ylabel('agreement change vs matched random')
+    b.set_title('c. Remove one kind', loc='left', color=INK, fontsize=8.5)
+    handles, labels = a.get_legend_handles_labels()
+    fig.legend(handles, labels, loc='lower center', ncol=4, fontsize=7.5, bbox_to_anchor=(.5, 0))
+    fig.suptitle('Both models prune deep layers and need the object; DeiT-S sets sit on the object more '
+                 '(Pet, m = k = 25)', x=.01, ha='left', fontsize=9, color=INK)
+    fig.tight_layout(rect=(0, .07, 1, 1))
     save(fig, out / 'figure4_object_focus')
-
 
 def figure4_examples(runs_pet, images, out, layers=(4, 8, 12), spec='m25_k25_clean'):
     """MiTA-style pruning view: tokens read by no set at that layer are whitened."""
