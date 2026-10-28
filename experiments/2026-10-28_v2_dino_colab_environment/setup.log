@@ -1,0 +1,5 @@
+5699c62 Add DINO ViT-S/16 supplement: loader, runner --model/--config, repro stage, union output
+2.7.0+cu128 1.0.30 NVIDIA L4
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+DINO_HEAD_OK
+SETUP_DONE
