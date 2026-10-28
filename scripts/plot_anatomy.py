@@ -129,6 +129,33 @@ def figure4(analysis, out, examples_dir=None):
     save(fig, out / 'figure4_object_focus')
 
 
+def figure4_examples(runs_pet, images, out, layers=(4, 8, 12), spec='m25_k25_clean'):
+    """MiTA-style pruning view: tokens read by no set at that layer are whitened."""
+    from PIL import Image
+    examples = pd.read_csv(runs_pet / 'examples.csv', dtype={'tokens': str})
+    ids = [2335, 1874, 989]
+    fig, axes = plt.subplots(len(ids), 1 + 2 * len(layers), figsize=(7.2, 3.1))
+    for row, index in enumerate(ids):
+        image = np.asarray(Image.open(images / f'pet_{index}.png').convert('RGB')) / 255.
+        axes[row, 0].imshow(image)
+        for col, (model, layer) in enumerate([(m, l) for m in ['deit', 'mita'] for l in layers], start=1):
+            tokens = examples.query('model == @model and index == @index and spec == @spec and layer == @layer')
+            keep = np.array([c == '1' for c in tokens['tokens'].item()]).reshape(14, 14)
+            mask = np.kron(keep, np.ones((16, 16)))[..., None]
+            axes[row, col].imshow(image * mask + (1 - mask))
+            if row == 0:
+                axes[row, col].set_title(f"{'DeiT-S' if model == 'deit' else 'MiTA'} L{layer}", fontsize=7.5, color=INK)
+    axes[0, 0].set_title('image', fontsize=7.5, color=INK)
+    for ax in axes.flat:
+        ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+    fig.suptitle('Tokens read by any of the 25 top-25 sets (white = read by none)', x=.01, ha='left',
+                 fontsize=9, color=INK)
+    fig.tight_layout(w_pad=.2, h_pad=.2)
+    save(fig, out / 'figure4_examples')
+
+
 def save(fig, stem):
     fig.savefig(f'{stem}.png', dpi=200)
     fig.savefig(f'{stem}.pdf')
@@ -139,12 +166,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--analysis', type=Path, default=ROOT / 'experiments/2026-10-28_v2_analysis')
     parser.add_argument('--output', type=Path, default=ROOT / 'figures')
+    parser.add_argument('--pet-run', type=Path, default=ROOT / 'experiments/2026-10-28_v2_pet')
+    parser.add_argument('--images', type=Path,
+                        default=ROOT / 'experiments/2026-10-28_v2_colab_environment/example_images')
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     noise = json.loads((args.analysis / 'checks.json').read_text())['noise_floor']
     figure2(args.analysis, noise, args.output)
     figure3(args.analysis, noise, args.output)
     figure4(args.analysis, args.output)
+    if args.images.exists():
+        figure4_examples(args.pet_run, args.images, args.output)
 
 
 if __name__ == '__main__':
