@@ -91,3 +91,5 @@ RQ3完成后，RQ2独立累积参照也已完成。2026-10-26 22:08 后用户要
 - 2026-10-25：用户完成 ImageNet 授权；用项目 `.env` 中的 token 请求 `validation-00000-of-00014.parquet` 的前 4 字节，返回 HTTP 206、`Content-Range: bytes 0-3/479922797`，内容为 `PAR1`。实际文件访问已验证，尚未下载完整验证集。
 - 2026-10-25：用户确认检查点 2 并授权进入 P2；完成 Imagenette 500 张完整 RQ1，代码提交 `b436890`，结果见 `experiments/2026-10-25_rq1_pilot/`。预设 k≤64 的样本一致率均未达到 90%。
 - 2026-10-25：完成 ImageNet validation 下载和数据验收，数据位于 `data/imagenet_val/`；源版本、14 个哈希、标签与解码验证见 `experiments/2026-10-25_imagenet_download/verification.json`。正式 5,000 张 RQ1 与恒等验收留待 P4。
+
+- 2026-10-28：用户确认 V2 主线（`docs/research_design_v2.md`）。在云端会话从审阅快照（09dad4d）重建本地仓库，分支 `feature/anatomy-v2`；Python 3.12.3、PyTorch 2.7.0、timm 1.0.30；原 46 项 CPU 测试通过。新增解剖模块、MiTA-DeiT-S 加载、6 个运行阶段及 23 项新测试（CPU 全通过）；Colab CLI 已授权，尚未开实例。
