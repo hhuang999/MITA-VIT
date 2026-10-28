@@ -182,3 +182,20 @@ def test_shifted_crop_moves_window_one_pixel():
     base, moved = transform(image), shifted_transform(transform, 1)(image)
     torch.testing.assert_close(moved[:, :, :-1], base[:, :, 1:], atol=0, rtol=0)
     assert not torch.equal(moved, base)
+
+
+def test_shapley_split_sums_to_mixed_minus_random_per_image():
+    import numpy as np
+    from mita_probe.anatomy_analysis import anatomy_table, resample_indices, shapley
+    import pandas as pd
+    rng = np.random.default_rng(0)
+    table = pd.DataFrame({name: rng.integers(0, 2, 50).astype(float) for name in
+                          ['rand', 'randC', 'L3', 'L4', 'L2', 'L1_k32']})
+    phi_c, phi_r = shapley(table['rand'], table['randC'], table['L3'], table['L4'])
+    np.testing.assert_allclose(phi_c + phi_r, table['L4'] - table['rand'])
+    summary = anatomy_table(table, resample_indices(50))
+    assert summary.loc['phi_C', 'mean'] + summary.loc['phi_R', 'mean'] == pytest.approx(
+        summary.loc['L4', 'mean'] - summary.loc['rand', 'mean'])
+    bounded = summary.drop(index='sharing_index')  # random toy data can make its denominator 0
+    assert (bounded['low'] <= bounded['mean'] + 1e-12).all() and (bounded['mean'] <= bounded['high'] + 1e-12).all()
+    assert (resample_indices(50)[0] == np.random.default_rng(0).integers(50, size=50)).all()
