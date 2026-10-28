@@ -1,5 +1,11 @@
 # 实验日志
 
+## 2026-10-28 Colab 环境、资产核对与第一次 smoke 失败
+
+- Colab L4 实例 `mita-anatomy-v2`；Python 3.12.3、torch 2.7.0+cu128、timm 1.0.30。ImageNet 14 个分片 SHA-256、5,000 张索引、Pet 3,669 张与 v1 记录完全一致；MiTA 权重 SHA-256 与本地一致。GPU 上完整 pytest 73 项通过。
+- 测试 7（官方 flash-attn 模块对比）：flash-attn 环境第一次因 uv 把 torch 连带升级而 ABI 不匹配，钉住 torch 2.4.0/torchvision 0.19.0 后运行；预设 fp32 标准未通过、同精度 fp16 对比通过，判定见 decisions A11。
+- 第一次 smoke 在 noise 阶段失败：`run()` 中 `data` 未定义（重构时一处字符串替换未生效；CPU 阶段测试绕过 `run()`，未覆盖）。总控脚本按设计中止，未进入正式运行。修正后用 pyflakes 检查未定义名称并重跑。
+
 ## 2026-10-28 V2 代码与本地验收
 
 - 新增 `anatomy.py`、`settings.py`、`mita_model.py`、`scripts/run_anatomy.py`、`configs/anatomy_v2.yaml`。手算例子（设计书 §4.3）四种计算方式与文档一致；k = 197 稠密实现与 timm（融合/非融合）误差 < 1e-5；m = 196 按区域路由等于每 query top-k；MiTA 原生计算等于冻结执行（误差 0）；v1 读取结果逐位复现。
