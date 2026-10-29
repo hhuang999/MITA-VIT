@@ -1,8 +1,7 @@
-"""Aligned Pet images, trimaps and spatial token labels for RQ3."""
+"""Oxford-IIIT Pet test split: images aligned with their trimaps, labelled per 16x16 patch."""
 
 import numpy as np
 import torch
-from PIL import Image
 from timm.data import create_transform, resolve_model_data_config
 from torch.utils.data import Dataset
 from torchvision.datasets import OxfordIIITPet
@@ -52,27 +51,3 @@ class PetSegmentation(Dataset):
         tensor, _, _, foreground, valid = self.aligned(index)
         return tensor, foreground, valid, index
 
-
-def grid_region_membership(grid=14, regions=4):
-    """Exact adaptive-average-pooling windows (overlap for 14 -> 4)."""
-    membership = torch.zeros(regions*regions, grid, grid, dtype=torch.bool)
-    for y in range(regions):
-        for x in range(regions):
-            membership[y*regions+x, y*grid//regions:((y+1)*grid+regions-1)//regions,
-                       x*grid//regions:((x+1)*grid+regions-1)//regions] = True
-    return membership.flatten(1)
-
-
-def background_regions(foreground, valid):
-    membership = grid_region_membership().to(foreground.device)
-    count = valid.float() @ membership.float().T
-    fg_count = (foreground & valid).float() @ membership.float().T
-    return (2 * fg_count < count) & count.gt(0)
-
-
-def selection_counts(readsets, n_patches=196):
-    batch = readsets.shape[0]
-    counts = torch.zeros(batch, n_patches+1, device=readsets.device)
-    flat = readsets.flatten(1)
-    counts.scatter_add_(1, flat, torch.ones_like(flat, dtype=counts.dtype))
-    return counts[:, 1:]
