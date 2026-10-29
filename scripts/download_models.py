@@ -21,7 +21,7 @@ def main():
     if not head.exists():
         head.parent.mkdir(parents=True, exist_ok=True)
         urllib.request.urlretrieve(HEAD_URL, head)
-    for name in ('deit', 'dino'):
+    for name in ('deit', 'deit_b', 'dino'):
         model = load_model(name)
         print(f'{name}: {sum(p.numel() for p in model.parameters()):,} parameters, '
               f'{timm.data.resolve_model_data_config(getattr(model, "backbone", model))}')
