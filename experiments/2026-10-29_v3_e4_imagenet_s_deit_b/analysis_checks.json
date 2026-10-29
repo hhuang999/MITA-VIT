@@ -1,0 +1,6 @@
+{
+  "model": "deit_b",
+  "dataset": "imagenet_s",
+  "faithfulness_duplicates": 0,
+  "plausibility_duplicates": 0
+}
