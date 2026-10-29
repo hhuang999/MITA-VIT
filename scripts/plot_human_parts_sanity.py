@@ -35,7 +35,7 @@ def human(runs, output):
         specific = table.query("measure == 'specific_pixel'").set_index('method')
         interval_dots(column[0], specific, MAIN_METHODS)
         column[0].axvline(0, color='#c3c2b7', lw=1)
-        column[0].set(title=f'{model}: ClickMe', xlabel='Image-specific Spearman (own - other image)')
+        column[0].set(title=f'{model}: ClickMe', xlabel='Image-specific Spearman')
         layers = pd.read_csv(run / 'analysis_layers.csv').query("measure == 'specific_pixel'").sort_values('layer')
         band(column[1], layers.layer, layers, BLUE, label='Probe at one layer')
         overall = specific.loc['probe_mass']
