@@ -1,4 +1,4 @@
-# 实验计划 v3（已确认，2026-10-29）
+# 实验计划 v3（已确认并全部完成，2026-10-29；结果见 [v3 报告](analysis/v3_report.md)）
 
 2026-10-29 · 依据：[相关工作综述](related_work.md)、决策 B01–B04 · 代码分支 `refactor/probe-method`
 
@@ -30,13 +30,13 @@
 | --- | --- | --- | --- | --- | --- |
 | E1 | 全层、单层解剖，k 和 m 扫描 | RQ1, RQ2 | ImageNet 5k | DeiT-S, DINO | ✅ |
 | E2 | Pet 成分、中心对照（A14）、中心配对删除（A15） | RQ3 | Pet | 三个模型 | ✅ |
-| E3 | token 身份检验（`identity`） | 前提 | ImageNet 前 500 张 | DeiT-S, DINO | 🟢 |
-| E4 | 解释方法比较：合理性 + 忠实性（`explanations`） | RQ3, RQ4 | ImageNet-S（主）、ImageNet 5k、Pet、Hard ImageNet | DeiT-S, DINO | 🟢 |
-| E5 | 移位裁剪：同一物体放在中心和四个角（`shifted_crops`） | RQ3 | ImageNet-S 2,000 张 | DeiT-S, DINO | 🟢 |
-| E6 | 中心配对删除推广到 ImageNet-S、Hard ImageNet（`matched_deletion`） | RQ3 | ImageNet-S、Hard ImageNet | 三个模型 | 🟢 |
-| E7 | 与人类判断的一致性（`human_alignment`） | RQ3 | ClickMe 验证集 | DeiT-S, DINO, DeiT-B | 🟢 |
-| E8 | 部件层面（头、身体、尾巴）（`parts`） | RQ3 | PartImageNet | DeiT-S, DINO, DeiT-B | 🟢 |
-| E11 | 权重随机化健全性检验（`sanity`） | RQ4 | ImageNet-S 1,000 张 | DeiT-S, DINO, DeiT-B | 🟢 |
+| E3 | token 身份检验（`identity`） | 前提 | ImageNet 前 500 张 | DeiT-S, DINO, DeiT-B | ✅ |
+| E4 | 解释方法比较：合理性 + 忠实性（`explanations`） | RQ3, RQ4 | ImageNet-S（主）、ImageNet 5k、Pet、Hard ImageNet | DeiT-S, DINO, DeiT-B | ✅ |
+| E5 | 移位裁剪：同一物体放在中心和四个角（`shifted_crops`） | RQ3 | ImageNet-S 2,000 张 | DeiT-S, DINO, DeiT-B | ✅ |
+| E6 | 中心配对删除推广到 ImageNet-S、Hard ImageNet（`matched_deletion`） | RQ3 | ImageNet-S、Hard ImageNet | 三个模型 | ✅ |
+| E7 | 与人类判断的一致性（`human_alignment`） | RQ3 | ClickMe 验证集 | DeiT-S, DINO, DeiT-B | ✅ |
+| E8 | 部件层面（头、身体、尾巴）（`parts`） | RQ3 | PartImageNet | DeiT-S, DINO, DeiT-B | ✅ |
+| E11 | 权重随机化健全性检验（`sanity`） | RQ4 | ImageNet-S 1,000 张 | DeiT-S, DINO, DeiT-B | ✅ |
 | E9 | 按 head 分析、因果替换 | RQ2, RQ3 | — | — | ⚪ 可选 |
 | E10 | 需要训练的数据集（Waterbirds、CUB） | RQ3 | — | — | ⚪ 推后 |
 

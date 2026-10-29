@@ -4,6 +4,16 @@
 
 研究主线、研究问题和每项实验的判定标准见 [决策日志](docs/decisions.md)（B01–B16）和 [实验计划 v3](docs/experiment_plan_v3.md)；相关工作见 [综述](docs/related_work.md)。旧版说明（第一、二代设计、HPC 记录）保存在 [docs/history/](docs/history/README_2026-10-27.md)。
 
+## 主要结果（[完整报告](docs/analysis/v3_report.md)）
+
+在 DeiT-S、DINO、DeiT-B 三个模型和 ImageNet-S、Hard ImageNet、Pet、ClickMe、PartImageNet 等数据集上，与 5 种常用解释方法在同一套检验下比较：
+
+- **可执行**：只按探针名单计算，模型保留大部分预测（DeiT-S 12 层同时 71%，DeiT-B 83%；单层 92%–97%）。
+- **便宜**：约等于一次前向计算（GAE 的 2–3 倍以下，IG 的约 1/40）。
+- **忠实性**：在只看注意力的方法中总体最好或持平（DeiT-S、DeiT-B 高于 CLS 注意力和 Rollout；DINO 上低于 CLS 注意力）；低于用梯度的 GAE、Grad-CAM。
+- **常识**：扣除中心偏差后仍偏向物体；物体移到角落时跟着物体走；与人类重要性图的一致明显超出中心偏差；对动物头部的偏爱在三个模型上都是所有方法中最高，而模型自己也确实更依赖头。
+- **逐层**：最像人的读取在中后层；有监督模型的最后一层离开物体。
+
 ## 研究问题
 
 | RQ | 问题 | 主要实验 |
