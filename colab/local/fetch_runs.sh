@@ -26,7 +26,7 @@ PY
   out=""
   for attempt in $(seq 1 60); do
     sleep 10
-    out=$("$COLAB" exec -s "$SESSION" -f "$WORK/poll.py" --timeout 120 2>/dev/null || true)
+    out=$(timeout 200 "$COLAB" exec -s "$SESSION" -f "$WORK/poll.py" --timeout 120 2>/dev/null || true)
     echo "$out" | grep -q '^SHA ' && break
   done
   parts=$(echo "$out" | sed -n 's/^PARTS //p')
@@ -35,7 +35,7 @@ PY
   for part in $parts; do
     for wait in 0 2 4 8 16; do
       sleep $wait
-      "$COLAB" download -s "$SESSION" "/content/out/$RUN/$part" "$WORK/$part" >/dev/null 2>&1 && [ -s "$WORK/$part" ] && break
+      timeout 300 "$COLAB" download -s "$SESSION" "/content/out/$RUN/$part" "$WORK/$part" >/dev/null 2>&1 && [ -s "$WORK/$part" ] && break
     done
     [ -s "$WORK/$part" ] || { echo "download failed: $RUN/$part" >&2; exit 1; }
   done
