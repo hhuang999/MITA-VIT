@@ -1,0 +1,14 @@
+2026-10-29 03:18:22,059 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-29 03:18:22,344 HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+2026-10-29 03:18:22,588 HTTP Request: HEAD https://huggingface.co/timm/deit_small_patch16_224.fb_in1k/resolve/91327a9c99f98fe6b524cd4d397b7226b80e1365/model.safetensors "HTTP/1.1 302 Found"
+2026-10-29 03:18:22,833 HTTP Request: GET https://huggingface.co/api/models/timm/deit_small_patch16_224.fb_in1k/xet-read-token/91327a9c99f98fe6b524cd4d397b7226b80e1365 "HTTP/1.1 200 OK"
+2026-10-29 03:18:25,147 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-29 03:18:26,856 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
+2026-10-29 03:18:27,095 HTTP Request: HEAD https://huggingface.co/timm/vit_small_patch16_224.dino/resolve/10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4/model.safetensors "HTTP/1.1 302 Found"
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-10-29 03:18:27,095 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-10-29 03:18:27,341 HTTP Request: GET https://huggingface.co/api/models/timm/vit_small_patch16_224.dino/xet-read-token/10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4 "HTTP/1.1 200 OK"
+2026-10-29 03:18:30,333 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-29 03:18:39,697 deit 64/64 images; 8.7s
+2026-10-29 03:18:47,712 dino 64/64 images; 16.7s
+2026-10-29 03:18:55,776 mita 64/64 images; 24.7s

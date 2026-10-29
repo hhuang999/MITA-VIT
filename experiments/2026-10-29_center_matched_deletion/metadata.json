@@ -1,0 +1,18 @@
+{
+  "git_commit": "46cd1fc68bd5598ab4e2de52e99fc7fe054068fc",
+  "decision": "A15",
+  "images": 3669,
+  "device": "NVIDIA L4",
+  "torch": "2.7.0+cu128",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "categories": [
+    "foreground",
+    "background"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "duplicates": 0,
+  "deit_compared_rows": 47697,
+  "deit_agree_mismatches": 0,
+  "deit_max_kl_difference": 0.0,
+  "mita_compared_rows": 47697,
+  "mita_agree_mismatches": 0,
+  "mita_max_kl_difference": 0.0,
+  "dino_compared_rows": 47697,
+  "dino_agree_mismatches": 0,
+  "dino_max_kl_difference": 0.0
+}
