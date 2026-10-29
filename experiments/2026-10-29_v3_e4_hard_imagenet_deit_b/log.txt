@@ -1,0 +1,5 @@
+2026-10-29 19:53:40,545 Loading pretrained weights from Hugging Face hub (timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6)
+2026-10-29 19:53:40,547 [timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-29 20:03:27,184 explain_deit_b 640/750 images; 585.6s
+2026-10-29 20:05:06,696 explain_deit_b 750/750 images; 685.1s
+2026-10-29 20:05:06,774 Complete: explanations on hard_imagenet

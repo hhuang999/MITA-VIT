@@ -1,0 +1,11 @@
+         measure    n   model        dataset        base          other  difference     low    high verdict
+0      srg_agree  750  deit_b  hard_imagenet  probe_mass  cls_attention      0.0359  0.0193  0.0509  higher
+1      srg_agree  750  deit_b  hard_imagenet  probe_mass        rollout      0.1108  0.0913  0.1280  higher
+2      srg_agree  750  deit_b  hard_imagenet  probe_mass            gae     -0.1803 -0.1965 -0.1648   lower
+14  srg_p_target  750  deit_b  hard_imagenet  probe_mass  cls_attention      0.0281  0.0187  0.0366  higher
+15  srg_p_target  750  deit_b  hard_imagenet  probe_mass        rollout      0.0695  0.0567  0.0806  higher
+16  srg_p_target  750  deit_b  hard_imagenet  probe_mass            gae     -0.1484 -0.1567 -0.1402   lower
+28    enrichment  656  deit_b  hard_imagenet  probe_mass  cls_attention      0.0140  0.0076  0.0195  higher
+29    enrichment  656  deit_b  hard_imagenet  probe_mass        rollout      0.0118  0.0029  0.0199  higher
+30    enrichment  656  deit_b  hard_imagenet  probe_mass            gae     -0.1334 -0.1479 -0.1178   lower
+31    enrichment  656  deit_b  hard_imagenet  probe_mass         centre      0.0296  0.0230  0.0357  higher
