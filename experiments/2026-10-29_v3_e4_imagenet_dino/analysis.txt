@@ -1,0 +1,7 @@
+         measure     n model   dataset        base          other  difference     low    high verdict
+0      srg_agree  2000  dino  imagenet  probe_mass  cls_attention     -0.0653 -0.0727 -0.0574   lower
+1      srg_agree  2000  dino  imagenet  probe_mass        rollout      0.0657  0.0541  0.0766  higher
+2      srg_agree  2000  dino  imagenet  probe_mass            gae     -0.1895 -0.1988 -0.1800   lower
+13  srg_p_target  2000  dino  imagenet  probe_mass  cls_attention     -0.0576 -0.0621 -0.0527   lower
+14  srg_p_target  2000  dino  imagenet  probe_mass        rollout      0.0554  0.0488  0.0626  higher
+15  srg_p_target  2000  dino  imagenet  probe_mass            gae     -0.1670 -0.1729 -0.1608   lower
