@@ -58,7 +58,7 @@ def main():
     axes[-1].invert_yaxis()
     axes[-1].axvline(0, color='#c3c2b7', lw=1)
     axes[-1].grid(axis='y', visible=False)
-    axes[-1].set(xlabel='Agreement: object removed - same-distance removed', title='(c) Object vs centre position')
+    axes[-1].set(xlabel='Agreement difference', title='(c) Object removed vs same-distance removed')
     fig.tight_layout()
     save(fig, args.output)
 
