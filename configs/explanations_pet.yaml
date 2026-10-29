@@ -2,3 +2,4 @@
 base: explanations.yaml
 explanations:
   dataset: pet
+  faithfulness_images: 2000      # fixed random subset (decision B18)
