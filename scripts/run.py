@@ -7,6 +7,7 @@ Examples:
   python scripts/run.py center_control --device cpu --config configs/center_control.yaml --output ...
 
 Add --smoke N to run on the first N images, and --resume to continue an interrupted run in place.
+--batch-size and --workers override the config (the saved config.yaml records the values used).
 The source tree must be committed: the git commit is stored with every result.
 """
 
@@ -28,7 +29,9 @@ def main():
     parser.add_argument('--config', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--stage', help='anatomy only: noise, rq1, rq2, repro, mita_repro, mita_anatomy, pet')
-    parser.add_argument('--model', default='deit', help='primary model for anatomy: deit or dino')
+    parser.add_argument('--model', default='deit', help='model name: deit, deit_b, dino or mita')
+    parser.add_argument('--batch-size', type=int)
+    parser.add_argument('--workers', type=int)
     parser.add_argument('--device', default='cuda', choices=['cuda', 'cpu'])
     parser.add_argument('--smoke', type=int, default=0)
     parser.add_argument('--resume', action='store_true')
@@ -37,6 +40,10 @@ def main():
     if hasattr(module, 'STAGES') and args.stage not in module.STAGES:
         parser.error(f'{args.experiment} needs --stage from {module.STAGES}')
     config = load_config(ROOT / args.config)
+    if args.batch_size:
+        config['batch_size'] = args.batch_size
+    if args.workers is not None:
+        config['num_workers'] = args.workers
     commit = source_commit(ROOT)
     common.DEVICE = args.device
     output = ROOT / args.output
