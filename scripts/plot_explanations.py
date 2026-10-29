@@ -53,7 +53,7 @@ def main():
             row[2].set(xlabel='Object enrichment (same-distance rings)', title='Plausibility beyond centre')
         else:
             row[2].set_visible(False)
-    axes[0, 0].legend(fontsize=7, loc='upper right')
+    axes[0, 0].legend(fontsize=7, loc='lower left')
     fig.tight_layout()
     save(fig, args.output)
 
