@@ -26,16 +26,6 @@ def ratio_interval(numerator, denominator, draws, confidence=.95):
     return float(numerator.mean() / denominator.mean()), float(low), float(high)
 
 
-def wide_agreement(rows, keys):
-    """One row per image, one column per setting; random seeds averaged per image first."""
-    frame = rows.drop_duplicates(['index'] + keys + ['seed'] if 'seed' in rows else ['index'] + keys)
-    frame = frame.assign(setting=frame['setting'].str.replace(r'_s\d+$', '', regex=True))
-    table = frame.pivot_table(index='index', columns=keys, values='agree', aggfunc='mean')
-    if table.isna().any().any():
-        raise ValueError('Missing image-setting measurements')
-    return table.sort_index()
-
-
 def shapley(rand, rand_c, shared, mixed):
     """Two-player Shapley values of compression (C) and routing (R); sum = mixed - rand."""
     phi_c = .5 * ((rand_c - rand) + (mixed - shared))

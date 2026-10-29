@@ -1,15 +1,13 @@
 """Figure 6: probe union reads against the centre prior (decision A14), from the control CSV only."""
 
-import importlib.util
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
+from mita_probe import plotting as style
+
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('plot_anatomy', ROOT / 'scripts/plot_anatomy.py')
-style = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(style)
 plt, band, save = style.plt, style.band, style.save
 MODELS = [('deit', 'DeiT-S', style.BLUE), ('dino', 'DINO ViT-S/16', style.AQUA), ('mita', 'MiTA-DeiT-S', style.ORANGE)]
 

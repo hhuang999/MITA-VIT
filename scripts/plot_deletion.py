@@ -1,15 +1,13 @@
 """Figure 7: matched deletion of foreground tokens with random and centre-matched controls (A15)."""
 
-import importlib.util
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
+from mita_probe import plotting as style
+
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('plot_anatomy', ROOT / 'scripts/plot_anatomy.py')
-style = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(style)
 plt, save = style.plt, style.save
 MODELS = [('deit', 'DeiT-S'), ('dino', 'DINO ViT-S/16'), ('mita', 'MiTA-DeiT-S')]
 CONDITIONS = [('baseline', 'no deletion', '#c9c7c2'), ('random', 'random tokens removed', style.GRAY),

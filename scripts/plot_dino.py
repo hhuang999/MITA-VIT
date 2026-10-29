@@ -1,16 +1,14 @@
 """Figure 5: DINO ViT-S/16 against DeiT-S (and MiTA-DeiT-S on Pet), from the analysis CSVs only."""
 
 import argparse
-import importlib.util
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
+from mita_probe import plotting as style
+
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('plot_anatomy', ROOT / 'scripts/plot_anatomy.py')
-style = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(style)
 plt, band, save = style.plt, style.band, style.save
 BLUE, ORANGE, AQUA, INK, QUIET = style.BLUE, style.ORANGE, style.AQUA, style.INK, style.QUIET
 MODELS = [('deit', 'DeiT-S', BLUE), ('mita', 'MiTA-DeiT-S', ORANGE), ('dino', 'DINO ViT-S/16', AQUA)]

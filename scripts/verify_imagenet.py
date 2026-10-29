@@ -73,7 +73,7 @@ def main():
     if not args.skip_inference:
         torch.set_num_threads(2)
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        model = load_model(device)
+        model = load_model("deit", device)
         prepared = ImageNetValidation(root / "imagenet_val", model)
         batch = torch.stack([prepared[index][0] for index in indices[:32]]).to(device)
         with torch.inference_mode():

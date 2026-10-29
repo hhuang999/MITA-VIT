@@ -1,7 +1,6 @@
 """CPU analysis of the DINO ViT-S/16 supplement (decision A13): tables, DeiT-S comparison, D1-D6."""
 
 import argparse
-import importlib.util
 import json
 import os
 from pathlib import Path
@@ -11,13 +10,10 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import numpy as np
 import pandas as pd
 
-from mita_probe.anatomy_analysis import anatomy_table, interval, ratio_interval, resample_indices
+from mita_probe.results import load, rows_of, seed_mean
+from mita_probe.stats import anatomy_table, interval, ratio_interval, resample_indices
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('analyze_anatomy', ROOT / 'scripts/analyze_anatomy.py')
-base = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(base)
-load, rows_of, seed_mean = base.load, base.rows_of, base.seed_mean
 SPECS = ['m16_k16_clean', 'm25_k25_clean', 'm25_k25_mita']
 
 

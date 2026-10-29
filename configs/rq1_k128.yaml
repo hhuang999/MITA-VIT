@@ -1,4 +1,0 @@
-base: rq1.yaml
-k: [128]
-purpose: user_requested_k128
-collect_grouping_counts: true

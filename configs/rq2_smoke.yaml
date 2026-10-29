@@ -1,3 +1,0 @@
-base: rq2.yaml
-n_images: 50
-purpose: overnight_rq2_smoke

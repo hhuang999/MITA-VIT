@@ -1,4 +1,0 @@
-base: rq1.yaml
-dataset: imagenette
-n_images: 500
-indices: null

@@ -1,28 +1,25 @@
-"""Download public debug data or ImageNet validation on the chosen machine."""
+"""Download a dataset to the data folder: imagenet (validation, needs HF_TOKEN) or pet (Oxford-IIIT Pet test)."""
 
 import argparse
 import json
 from pathlib import Path
 
 from mita_probe.runtime import configure_runtime, data_root
-from mita_probe.assets import IMAGENET_REPO, IMAGENET_REVISION
+from mita_probe.data import IMAGENET_REPO, IMAGENET_REVISION
 
 ROOT = configure_runtime()
 
-from torchvision.datasets import Imagenette, OxfordIIITPet
+from torchvision.datasets import OxfordIIITPet
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("dataset", choices=["imagenette", "pet", "imagenet"])
+    parser.add_argument("dataset", choices=["pet", "imagenet"])
     parser.add_argument("--root", type=Path, default=data_root())
     args = parser.parse_args()
     args.root.mkdir(parents=True, exist_ok=True)
 
-    if args.dataset == "imagenette":
-        data = Imagenette(args.root, split="val", size="160px", download=True)
-        print(f"Imagenette validation: {len(data)} images")
-    elif args.dataset == "pet":
+    if args.dataset == "pet":
         data = OxfordIIITPet(
             args.root, split="test", target_types="segmentation", download=True
         )
