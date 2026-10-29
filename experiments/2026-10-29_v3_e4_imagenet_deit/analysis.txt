@@ -1,0 +1,7 @@
+         measure     n model   dataset        base          other  difference     low    high verdict
+0      srg_agree  2000  deit  imagenet  probe_mass  cls_attention      0.0258  0.0178  0.0341  higher
+1      srg_agree  2000  deit  imagenet  probe_mass        rollout      0.0561  0.0463  0.0664  higher
+2      srg_agree  2000  deit  imagenet  probe_mass            gae     -0.1568 -0.1663 -0.1470   lower
+13  srg_p_target  2000  deit  imagenet  probe_mass  cls_attention      0.0225  0.0181  0.0269  higher
+14  srg_p_target  2000  deit  imagenet  probe_mass        rollout      0.0362  0.0301  0.0423  higher
+15  srg_p_target  2000  deit  imagenet  probe_mass            gae     -0.1183 -0.1231 -0.1130   lower
