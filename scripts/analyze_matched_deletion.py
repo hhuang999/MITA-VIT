@@ -1,4 +1,5 @@
-"""CPU analysis of the centre-matched deletion (decision A15) and its consistency with the V2/DINO runs."""
+"""CPU analysis of the centre-matched deletion (decision A15) on any dataset (E6); on Pet, also its
+consistency with the V2/DINO runs."""
 
 import argparse
 import json
@@ -42,9 +43,10 @@ def main():
     table = pd.DataFrame(summary)
     table.to_csv(args.run / 'summary.csv', index=False)
 
-    # The recomputed target and random conditions should repeat the earlier runs image by image.
+    # The recomputed target and random conditions should repeat the earlier Pet runs image by image.
     keys = ['index', 'category', 'kind', 'seed']
-    for model, directory in ORIGINAL.items():
+    dataset = json.loads((args.run / 'metadata.json').read_text()).get('dataset', 'pet')
+    for model, directory in (ORIGINAL.items() if dataset == 'pet' else []):
         old, _ = load(ROOT / 'experiments' / directory, 'deletion.csv')
         old = old.query("model == @model and kind in ['target', 'random', 'baseline']").set_index(keys)
         new = rows.query("model == @model and kind in ['target', 'random', 'baseline']").set_index(keys)
