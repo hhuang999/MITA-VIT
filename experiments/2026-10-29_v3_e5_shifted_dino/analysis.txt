@@ -1,0 +1,6 @@
+{"model": "dino", "duplicates": 0, "images": 1515}
+     measure     n model        base          other  difference     low    high verdict
+0  mass_drop  1515  dino  probe_mass         centre     -0.0531 -0.0584 -0.0473   lower
+1  mass_drop  1515  dino  probe_mass  cls_attention     -0.0031 -0.0054 -0.0007   lower
+2  mass_drop  1515  dino  probe_mass        rollout     -0.0274 -0.0313 -0.0237   lower
+3  mass_drop  1515  dino  probe_mass            gae     -0.0081 -0.0109 -0.0053   lower
