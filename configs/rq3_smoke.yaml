@@ -1,3 +1,0 @@
-base: rq3.yaml
-n_images: 50
-purpose: overnight_rq3_smoke

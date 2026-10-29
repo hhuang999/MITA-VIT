@@ -29,6 +29,19 @@ def grid_landmarks(patches, grid_size, output_size=(4, 4)):
     return pooled.flatten(2).transpose(1, 2).reshape(batch, heads, -1, dim)
 
 
+def kmeans_landmarks(patches, initial, iterations=10):
+    """Lloyd's Euclidean k-means from grid centres (Clustered Attention grouping); keep empty clusters' centres."""
+    centers = initial.clone()
+    for _ in range(iterations):
+        distances = (patches.square().sum(-1, keepdim=True) + centers.square().sum(-1).unsqueeze(-2)
+                     - 2 * patches @ centers.transpose(-2, -1))
+        membership = F.one_hot(distances.argmin(-1), centers.shape[-2]).to(patches.dtype)
+        counts = membership.sum(-2).unsqueeze(-1)
+        means = membership.transpose(-2, -1) @ patches / counts.clamp_min(1)
+        centers = torch.where(counts > 0, means, centers)
+    return centers
+
+
 def spatial_routes(grid, m_side, prefix=1, device=None):
     """Assign each patch to one region whose adaptive-pooling window contains it."""
     rows = torch.arange(grid[0], device=device) * m_side // grid[0]
@@ -42,6 +55,9 @@ def landmarks(q, grid, m_side, prefix=1, mode='clean'):
         return grid_landmarks(q[:, :, prefix:], grid, (m_side, m_side))
     if mode == 'mita':
         return grid_landmarks(q[:, :, :grid[0] * grid[1]], grid, (m_side, m_side))
+    if mode == 'kmeans':
+        patches = q[:, :, prefix:]
+        return kmeans_landmarks(patches, grid_landmarks(patches, grid, (m_side, m_side)))
     raise ValueError(f'Unknown landmark mode {mode}')
 
 

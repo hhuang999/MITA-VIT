@@ -1,138 +1,71 @@
-"""Run one V2 anatomy stage (design v2 section 7) on the fixed data; resumable by batch."""
+"""Anatomy experiments (RQ1 faithfulness, RQ2 layer structure, RQ3 Pet composition and deletion).
 
-import argparse
+Stages, each writing one folder of CSVs; every stage is resumable batch by batch:
+
+| stage | data | what it measures |
+| --- | --- | --- |
+| noise | ImageNet subset | agreement after shifting the crop by 1 px (the noise floor) |
+| rq1 | ImageNet subset | one layer replaced at a time: L1-L4, random controls; attention coverage |
+| rq2 | ImageNet subset | all layers replaced at once over the settings in the config |
+| repro | ImageNet, 50,000 | top-1 of the primary model against its published number |
+| mita_repro / mita_anatomy | ImageNet | the MiTA-DeiT-S control model (DeiT-S runs only) |
+| pet | Oxford-IIIT Pet | reading-set composition, union, examples and matched deletion |
+"""
+
 import csv
-import hashlib
-import json
 import logging
 import time
-from datetime import datetime
-from pathlib import Path
 from types import SimpleNamespace
 
-from mita_probe.runtime import configure_runtime, data_root, project_path
-ROOT = configure_runtime()
-
-import timm
 import torch
-import yaml
 from torch.utils.data import DataLoader, Subset
 
-from mita_probe.anatomy import Plan, capture_qk, coverage, execute, token_mask, union_fraction
-from mita_probe.assets import MODEL_REVISION
-from mita_probe.dino_model import DINO_REVISION, HEAD, HEAD_SHA256, load_dino_model
-from mita_probe.data import ImageNetValidation, experiment_indices
-from mita_probe.io import load_config, source_commit, write_json
-from mita_probe.metrics import kl_divergence
-from mita_probe.mita_model import CHECKPOINT_SHA256, PREPROCESSING, load_mita_model
-from mita_probe.models import load_model
-from mita_probe.pet import PetSegmentation
-from mita_probe.probe import ReadingPattern
-from mita_probe.rq3_extension import capture_input_norms, replace_category, sink_tokens
-from mita_probe.settings import base_pattern, batch_generator, expand_rq2, make_plan, resolve
-from mita_probe.validation import replace_random_patches
+from ..data import ImageNetValidation, PetSegmentation, experiment_indices
+from ..interventions import replace_category, replace_random_patches, sink_tokens
+from ..models import IMAGENET_PREPROCESSING, data_reference, load_model
+from ..models.deit import REVISION as DEIT_REVISION
+from ..models.dino import DINO_REVISION, HEAD_SHA256
+from ..models.mita import CHECKPOINT_SHA256
+from ..probe import (Pattern, Plan, base_pattern, batch_generator, capture_input_norms, capture_qk, coverage,
+                     execute, expand_rq2, make_plan, resolve, token_mask, union_fraction)
+from ..runtime import data_root, project_path
+from ..io import write_json
+from . import common
+from .common import OUTCOME, Sink, dense_identity, full_plans, outcomes, update_checks
 
 STAGES = ['noise', 'rq1', 'rq2', 'repro', 'mita_repro', 'mita_anatomy', 'pet']
 MODELS = ['deit', 'dino']
-OUTCOME = ['index', 'target', 'original', 'executed', 'agree', 'kl']
-DEVICE = 'cuda'  # tests set 'cpu' to exercise the stages without a GPU
 MITA_SPEC = dict(mode='L4', m_side=5, k=25, routing='dot', cls='routed', landmark_mode='mita')
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('stage', choices=STAGES)
-    parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--smoke', type=int, default=0)
-    parser.add_argument('--resume', action='store_true')
-    parser.add_argument('--model', choices=MODELS, default='deit', help='primary (studied) model')
-    parser.add_argument('--config', type=Path, default=Path('configs/anatomy_v2.yaml'))
-    args = parser.parse_args()
-    config = load_config(ROOT / args.config)
-    assert config.get('primary', 'deit') == args.model, 'config and --model disagree'
-    commit = source_commit(ROOT)
-    output = ROOT / args.output
-    output.mkdir(parents=True, exist_ok=args.resume)
-    if not args.resume:
-        (output / 'config.yaml').write_text(yaml.safe_dump(config | dict(stage=args.stage, model=args.model,
-                                            smoke_images=args.smoke)), encoding='utf-8')
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', handlers=[
-        logging.FileHandler(output / 'log.txt'), logging.StreamHandler()])
-    try:
-        run(args, config, output, commit)
-    except Exception:
-        logging.exception('Stage failed; preserve this directory and resume with --resume')
-        raise
-
-
-class Sink:
-    """Append-only CSV written one whole batch at a time."""
-
-    def __init__(self, path, fields):
-        fresh = not path.exists()
-        self.stream = path.open('a', newline='', encoding='utf-8')
-        self.writer = csv.DictWriter(self.stream, fieldnames=fields)
-        if fresh:
-            self.writer.writeheader()
-
-    def write(self, rows):
-        self.writer.writerows(rows)
-        self.stream.flush()
-
-
-def outcomes(ids, labels, original, executed, **fields):
-    assert torch.isfinite(executed).all()
-    kl = kl_divergence(original.double(), executed.double()).tolist()
-    predicted, reference = executed.argmax(-1).tolist(), original.argmax(-1).tolist()
-    return [dict(index=index, target=labels[n], original=reference[n], executed=predicted[n],
-                 agree=int(predicted[n] == reference[n]), kl=kl[n], **fields)
-            for n, index in enumerate(ids)]
-
-
-def full_plans(n_layers, plan):
-    return {layer: plan(layer) for layer in range(1, n_layers + 1)}
-
-
 def run(args, config, output, commit):
-    torch.set_num_threads(2)
-    torch.manual_seed(0)
-    torch.use_deterministic_algorithms(True)
-    assert torch.cuda.is_available(), 'Formal inference requires the authorized remote GPU'
-    device = DEVICE
-    if args.model == 'dino':
-        head = project_path(HEAD)
-        assert hashlib.sha256(head.read_bytes()).hexdigest() == HEAD_SHA256
-        primary = load_dino_model(head, device)
-        reference = primary.backbone  # timm data config; Pet geometry equals DeiT-S (crop 0.9)
-    else:
-        primary = reference = load_model(device)
+    """args: stage, model, smoke, resume. Loads models and data, then runs one stage."""
+    assert config.get('primary', 'deit') == args.model, 'config and --model disagree'
+    common.deterministic()
+    assert common.DEVICE != 'cuda' or torch.cuda.is_available(), 'Formal inference requires a GPU'
+    device = common.DEVICE
+    primary = load_model(args.model, device)
+    reference = data_reference(primary)  # timm data config; Pet geometry is DeiT-S's (crop 0.9) for all
     mita = None
     if args.model == 'deit' and args.stage in {'noise', 'mita_repro', 'mita_anatomy', 'pet'}:
-        path = project_path(config['mita']['checkpoint'])
-        assert hashlib.sha256(path.read_bytes()).hexdigest() == CHECKPOINT_SHA256
-        mita = load_mita_model(path, device)
-    progress_path = output / 'progress.json'
-    done = json.loads(progress_path.read_text())['done'] if args.resume and progress_path.exists() else {}
-    write_json(output / f'metadata{"_resume" if done else ""}.json', dict(
-        git_commit=commit, stage=args.stage, timestamp=datetime.now().astimezone().isoformat(),
-        torch=torch.__version__, timm=timm.__version__, device=torch.cuda.get_device_name(),
-        dtype='float32, no autocast', model=args.model, deit_revision=MODEL_REVISION,
-        mita_sha256=CHECKPOINT_SHA256, dino_revision=DINO_REVISION, dino_head_sha256=HEAD_SHA256,
-        batch_size=config['batch_size'], smoke_images=args.smoke, resumed_from=done))
+        mita = load_model('mita', device)
+    progress_path, done = common.progress(output, args.resume)
+    write_json(output / f'metadata{"_resume" if done else ""}.json', common.provenance(
+        commit, stage=args.stage, model=args.model, deit_revision=DEIT_REVISION, mita_sha256=CHECKPOINT_SHA256,
+        dino_revision=DINO_REVISION, dino_head_sha256=HEAD_SHA256, batch_size=config['batch_size'],
+        smoke_images=args.smoke, resumed_from=done))
     started = time.perf_counter()
-    batches = make_batches(config, done, progress_path, started)
+    batches = common.make_batches(config, done, progress_path, started)
 
     def imagenet(model_kind, n=None, shift=0):
-        # MiTA and DINO linear evaluation: Resize 256 bicubic + CenterCrop 224 (crop 0.875).
-        pre = PREPROCESSING if model_kind in {'mita', 'dino'} else None
-        dataset = ImageNetValidation(data_root() / 'imagenet_val', reference, preprocessing=pre, shift=shift)
+        dataset = ImageNetValidation(data_root() / 'imagenet_val', reference,
+                                     preprocessing=IMAGENET_PREPROCESSING[model_kind], shift=shift)
         if n == 50000:
             indices = list(range(50000))
         else:
             indices = experiment_indices(len(dataset), config['n_images'], config['subset_seed'],
                                          project_path(config['indices']))
-        indices = indices[:args.smoke] if args.smoke else indices
-        return dataset, indices
+        return dataset, indices[:args.smoke] if args.smoke else indices
 
     def pet():
         dataset = PetSegmentation(data_root(), reference)
@@ -142,49 +75,12 @@ def run(args, config, output, commit):
 
     data = SimpleNamespace(imagenet=imagenet, pet=pet)
     STAGE_FUNCTIONS[args.stage](args, config, output, primary, mita, data, batches)
-    write_json(output / 'checks.json', dict(complete=True, elapsed_seconds=time.perf_counter() - started,
-                                            **json.loads((output / 'running_checks.json').read_text())))
+    common.finish(output, started)
     logging.info('Complete: %s', args.stage)
 
 
 def make_batches(config, done, progress_path, started):
-    def batches(name, dataset, indices):
-        """Yield (start, ids, batch) for batches not yet completed; record completion after use."""
-        start = 0
-        for batch in DataLoader(Subset(dataset, indices), batch_size=config['batch_size'],
-                                num_workers=config['num_workers'], shuffle=False):
-            ids = indices[start:start + len(batch[0])]
-            if start >= done.get(name, 0):
-                yield start, ids, batch
-                done[name] = start + len(ids)
-                write_json(progress_path, dict(done=done))
-                if done[name] % 640 < len(ids) or done[name] == len(indices):
-                    logging.info('%s %d/%d images; %.1fs', name, done[name], len(indices),
-                                 time.perf_counter() - started)
-            start += len(ids)
-    return batches
-
-
-def update_checks(output, **values):
-    path = output / 'running_checks.json'
-    checks = json.loads(path.read_text()) if path.exists() else {}
-    for key, value in values.items():
-        checks[key] = max(checks.get(key, value), value) if key.startswith('max_') else value
-    write_json(path, checks)
-
-
-def dense_identity(model, images, original):
-    """Captured Q/K leave logits unchanged; dense attention over all keys reproduces them."""
-    with capture_qk(model) as qk:
-        observed = model(images)
-    assert torch.equal(observed, original)
-    q = qk[1][0]
-    full = torch.ones(*q.shape[:3], q.shape[2], dtype=torch.bool, device=q.device)
-    with execute(model, full_plans(len(model.blocks), lambda layer: Plan(token_mask=full))):
-        dense = model(images)
-    error = (dense - original).abs().max().item()
-    assert error < 1e-4 and torch.equal(dense.argmax(-1), original.argmax(-1)), error
-    return qk, error
+    return common.make_batches(config, done, progress_path, started)
 
 
 def compared(args, model, mita):
@@ -206,8 +102,8 @@ def stage_noise(args, config, output, primary, mita, data, batches):
                 while position <= start:
                     moved = next(shifted_loader)
                     position += config['batch_size']
-                original = model(batch[0].to(DEVICE))
-                rows.write(outcomes(ids, batch[1].tolist(), original, model(moved[0].to(DEVICE)), model=kind))
+                original = model(batch[0].to(common.DEVICE))
+                rows.write(outcomes(ids, batch[1].tolist(), original, model(moved[0].to(common.DEVICE)), model=kind))
     update_checks(output, models=[kind for kind, _ in models])
 
 
@@ -230,7 +126,7 @@ def stage_rq1(args, config, output, model, mita, data, batches):
                  for seed in config['random_seeds'] for mode in ['rand', 'randC']]
     with torch.inference_mode():
         for start, ids, batch in batches('rq1', dataset, indices):
-            images, labels = batch[0].to(DEVICE), batch[1].tolist()
+            images, labels = batch[0].to(common.DEVICE), batch[1].tolist()
             original = model(images)
             qk, error = dense_identity(model, images, original)
             update_checks(output, max_identity_error=error)
@@ -282,7 +178,7 @@ def stage_rq2(args, config, output, model, mita, data, batches):
     grid, scale = model.patch_embed.grid_size, model.blocks[0].attn.scale
     with torch.inference_mode():
         for start, ids, batch in batches('rq2', dataset, indices):
-            images, labels = batch[0].to(DEVICE), batch[1].tolist()
+            images, labels = batch[0].to(common.DEVICE), batch[1].tolist()
             original = model(images)
             qk, error = dense_identity(model, images, original)
             update_checks(output, max_identity_error=error)
@@ -309,7 +205,7 @@ def reproduce(args, output, model, kind, data, batches, reported, tolerance):
     rows = Sink(output / 'predictions.csv', ['index', 'target', 'predicted', 'correct'])
     with torch.inference_mode():
         for start, ids, batch in batches(f'{kind}_repro', dataset, indices):
-            predicted = model(batch[0].to(DEVICE)).argmax(-1).tolist()
+            predicted = model(batch[0].to(common.DEVICE)).argmax(-1).tolist()
             labels = batch[1].tolist()
             rows.write([dict(index=i, target=labels[n], predicted=predicted[n],
                              correct=int(predicted[n] == labels[n])) for n, i in enumerate(ids)])
@@ -339,7 +235,7 @@ def stage_mita_anatomy(args, config, output, model, mita, data, batches):
                  for seed in config['random_seeds'] for mode in ['rand', 'randC']]
     with torch.inference_mode():
         for start, ids, batch in batches('mita_anatomy', dataset, indices):
-            images, labels = batch[0].to(DEVICE), batch[1].tolist()
+            images, labels = batch[0].to(common.DEVICE), batch[1].tolist()
             with capture_qk(mita) as qk:
                 native = mita(images)
             out = []
@@ -371,7 +267,7 @@ def stage_pet(args, config, output, primary, mita, data, batches):
         scale, grid = model.blocks[0].attn.scale, model.patch_embed.grid_size
         with torch.inference_mode():
             for start, ids, batch in batches(f'pet_{kind}', dataset, indices):
-                images, fg, valid = (part.to(DEVICE) for part in batch[:3])
+                images, fg, valid = (part.to(common.DEVICE) for part in batch[:3])
                 labels = [-1] * len(ids)
                 with capture_qk(model) as qk, capture_input_norms(model) as norms:
                     original = model(images)
@@ -379,7 +275,7 @@ def stage_pet(args, config, output, primary, mita, data, batches):
                 comp_rows, example_rows, union_rows = [], [], []
                 for layer in range(1, 13):
                     sink = sink_tokens(norms[layer], config['pet']['sink_threshold'])
-                    labels_tok = torch.full((len(ids), 197), 4, device=DEVICE)
+                    labels_tok = torch.full((len(ids), 197), 4, device=common.DEVICE)
                     patches = labels_tok[:, 1:]
                     patches[valid & fg] = 2
                     patches[valid & ~fg] = 3
@@ -392,7 +288,7 @@ def stage_pet(args, config, output, primary, mita, data, batches):
                         chosen = labels_tok.gather(1, pattern.readsets.flatten(1))
                         counts = torch.nn.functional.one_hot(chosen, 5).float().mean(1).tolist()
                         name = f"m{comp['m_side'] ** 2}_k{comp['k']}_{comp['landmark_mode']}"
-                        used = torch.zeros(len(ids), 197, dtype=torch.bool, device=DEVICE)
+                        used = torch.zeros(len(ids), 197, dtype=torch.bool, device=common.DEVICE)
                         used.scatter_(1, pattern.readsets.flatten(1), True)
                         used = used[:, 1:]
                         size = used.sum(-1).clamp_min(1)
@@ -426,7 +322,7 @@ def pet_deletion(model, kind, qk, norms, images, fg, valid, ids, labels, origina
     base, scores = {}, {}
     for layer in range(1, 13):
         pattern, scores[layer] = base_pattern(spec, *qk[layer], scale, grid)
-        base[layer] = ReadingPattern(pattern.readsets, pattern.routes)
+        base[layer] = Pattern(pattern.readsets, pattern.routes)
     plan = lambda patterns: {layer: Plan(token_mask=token_mask(patterns[layer]), **summary) for layer in patterns}
     rows = []
     with execute(model, plan(base)):
@@ -437,10 +333,10 @@ def pet_deletion(model, kind, qk, norms, images, fg, valid, ids, labels, origina
         update_checks(output, max_pet_frozen_native_error=error)
     rows += outcomes(ids, labels, original, executed, model=kind, category='', kind='baseline', seed=-1,
                      eligible=1, mean_removed_per_set=0.)
-    zero = torch.zeros(len(ids), 1, dtype=torch.bool, device=DEVICE)
+    zero = torch.zeros(len(ids), 1, dtype=torch.bool, device=common.DEVICE)
     for c, category in enumerate(categories):
         changed, doses = {}, {}
-        eligible = torch.ones(len(ids), dtype=torch.bool, device=DEVICE)
+        eligible = torch.ones(len(ids), dtype=torch.bool, device=common.DEVICE)
         for layer in range(1, 13):
             sink = sink_tokens(norms[layer], config['pet']['sink_threshold'])
             mask = sink if category == 'sink' else (fg & valid if category == 'foreground' else ~fg & valid & ~sink)
@@ -455,7 +351,7 @@ def pet_deletion(model, kind, qk, norms, images, fg, valid, ids, labels, origina
             rows.append(row | dict(eligible=int(ok), mean_removed_per_set=removed))
         for seed in config['random_seeds']:
             randomized = {layer: replace_random_patches(base[layer], scores[layer], doses[layer],
-                          batch_generator(DEVICE, seed * 10 + c, layer, 25, start))
+                          batch_generator(common.DEVICE, seed * 10 + c, layer, 25, start))
                           for layer in range(1, 13)}
             with execute(model, plan(randomized)):
                 random_out = model(images)
@@ -469,5 +365,3 @@ def pet_deletion(model, kind, qk, norms, images, fg, valid, ids, labels, origina
 STAGE_FUNCTIONS = dict(noise=stage_noise, rq1=stage_rq1, rq2=stage_rq2, repro=stage_repro,
                        mita_repro=stage_mita_repro, mita_anatomy=stage_mita_anatomy, pet=stage_pet)
 
-if __name__ == '__main__':
-    main()

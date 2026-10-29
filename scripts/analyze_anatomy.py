@@ -10,29 +10,12 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import numpy as np
 import pandas as pd
 
-from mita_probe.anatomy_analysis import anatomy_table, interval, ratio_interval, resample_indices
+from mita_probe.results import load, rows_of, seed_mean
+from mita_probe.stats import anatomy_table, interval, ratio_interval, resample_indices
 
 ROOT = Path(__file__).resolve().parents[1]
 V1_SUMMARY = ROOT / 'experiments/2026-10-27_rq1_colab_combined/summary.csv'
 V1_RQ2 = ROOT / 'experiments/2026-10-26_rq2_imagenet/results.csv'
-
-
-def load(directory, name):
-    path = directory / name
-    frame = pd.read_csv(path if path.exists() else path.with_name(name + '.gz'))
-    keys = [c for c in ['model', 'index', 'layer', 'setting', 'setting_id', 'seed', 'spec', 'category', 'kind']
-            if c in frame]
-    duplicated = frame.duplicated(keys).sum()  # a crash between a batch write and its progress record
-    return frame.drop_duplicates(keys), int(duplicated)
-
-
-def rows_of(table, **labels):
-    return [dict(labels, quantity=q, mean=r['mean'], low=r['low'], high=r['high']) for q, r in table.iterrows()]
-
-
-def seed_mean(frame, by):
-    base = frame.assign(setting=frame['setting'].str.replace(r'_s\d+$', '', regex=True))
-    return base.groupby(['index'] + by)['agree'].mean().unstack(by).sort_index()
 
 
 def main():

@@ -1,0 +1,4 @@
+# Centre-prior control (decision A14): reads the probe's union sizes from these earlier pet runs.
+base: anatomy_deit.yaml
+center_control:
+  union_runs: {deit: 2026-10-28_v2_pet_union, mita: 2026-10-28_v2_pet_union, dino: 2026-10-28_v2_dino_pet}

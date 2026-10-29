@@ -20,7 +20,7 @@ def source_commit(root: Path) -> str:
     )
     untracked = subprocess.check_output(
         ["git", "ls-files", "--others", "--exclude-standard", "src", "scripts",
-         "configs", "tests", "hpc"], cwd=root, text=True,
+         "configs", "tests", "colab"], cwd=root, text=True,
     )
     if status or untracked:
         raise RuntimeError("Commit source and tracked changes before running experiments")

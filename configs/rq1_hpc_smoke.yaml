@@ -1,3 +1,0 @@
-base: rq1.yaml
-purpose: hpc_smoke
-n_images: 50
