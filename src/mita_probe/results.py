@@ -5,11 +5,14 @@ import pandas as pd
 KEYS = ['model', 'index', 'layer', 'setting', 'setting_id', 'seed', 'spec', 'category', 'kind']
 
 
-def load(directory, name):
-    """Read name (or name.gz); drop rows repeated by a crash between a batch write and its progress record."""
+def load(directory, name, keys=None):
+    """Read name (or name.gz); drop rows repeated by a crash between a batch write and its progress record.
+
+    keys: the columns that identify a row (default: those of KEYS present in the file).
+    """
     path = directory / name
     frame = pd.read_csv(path if path.exists() else path.with_name(name + '.gz'))
-    keys = [c for c in KEYS if c in frame]
+    keys = keys or [c for c in KEYS if c in frame]
     duplicated = frame.duplicated(keys).sum()
     return frame.drop_duplicates(keys), int(duplicated)
 
