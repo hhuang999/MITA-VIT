@@ -46,6 +46,40 @@ def replace_random_patches(pattern, scores, number, generator, prefix=1):
     return ReadingPattern(changed, pattern.routes)
 
 
+def centre_rings(grid=14, prefix=1):
+    """Ring id of every token by distance to the image centre; prefix tokens get -1."""
+    rows, cols = np.divmod(np.arange(grid * grid), grid)
+    distance = (rows - (grid - 1) / 2) ** 2 + (cols - (grid - 1) / 2) ** 2
+    rings = np.unique(distance, return_inverse=True)[1]
+    return torch.cat([torch.full((prefix,), -1), torch.from_numpy(rings)])
+
+
+def replace_matched_patches(pattern, scores, forbidden, rings, generator):
+    """Remove, per set, as many members as it holds forbidden ones, drawn at random from the same rings.
+
+    The refill is the same as replace_random_patches, so only which members leave differs.
+    """
+    reads = pattern.readsets
+    k = reads.shape[-1]
+    blocked = forbidden[:, None, None, :].expand(*reads.shape[:3], -1).gather(-1, reads)
+    ring = rings.to(reads.device)[reads]
+    key = torch.rand(reads.shape, device=reads.device, generator=generator)
+    remove = torch.zeros_like(reads, dtype=torch.bool)
+    for value in ring.unique().tolist():
+        if value < 0:
+            continue
+        inside = ring == value
+        need = (blocked & inside).sum(-1, keepdim=True)
+        order = key.masked_fill(~inside, torch.inf).argsort(dim=-1, stable=True)
+        rank = torch.empty_like(order).scatter_(-1, order, torch.arange(k, device=reads.device).expand_as(order))
+        remove |= inside & (rank < need)
+    original = torch.zeros_like(scores, dtype=torch.bool).scatter_(-1, reads, True)
+    ranked = scores.masked_fill(original, -torch.inf).argsort(dim=-1, descending=True, stable=True)
+    position = (remove.long().cumsum(-1) - 1).clamp_min(0)
+    changed = torch.where(remove, ranked.gather(-1, position), reads)
+    return ReadingPattern(changed, pattern.routes), remove
+
+
 def layer_settings():
     settings = [(f'layer_{layer:02}', (layer,)) for layer in range(1, 13)]
     for depth in [3, 6, 9]:
