@@ -1,0 +1,11 @@
+         measure    n model        dataset        base          other  difference     low    high verdict
+0      srg_agree  750  dino  hard_imagenet  probe_mass  cls_attention     -0.0504 -0.0639 -0.0381   lower
+1      srg_agree  750  dino  hard_imagenet  probe_mass        rollout      0.0661  0.0483  0.0837  higher
+2      srg_agree  750  dino  hard_imagenet  probe_mass            gae     -0.2051 -0.2212 -0.1892   lower
+14  srg_p_target  750  dino  hard_imagenet  probe_mass  cls_attention     -0.0435 -0.0512 -0.0362   lower
+15  srg_p_target  750  dino  hard_imagenet  probe_mass        rollout      0.0479  0.0360  0.0597  higher
+16  srg_p_target  750  dino  hard_imagenet  probe_mass            gae     -0.1854 -0.1953 -0.1757   lower
+28    enrichment  654  dino  hard_imagenet  probe_mass  cls_attention     -0.0503 -0.0583 -0.0416   lower
+29    enrichment  654  dino  hard_imagenet  probe_mass        rollout      0.0323  0.0209  0.0443  higher
+30    enrichment  654  dino  hard_imagenet  probe_mass            gae     -0.0841 -0.0973 -0.0705   lower
+31    enrichment  654  dino  hard_imagenet  probe_mass         centre      0.0955  0.0834  0.1083  higher
