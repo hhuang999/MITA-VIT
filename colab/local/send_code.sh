@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Runs LOCALLY. Bundle the branch, upload it to a Colab session in 8 MB parts (large single uploads are cut
 # off by the network proxy), join and verify the SHA-256 on the VM, and upload the remote/ scripts.
-# Usage: colab/local/send_code.sh <session> <branch>
+# Usage: colab/local/send_code.sh <session> <branch> [base commit]
+# With a base commit the bundle holds only the commits after it (for update.sh on a VM that has the base).
 set -euo pipefail
-SESSION=${1:?session}; BRANCH=${2:?branch}
+SESSION=${1:?session}; BRANCH=${2:?branch}; BASE=${3:-}
 COLAB=${COLAB:-colab}
 ROOT=$(git rev-parse --show-toplevel)
 WORK=$(mktemp -d)
-git -C "$ROOT" bundle create "$WORK/mita.bundle" "$BRANCH"
+git -C "$ROOT" bundle create "$WORK/mita.bundle" ${BASE:+"^$BASE"} "$BRANCH"
 SHA=$(sha256sum "$WORK/mita.bundle" | cut -d' ' -f1)
 split -b 8M -d "$WORK/mita.bundle" "$WORK/part."
 printf "import os\nos.makedirs('/content/parts', exist_ok=True)\nprint('ok')\n" > "$WORK/mkdir.py"
