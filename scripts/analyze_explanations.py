@@ -9,7 +9,9 @@ Writes into the run folder:
 - analysis_comparisons.csv: the registered primary comparisons, probe_mass against CLS attention, Rollout
   and GAE on SRG and on ring-matched enrichment (paired bootstrap), plus every method against random;
 - analysis_strata.csv: enrichment and mass by object-area and object-distance tertile;
-- analysis_saco.csv and analysis_cost.csv (milliseconds per image, median over batches).
+- analysis_saco.csv and analysis_cost.csv (milliseconds per image, median over batches);
+- per_image_faithfulness.csv.gz: the per-image SRG, insertion and fixed-budget values behind the tables
+  (small enough for Git; the full faithfulness.csv can stay in the run's raw/ folder).
 Images with a missing value for any method are left out of that measure's paired tables.
 """
 
@@ -96,6 +98,7 @@ def faithfulness(rows, run):
     for condition in fixed.columns:
         per_image[f'{condition}_agree'] = fixed[condition]
     per_image = pd.DataFrame(per_image)
+    per_image.round(5).to_csv(run / 'per_image_faithfulness.csv.gz', compression='gzip')
     out = []
     for quantity in per_image.columns:
         table = per_image[quantity].unstack('method').dropna()
