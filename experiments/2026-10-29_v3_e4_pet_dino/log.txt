@@ -1,0 +1,11 @@
+2026-10-29 15:22:02,305 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
+2026-10-29 15:22:02,307 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-29 15:22:02,989 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-29 15:22:02,989 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-29 15:24:59,194 explain_dino 640/3669 images; 176.1s
+2026-10-29 15:28:00,326 explain_dino 1280/3669 images; 357.3s
+2026-10-29 15:30:59,737 explain_dino 1920/3669 images; 536.7s
+2026-10-29 15:33:56,680 explain_dino 2560/3669 images; 713.6s
+2026-10-29 15:36:52,295 explain_dino 3200/3669 images; 889.2s
+2026-10-29 15:39:05,645 explain_dino 3669/3669 images; 1022.6s
+2026-10-29 15:39:05,725 Complete: explanations on pet
