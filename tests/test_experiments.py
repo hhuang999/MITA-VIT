@@ -164,3 +164,27 @@ def test_centre_weights_take_whole_rings_then_share_the_next():
     assert (abs(weights.sum(1) - range(197)) < 1e-9).all() and (weights <= 1).all()
     assert set(weights[4].nonzero()[0]) == {90, 91, 104, 105}
     assert sorted(set(weights[5][weights[5] > 0].round(3))) == [0.125, 1.0]
+
+
+@pytest.fixture(scope='module')
+def deit_b_setup(setup):
+    config = load_config(ROOT / 'configs/anatomy_deit_b.yaml')
+    config.update(batch_size=2, num_workers=0, random_seeds=[0, 1])
+    torch.manual_seed(0)
+    return config, load_deit(pretrained=False, base=True), None, setup[3], setup[4]
+
+
+def test_deit_b_rq1_rq2_and_maps(deit_b_setup):
+    config, model = deit_b_setup[:2]
+    assert model.embed_dim == 768 and model.blocks[0].attn.num_heads == 12
+    rq1 = pd.read_csv(run_stage(deit_b_setup, 'rq1', smoke=2, model='deit_b') / 'predictions.csv')
+    assert len(rq1) == 4 * (12 * 11 + 2)  # the fake ImageNet always yields its 4 images
+    rq2 = pd.read_csv(run_stage(deit_b_setup, 'rq2', smoke=2, model='deit_b') / 'settings.csv')
+    assert len(rq2) == len(expand_rq2(config))
+    from mita_probe import explain
+    from mita_probe.probe import resolve
+    images = torch.randn(2, 3, 224, 224)
+    spec = resolve({'mode': 'L3'}, config['main'])
+    for scores in (explain.probe(model, images, spec, [9, 10, 11, 12]), explain.gae(model, images),
+                   explain.rollout(model, images)):
+        assert scores.shape == (2, 196) and torch.isfinite(scores).all()
