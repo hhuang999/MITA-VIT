@@ -7,11 +7,15 @@ For each image of the chosen dataset and each configured method (see mita_probe.
   (keep_top = insertion, drop_top = deletion of the most important first, drop_bottom = of the least), plus
   keep/drop at the probe's own size (the number of patches the probe reads); agreement, p(top-1), KL;
 - saco.csv (same subset): the salience-guided faithfulness coefficient;
-- scores/<batch start>.npz: every method's patch scores (float16) for later analysis.
+- scores/<batch start>.npz: every method's patch scores (float16) for later analysis;
+- cost.csv: seconds each method takes per batch (GPU synchronised), next to one plain forward pass.
+
+faithfulness_images: null uses every image.
 """
 
 import logging
 import time
+from contextlib import contextmanager
 
 import numpy as np
 import torch
@@ -28,11 +32,28 @@ PLAUSIBILITY = ['mass', 'pointing', 'auroc', 'auroc_shuffled', 'precision', 'enr
                 'object_distance']
 
 
-def method_scores(entry, model, images, foreground, spec, generator):
+@contextmanager
+def timer():
+    """Yields a callable that returns the seconds spent in the block (CUDA work included)."""
+    sync = torch.cuda.synchronize if common.DEVICE == 'cuda' else (lambda: None)
+    sync()
+    started, result = time.perf_counter(), []
+    yield lambda: result[0]
+    sync()
+    result.append(time.perf_counter() - started)
+
+
+def layerwise_methods(depth):
+    """The probe (attention mass) at each single layer, named probe_layer<l>."""
+    return [dict(name=f'probe_layer{layer}', method='probe', weight='mass', layers=[layer])
+            for layer in range(1, depth + 1)]
+
+
+def method_scores(entry, model, images, foreground, spec, generator, target=None):
     if entry['method'] == 'probe':
         return explain.probe(model, images, spec, entry['layers'], entry.get('weight', 'mass'))
     return explain.compute(entry['method'], model, images, layers=entry.get('layers'), foreground=foreground,
-                           generator=generator)
+                           generator=generator, target=target)
 
 
 def run(args, config, output, commit):
@@ -48,7 +69,8 @@ def run(args, config, output, commit):
     methods = [entry for entry in settings['methods'] if has_masks or entry['method'] != 'mask']
     indices = indices[:args.smoke] if args.smoke else indices
     rng = np.random.default_rng(settings['subset_seed'])
-    n_faith = min(settings['faithfulness_images'], len(indices))
+    n_faith = len(indices) if settings['faithfulness_images'] is None else min(settings['faithfulness_images'],
+                                                                                len(indices))
     faithful = set(np.asarray(indices)[rng.choice(len(indices), n_faith, replace=False)].tolist())
     spec = resolve(settings['probe_spec'], config['main'])
     progress_path, done = common.progress(output, args.resume)
@@ -61,18 +83,24 @@ def run(args, config, output, commit):
     faith = Sink(output / 'faithfulness.csv', ['model', 'index', 'method', 'condition', 'budget', 'agree',
                                                'p_target', 'kl'])
     saco_rows = Sink(output / 'saco.csv', ['model', 'index', 'method', 'saco'])
+    cost = Sink(output / 'cost.csv', ['model', 'start', 'method', 'images', 'seconds'])
     (output / 'scores').mkdir(exist_ok=True)
     for start, ids, batch in batches(f'explain_{args.model}', dataset, indices):
         images = batch[0].to(device)
         foreground = batch[1].to(device) if has_masks else None
         valid = batch[2].to(device) if has_masks else None
-        with torch.no_grad():
+        with timer() as elapsed, torch.no_grad():
             original = model(images)
+        costs = [dict(model=args.model, start=start, method='forward', images=len(ids), seconds=elapsed())]
         tie = torch.Generator(device=device).manual_seed(settings['tie_seed'] * 1_000_003 + start)
         noise = torch.Generator(device=device).manual_seed(settings['random_seed'] * 1_000_003 + start)
         chosen = [n for n, index in enumerate(ids) if index in faithful]
-        all_scores = {entry['name']: method_scores(entry, model, images, foreground, spec, noise).float()
-                      for entry in methods}
+        all_scores = {}
+        for entry in methods:
+            with timer() as elapsed:
+                all_scores[entry['name']] = method_scores(entry, model, images, foreground, spec, noise).float()
+            costs.append(dict(model=args.model, start=start, method=entry['name'], images=len(ids), seconds=elapsed()))
+        cost.write(costs)
         np.savez_compressed(output / 'scores' / f'{start:06d}.npz', index=np.asarray(ids),
                             **{name: value.half().cpu().numpy() for name, value in all_scores.items()})
         probe_k = (all_scores[settings['probe_budget_from']] > 0).sum(1)

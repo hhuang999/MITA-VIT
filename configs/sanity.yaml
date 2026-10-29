@@ -1,0 +1,9 @@
+# Sanity check (Adebayo et al. 2018; mita_probe.experiments.sanity): cascading weight randomisation.
+# The methods and probe settings are those of explanations.yaml.
+base: explanations.yaml
+sanity:
+  dataset: imagenet_s
+  images: 1000                  # fixed random subset of ImageNet-S (subset_seed)
+  subset_seed: 0
+  random_seed: 0                # the 'random' reference map
+  init_seed: 0                  # re-initialisation draws

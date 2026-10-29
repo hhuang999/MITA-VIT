@@ -1,0 +1,7 @@
+# RQ3 human alignment (E7, mita_probe.experiments.human_alignment): ClickMe validation human maps.
+# The methods and probe settings are those of explanations.yaml, so every experiment scores the same maps.
+base: explanations.yaml
+human_alignment:
+  shards: 17
+  random_seed: 0                # the 'random' reference map
+  layerwise: true               # also the probe at each single layer

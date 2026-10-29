@@ -1,0 +1,7 @@
+# Qualitative examples (mita_probe.experiments.gallery): randomly drawn, not hand-picked.
+base: human_alignment.yaml
+gallery:
+  datasets: [imagenet_s, clickme, partimagenet, hard_imagenet]
+  images: 24
+  subset_seed: 0
+  random_seed: 0

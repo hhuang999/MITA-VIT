@@ -205,8 +205,10 @@ def random_scores(batch, generator, n_patches=196, device=None):
     return torch.rand(batch, n_patches, generator=generator, device=device)
 
 
-def compute(method, model, images, *, spec=None, layers=None, weight='mass', foreground=None, generator=None):
-    """Dispatch by name; see the table in the module docstring."""
+def compute(method, model, images, *, spec=None, layers=None, weight='mass', foreground=None, generator=None,
+            target=None):
+    """Dispatch by name; see the table in the module docstring. target: class indices for the gradient
+    methods (default: the model's own top-1)."""
     if method == 'probe':
         return probe(model, images, spec, layers, weight)
     if method == 'cls_attention':
@@ -214,11 +216,11 @@ def compute(method, model, images, *, spec=None, layers=None, weight='mass', for
     if method == 'rollout':
         return rollout(model, images)
     if method == 'gae':
-        return gae(model, images)
+        return gae(model, images, target)
     if method == 'gradcam':
-        return gradcam(model, images)
+        return gradcam(model, images, target)
     if method == 'integrated_gradients':
-        return integrated_gradients(model, images)
+        return integrated_gradients(model, images, target)
     if method == 'centre':
         return centre(len(images), device=images.device)
     if method == 'random':

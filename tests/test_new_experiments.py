@@ -75,6 +75,8 @@ def test_explanations_writes_every_table(patched, tmp_path):
     assert len(faith) == 2 * len(keep) * (3 * 2 + 2) and faith['index'].nunique() == 2
     assert set(faith.condition) == {'keep_top', 'drop_top', 'drop_bottom', 'keep_probe_k', 'drop_probe_k'}
     assert len(pd.read_csv(tmp_path / 'saco.csv')) == 2 * len(keep)
+    cost = pd.read_csv(tmp_path / 'cost.csv')
+    assert set(cost.method) == keep | {'forward'} and (cost.seconds > 0).all()
     shards = sorted((tmp_path / 'scores').glob('*.npz'))
     assert len(shards) == 2 and np.load(shards[0])['probe_mass'].shape == (2, 196)
 
