@@ -1,0 +1,6 @@
+{
+  "model": "deit",
+  "duplicates": 0,
+  "images": 17408,
+  "top1": 0.8912568933823529
+}
