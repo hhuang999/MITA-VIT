@@ -76,3 +76,44 @@ def experiment_indices(n_total: int, n_images: int, seed: int, saved: Path | Non
     if not 1 <= n_images <= len(indices):
         raise ValueError("Requested sample must fit within the fixed 5,000-image pool")
     return indices[:n_images]
+
+
+def wnid_index(wnid: str) -> int:
+    """ImageNet-1k class index of a WordNet id (the standard sorted-synset order used by timm heads)."""
+    from timm.data import ImageNetInfo
+
+    return ImageNetInfo().label_names().index(wnid)
+
+
+class ImageNetFiles:
+    """Look up ImageNet validation images by file name (ILSVRC2012_val_000xxxxx) in the pinned HF copy.
+
+    The HF copy is stored in a shuffled order; each row keeps its original file name, so a name -> row
+    index map is built once and cached next to the dataset.
+    """
+
+    def __init__(self, root: Path, expected: int = 50000):
+        import datasets
+
+        self.dataset = datasets.load_from_disk(str(root)).cast_column('image', datasets.Image(decode=False))
+        cache = Path(root).parent / f'{Path(root).name}_names.json'
+        if cache.exists():
+            names = json.loads(cache.read_text(encoding='utf-8'))
+        else:  # read only the path field of the memory-mapped Arrow column, never the image bytes
+            column = self.dataset.data.column('image')
+            names = [path.rsplit('_', 1)[0] for chunk in column.chunks for path in chunk.field('path').to_pylist()]
+            cache.write_text(json.dumps(names), encoding='utf-8')
+        if len(names) != expected or len(set(names)) != expected:
+            raise ValueError(f'Expected {expected} distinct ImageNet validation file names')
+        self.rows = {name: row for row, name in enumerate(names)}
+
+    def image(self, name: str):
+        import io
+
+        from PIL import Image
+
+        data = self.dataset[self.rows[name]]['image']['bytes']
+        return Image.open(io.BytesIO(data)).convert('RGB')
+
+    def label(self, name: str) -> int:
+        return int(self.dataset[self.rows[name]]['label'])

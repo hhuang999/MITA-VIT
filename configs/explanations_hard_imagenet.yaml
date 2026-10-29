@@ -1,0 +1,4 @@
+# The explanations experiment on hard_imagenet.
+base: explanations.yaml
+explanations:
+  dataset: hard_imagenet

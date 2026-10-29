@@ -1,25 +1,49 @@
-"""Download a dataset to the data folder: imagenet (validation, needs HF_TOKEN) or pet (Oxford-IIIT Pet test)."""
+"""Download a dataset to the data folder.
+
+imagenet: ImageNet validation at a pinned HF revision (needs HF_TOKEN); pet: Oxford-IIIT Pet test split;
+imagenet_s / hard_imagenet: mask annotations only (their images come from the ImageNet validation copy).
+Annotation archives are checked against a pinned SHA-256 before they are extracted.
+"""
 
 import argparse
+import hashlib
 import json
+import urllib.request
+import zipfile
 from pathlib import Path
 
 from mita_probe.runtime import configure_runtime, data_root
-from mita_probe.data import IMAGENET_REPO, IMAGENET_REVISION
+from mita_probe.data import IMAGENET_REPO, IMAGENET_REVISION, hard_imagenet, imagenet_s
 
 ROOT = configure_runtime()
+
+ANNOTATIONS = {
+    "imagenet_s": (imagenet_s.ANNOTATION_URL, imagenet_s.ANNOTATION_SHA256),
+    "hard_imagenet": (hard_imagenet.ANNOTATION_URL, hard_imagenet.ANNOTATION_SHA256),
+}
 
 from torchvision.datasets import OxfordIIITPet
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("dataset", choices=["pet", "imagenet"])
+    parser.add_argument("dataset", choices=["pet", "imagenet", "imagenet_s", "hard_imagenet"])
     parser.add_argument("--root", type=Path, default=data_root())
     args = parser.parse_args()
     args.root.mkdir(parents=True, exist_ok=True)
 
-    if args.dataset == "pet":
+    if args.dataset in ANNOTATIONS:
+        url, sha256 = ANNOTATIONS[args.dataset]
+        archive = args.root / f"{args.dataset}.zip"
+        urllib.request.urlretrieve(url, archive)
+        digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+        if digest != sha256:
+            raise ValueError(f"{archive} has SHA-256 {digest}, expected {sha256}")
+        with zipfile.ZipFile(archive) as bundle:
+            bundle.extractall(args.root / args.dataset)
+        archive.unlink()
+        print(f"{args.dataset}: annotations extracted to {args.root / args.dataset}")
+    elif args.dataset == "pet":
         data = OxfordIIITPet(
             args.root, split="test", target_types="segmentation", download=True
         )

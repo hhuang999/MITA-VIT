@@ -1,0 +1,18 @@
+# RQ3 position intervention: the same ImageNet-S object at the centre and at four diagonal offsets.
+base: explanations.yaml
+shifted_crops:
+  dataset: imagenet_s
+  images: 2000
+  subset_seed: 0
+  random_seed: 0
+  resize: 320                   # shorter side before cropping 224 x 224, leaving room to move the window
+  offsets: [[0, 0], [-48, -48], [-48, 48], [48, -48], [48, 48]]
+  min_object_kept: 0.5          # skip crops that cut off more than half of the object
+  probe_spec: {mode: L3}
+  methods:
+    - {name: probe_mass, method: probe, weight: mass, layers: [9, 10, 11, 12]}
+    - {name: cls_attention, method: cls_attention}
+    - {name: rollout, method: rollout}
+    - {name: gae, method: gae}
+    - {name: centre, method: centre}
+    - {name: mask, method: mask}

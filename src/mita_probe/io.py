@@ -8,10 +8,19 @@ from pathlib import Path
 import yaml
 
 
+def merge(base: dict, override: dict) -> dict:
+    """Recursive dict merge: nested sections are merged key by key, everything else is replaced."""
+    out = dict(base)
+    for key, value in override.items():
+        out[key] = merge(out[key], value) if isinstance(value, dict) and isinstance(out.get(key), dict) else value
+    return out
+
+
 def load_config(path: Path) -> dict:
+    """Read a YAML config; `base: other.yaml` inherits that file and overrides it section by section."""
     config = yaml.safe_load(path.read_text(encoding="utf-8"))
     base = config.pop("base", None)
-    return (load_config(path.parent / base) if base else {}) | config
+    return merge(load_config(path.parent / base), config) if base else config
 
 
 def source_commit(root: Path) -> str:

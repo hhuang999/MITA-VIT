@@ -1,4 +1,6 @@
-"""Necessity test on Pet (decision A15): remove foreground or background neurons from the reading sets.
+"""Necessity test (decision A15): remove foreground or background neurons from the reading sets.
+
+The dataset is config['matched_deletion']['dataset'] (default pet; also imagenet_s or hard_imagenet).
 
 On the MiTA-default plan (m = 25, k = 25, dot routing, CLS routed), all 12 layers, three conditions
 per category: target (remove that category, refill from the best outside tokens), random (remove the
@@ -12,15 +14,13 @@ import time
 import torch
 from torch.utils.data import DataLoader, Subset
 
-from ..data import PetSegmentation
 from ..interventions import (centre_rings, replace_category, replace_matched_patches, replace_random_patches,
                              sink_tokens)
 from ..io import write_json
-from ..models import data_reference, load_model
+from ..models import load_model
 from ..probe import Pattern, Plan, base_pattern, batch_generator, capture_input_norms, capture_qk, execute, resolve
 from ..probe import token_mask
-from ..runtime import data_root
-from . import common
+from . import common, datasets
 from .anatomy import MITA_SPEC
 from .common import OUTCOME, Sink, outcomes, update_checks
 
@@ -93,14 +93,17 @@ def run(args, config, output, commit):
     device = common.DEVICE
     assert device != 'cuda' or torch.cuda.is_available(), 'Formal inference requires a GPU'
     models = {name: load_model(name, device) for name in MODELS}
-    dataset = PetSegmentation(data_root(), data_reference(models['deit']))
-    assert len(dataset) == config['pet']['images']
-    indices = list(range(args.smoke or len(dataset)))
-    write_json(output / 'metadata.json', common.provenance(commit, decision='A15', images=len(indices),
+    name = config.get('matched_deletion', {}).get('dataset', 'pet')
+    write_json(output / 'metadata.json', common.provenance(commit, decision='A15', dataset=name,
                                                            seeds=config['random_seeds'], categories=CATEGORIES))
     sink = Sink(output / 'deletion.csv', FIELDS)
     started = time.perf_counter()
     for kind, model in models.items():
+        # Pet uses DeiT-S geometry for every model; ImageNet-based sets use each model's own preprocessing.
+        dataset, indices = datasets.build(name, model, kind, config, deit_reference=models['deit'])
+        if name == 'pet':
+            assert len(dataset) == config['pet']['images']
+        indices = indices[:args.smoke] if args.smoke else indices
         start = 0
         with torch.inference_mode():
             for images, fg, valid, ids in DataLoader(Subset(dataset, indices), batch_size=config['batch_size'],
