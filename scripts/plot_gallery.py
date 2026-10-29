@@ -60,7 +60,7 @@ def methods_figure(data, rows, output):
                 ax.set_title({'input': 'Input', 'truth': 'Ground truth'}.get(column, METHOD_LABELS.get(column, column)),
                              fontsize=7)
     fig.tight_layout(pad=0.3)
-    save(fig, output)
+    save(fig, output, dpi=110)  # photo grids: smaller PNG; the PDF keeps full resolution
 
 
 def layers_figure(data, rows, output):
@@ -75,7 +75,7 @@ def layers_figure(data, rows, output):
             if r == 0:
                 axes[r, c].set_title('Input' if c == 0 else f'Layer {c}', fontsize=7)
     fig.tight_layout(pad=0.3)
-    save(fig, output)
+    save(fig, output, dpi=110)  # photo grids: smaller PNG; the PDF keeps full resolution
 
 
 def main():
