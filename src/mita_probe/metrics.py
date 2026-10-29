@@ -27,3 +27,26 @@ def heatmap_metrics(heatmap, foreground, valid):
     hit = foreground.gather(1, maximum[:, None]).squeeze(1).float()
     usable = valid.any(-1) & mass.gt(0)
     return torch.where(usable, ratio, torch.nan), torch.where(usable, hit, torch.nan)
+
+
+def average_ranks(values: torch.Tensor) -> torch.Tensor:
+    """Row-wise ranks (0-based) with ties given their average rank, as in scipy.stats.rankdata."""
+    rows, n = values.shape
+    order = values.argsort(dim=-1, stable=True)
+    ordered = values.gather(-1, order)
+    starts = torch.ones_like(ordered, dtype=torch.bool)
+    starts[:, 1:] = ordered[:, 1:] != ordered[:, :-1]
+    group = starts.cumsum(-1) - 1 + torch.arange(rows, device=values.device)[:, None] * n
+    position = torch.arange(n, device=values.device, dtype=torch.float64).expand(rows, n).flatten()
+    total = torch.zeros(rows * n, dtype=torch.float64, device=values.device).index_add_(0, group.flatten(), position)
+    count = torch.zeros(rows * n, dtype=torch.float64, device=values.device).index_add_(
+        0, group.flatten(), torch.ones_like(position))
+    mean_rank = (total / count.clamp_min(1))[group.flatten()].view(rows, n)
+    return torch.empty_like(mean_rank).scatter_(-1, order, mean_rank)
+
+
+def spearman(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
+    """Row-wise Spearman correlation of [rows, n] tensors (tie-aware); NaN when a row is constant."""
+    ra, rb = average_ranks(a.flatten(1)), average_ranks(b.flatten(1))
+    ra, rb = ra - ra.mean(-1, keepdim=True), rb - rb.mean(-1, keepdim=True)
+    return (ra * rb).sum(-1) / (ra.norm(dim=-1) * rb.norm(dim=-1))

@@ -21,6 +21,10 @@ EXPERIMENTS = {
     'explanations': 'Probe and baseline patch maps: plausibility and token-removal faithfulness',
     'shifted_crops': 'Probe and baseline maps when the object is moved off-centre',
     'identity': 'Linear position probe and self-similarity of tokens, per layer',
+    'human_alignment': 'Probe and baseline maps against ClickMe human importance maps',
+    'parts': 'Part preference of every map and the model\'s own part reliance (PartImageNet)',
+    'sanity': 'Cascading weight randomisation: do the maps depend on the trained model?',
+    'gallery': 'Every map and the per-layer probe on randomly drawn images, for figures',
 }
 
 
