@@ -42,3 +42,26 @@ def anatomy_table(table, draws, upper='L1_k32'):
     out['query_specific'] = interval(table[upper] - table['L4'], draws)
     out['sharing_index'] = ratio_interval(table['L4'] - table['rand'], table[upper] - table['rand'], draws)
     return pd.DataFrame(out, index=['mean', 'low', 'high']).T
+
+
+def trapezoid(x, y):
+    """Area under each row of y [rows, points] over the shared x [points]."""
+    y = np.asarray(y, float)
+    return ((y[:, 1:] + y[:, :-1]) / 2 * np.diff(np.asarray(x, float))).sum(1)
+
+
+def paired(table, base, others, draws, **labels):
+    """Rows of mean (base - other) with bootstrap intervals; table: one row per image, one column per method."""
+    rows = []
+    for other in others:
+        diff = (table[base] - table[other]).to_numpy()
+        mean, low, high = interval(diff, draws)
+        rows.append(dict(labels, base=base, other=other, difference=mean, low=low, high=high,
+                         verdict='higher' if low > 0 else 'lower' if high < 0 else 'uncertain'))
+    return rows
+
+
+def summarise(table, draws, **labels):
+    """Rows of mean with bootstrap interval for each column of a per-image table (NaN-free columns)."""
+    return [dict(labels, quantity=name, **dict(zip(('mean', 'low', 'high'), interval(table[name].to_numpy(), draws))))
+            for name in table.columns]

@@ -16,9 +16,11 @@ import zipfile
 from pathlib import Path
 
 from mita_probe.runtime import configure_runtime, data_root
-from mita_probe.data import IMAGENET_REPO, IMAGENET_REVISION, clickme, hard_imagenet, imagenet_s, partimagenet
 
-ROOT = configure_runtime()
+ROOT = configure_runtime()  # sets HF_HOME before any Hugging Face library is imported
+
+from mita_probe.data import (IMAGENET_REPO, IMAGENET_REVISION, clickme, hard_imagenet, imagenet_s,  # noqa: E402
+                             partimagenet)
 
 ANNOTATIONS = {
     "imagenet_s": (imagenet_s.ANNOTATION_URL, imagenet_s.ANNOTATION_SHA256),
