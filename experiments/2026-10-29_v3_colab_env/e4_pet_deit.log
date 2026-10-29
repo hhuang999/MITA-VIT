@@ -1,0 +1,9 @@
+2026-10-29 15:04:55,185 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-29 15:04:55,187 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-29 15:07:51,631 explain_deit 640/3669 images; 176.1s
+2026-10-29 15:10:50,439 explain_deit 1280/3669 images; 354.9s
+2026-10-29 15:13:52,868 explain_deit 1920/3669 images; 537.3s
+2026-10-29 15:16:48,659 explain_deit 2560/3669 images; 713.1s
+2026-10-29 15:19:44,769 explain_deit 3200/3669 images; 889.2s
+2026-10-29 15:21:57,021 explain_deit 3669/3669 images; 1021.5s
+2026-10-29 15:21:57,083 Complete: explanations on pet
