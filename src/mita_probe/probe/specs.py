@@ -1,8 +1,13 @@
-"""Turn V2 setting specs into per-layer execution plans from captured original Q/K."""
+"""Turn setting specs (mode L1-L4 / rand / randC / drop, budget, routing) into per-layer plans.
+
+L1: each query reads its own top-k. L2: region summaries only. L3: shared top-k of its region.
+L4: L3 plus summaries (the MiTA mixture). rand/randC: random sets in place of L3/L4. drop: no attention.
+"""
 
 import torch
 
-from .anatomy import Plan, build_pattern, per_query_pattern, random_pattern, token_mask
+from .execute import Plan
+from .pattern import build_pattern, per_query_pattern, random_pattern, token_mask
 
 MODES = {'L1', 'L2', 'L3', 'L4', 'rand', 'randC', 'drop'}
 PATTERN_KEYS = ('m_side', 'k', 'routing', 'cls', 'scoring', 'landmark_mode')
