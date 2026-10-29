@@ -17,8 +17,8 @@ def band(ax, x, frame, color, label=None, style='-', marker='o'):
     ax.fill_between(x, frame['low'], frame['high'], color=color, alpha=.15, lw=0)
 
 
-def save(fig, stem):
-    fig.savefig(f'{stem}.png', dpi=200)
+def save(fig, stem, dpi=200):
+    fig.savefig(f'{stem}.png', dpi=dpi)
     fig.savefig(f'{stem}.pdf')
     plt.close(fig)
 
