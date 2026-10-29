@@ -1,0 +1,14 @@
+2026-10-29 14:54:02,563 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-29 14:54:02,566 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-29 14:54:06,977 layer 1: position accuracy 0.999
+2026-10-29 14:54:07,699 layer 2: position accuracy 1.000
+2026-10-29 14:54:08,412 layer 3: position accuracy 0.983
+2026-10-29 14:54:09,140 layer 4: position accuracy 0.884
+2026-10-29 14:54:09,857 layer 5: position accuracy 0.811
+2026-10-29 14:54:10,583 layer 6: position accuracy 0.629
+2026-10-29 14:54:11,309 layer 7: position accuracy 0.453
+2026-10-29 14:54:12,039 layer 8: position accuracy 0.317
+2026-10-29 14:54:12,776 layer 9: position accuracy 0.233
+2026-10-29 14:54:13,512 layer 10: position accuracy 0.182
+2026-10-29 14:54:14,247 layer 11: position accuracy 0.153
+2026-10-29 14:54:14,983 layer 12: position accuracy 0.146
