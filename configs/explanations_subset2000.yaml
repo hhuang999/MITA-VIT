@@ -1,0 +1,5 @@
+# The explanations experiment with faithfulness on a fixed random 2,000-image subset (the size in the v3 plan).
+# Used for DeiT-B/16, whose forward passes cost about four times DeiT-S's (decision B09).
+base: explanations.yaml
+explanations:
+  faithfulness_images: 2000

@@ -1,6 +1,8 @@
-# 实验计划 v3（提议，等待用户确认）
+# 实验计划 v3（已确认，2026-10-29）
 
 2026-10-29 · 依据：[相关工作综述](related_work.md)、决策 B01–B04 · 代码分支 `refactor/probe-method`
+
+> 用户已同意全部内容（B05–B08）。之后的补充（忠实性用全部图片、DeiT-B/16、E7 和 E8 的具体协议、健全性检验、成本、定性图）及其预测登记在决策 B09–B16，以决策日志为准。
 
 ## 一句话
 
@@ -32,8 +34,9 @@
 | E4 | 解释方法比较：合理性 + 忠实性（`explanations`） | RQ3, RQ4 | ImageNet-S（主）、ImageNet 5k、Pet、Hard ImageNet | DeiT-S, DINO | 🟢 |
 | E5 | 移位裁剪：同一物体放在中心和四个角（`shifted_crops`） | RQ3 | ImageNet-S 2,000 张 | DeiT-S, DINO | 🟢 |
 | E6 | 中心配对删除推广到 ImageNet-S、Hard ImageNet（`matched_deletion`） | RQ3 | ImageNet-S、Hard ImageNet | 三个模型 | 🟢 |
-| E7 | 与人类判断的一致性 | RQ3 | ClickMe 验证集 | DeiT-S, DINO | 🟡 |
-| E8 | 部件层面（头、身体、尾巴） | RQ3 | PartImageNet | DeiT-S, DINO | 🟡 |
+| E7 | 与人类判断的一致性（`human_alignment`） | RQ3 | ClickMe 验证集 | DeiT-S, DINO, DeiT-B | 🟢 |
+| E8 | 部件层面（头、身体、尾巴）（`parts`） | RQ3 | PartImageNet | DeiT-S, DINO, DeiT-B | 🟢 |
+| E11 | 权重随机化健全性检验（`sanity`） | RQ4 | ImageNet-S 1,000 张 | DeiT-S, DINO, DeiT-B | 🟢 |
 | E9 | 按 head 分析、因果替换 | RQ2, RQ3 | — | — | ⚪ 可选 |
 | E10 | 需要训练的数据集（Waterbirds、CUB） | RQ3 | — | — | ⚪ 推后 |
 

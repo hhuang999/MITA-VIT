@@ -3,7 +3,7 @@
 base: anatomy_deit.yaml
 explanations:
   dataset: imagenet_s
-  faithfulness_images: 2000     # fixed random subset (subset_seed) for deletion/insertion curves and SaCo
+  faithfulness_images: null     # null = every image (decision B09); else a fixed random subset (subset_seed)
   subset_seed: 0
   tie_seed: 0                   # equal scores are ordered by this seeded permutation
   random_seed: 0                # the 'random' reference map
