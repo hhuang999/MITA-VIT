@@ -6,12 +6,13 @@ KEYS = ['model', 'index', 'layer', 'setting', 'setting_id', 'seed', 'spec', 'cat
 
 
 def load(directory, name, keys=None):
-    """Read name (or name.gz); drop rows repeated by a crash between a batch write and its progress record.
+    """Read name (or name.gz, also inside raw/); drop rows repeated by a crash between a batch write and its
+    progress record.
 
     keys: the columns that identify a row (default: those of KEYS present in the file).
     """
-    path = directory / name
-    frame = pd.read_csv(path if path.exists() else path.with_name(name + '.gz'))
+    candidates = [directory / name, directory / f'{name}.gz', directory / 'raw' / name, directory / 'raw' / f'{name}.gz']
+    frame = pd.read_csv(next((path for path in candidates if path.exists()), candidates[0]))
     keys = keys or [c for c in KEYS if c in frame]
     duplicated = frame.duplicated(keys).sum()
     return frame.drop_duplicates(keys), int(duplicated)
