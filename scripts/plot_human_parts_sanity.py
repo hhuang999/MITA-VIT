@@ -20,7 +20,7 @@ import pandas as pd
 from mita_probe.plotting import (BLUE, GRAY, MAIN_METHODS, METHOD_COLORS, METHOD_LABELS, METHOD_STYLES,
                                  MODEL_LABELS, QUIET, band, interval_dots, save)
 
-LEVEL_LABELS = {'head': 'head', 'embed': 'embed'}
+LEVEL_LABELS = {'head': 'head', 'embed': 'emb'}
 
 
 def model_of(run):
@@ -95,9 +95,10 @@ def sanity(runs, output):
         ax.set_xticks(steps.step, [LEVEL_LABELS.get(level, level.removeprefix('block')) for level in steps.level],
                       fontsize=7)
         ax.set(title=f'{model}: weights re-initialised from the top', xlabel='Re-initialised down to (block)',
-               ylabel='Median Spearman with trained map', ylim=(-0.1, 1.05))
-    axes[0, 0].legend(fontsize=7)
-    fig.tight_layout()
+               ylabel='Median Spearman with trained map', ylim=(-0.45, 1.05))
+    fig.tight_layout(rect=(0, 0, 0.82, 1))
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels, fontsize=7, loc='center right')
     save(fig, output)
 
 
