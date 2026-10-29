@@ -1,0 +1,11 @@
+         measure     n model dataset        base          other  difference     low    high verdict
+0      srg_agree  2000  deit     pet  probe_mass  cls_attention      0.0723  0.0631  0.0807  higher
+1      srg_agree  2000  deit     pet  probe_mass        rollout      0.0413  0.0316  0.0514  higher
+2      srg_agree  2000  deit     pet  probe_mass            gae     -0.1646 -0.1743 -0.1544   lower
+14  srg_p_target  2000  deit     pet  probe_mass  cls_attention      0.0561  0.0515  0.0604  higher
+15  srg_p_target  2000  deit     pet  probe_mass        rollout      0.0228  0.0172  0.0279  higher
+16  srg_p_target  2000  deit     pet  probe_mass            gae     -0.1256 -0.1306 -0.1206   lower
+28    enrichment  3662  deit     pet  probe_mass  cls_attention      0.0242  0.0219  0.0264  higher
+29    enrichment  3662  deit     pet  probe_mass        rollout     -0.0120 -0.0150 -0.0090   lower
+30    enrichment  3662  deit     pet  probe_mass            gae     -0.0470 -0.0494 -0.0447   lower
+31    enrichment  3662  deit     pet  probe_mass         centre      0.1068  0.1040  0.1096  higher
