@@ -1,141 +1,98 @@
-# MITA-VIT
+# MITA-VIT：把 MiTA 的 top-k 读取用作 ViT 的解释方法
 
-2026-10-27夜间V00–V03已完成，见 [补充验证总结](docs/analysis/overnight_validation_2026-10-27.md)：匹配数量且保留CLS后，前景删除相对随机仍多损失53.99pp；k64单层明显比全层稳健；现场重算在k8反而下降13.18pp。完整区间、各项报告、图表、测试、执行异常及Colab停止证据均在总结中。
+**一句话：** 注意力可以看成一个"快权重 MLP"，图片的每个图块（token）就是它的一个隐藏神经元；我们借用 MiTA 的做法，只让每层读取少数几个神经元，再检验这些神经元能否复现模型的判断（忠实），以及它们是否落在人认为重要的物体和部件上（常识）。
 
-把预训练 ViT 每层每个注意力头概括成“16 块区域各读取 k 个 token”，再通过限制读取集合检验预测是否保持。核心模型是 DeiT-S/16，研究问题依次为概括的忠实性（RQ1）、逐层差异（RQ2）和与物体前景的对应（RQ3）。
+研究主线、研究问题和每项实验的判定标准见 [决策日志](docs/decisions.md)（B01–B16）和 [实验计划 v3](docs/experiment_plan_v3.md)；相关工作见 [综述](docs/related_work.md)。旧版说明（第一、二代设计、HPC 记录）保存在 [docs/history/](docs/history/README_2026-10-27.md)。
 
-RQ1（含用户指定 k=128）、RQ2 与 RQ3 均已完成，结果位于独立分支 `feature/overnight-rq1-rq2-rq3`。三份正式分析见 [RQ1](docs/analysis/rq1.md)、[RQ2](docs/analysis/rq2.md)、[RQ3](docs/analysis/rq3.md)；运行来源、进度及中断重跑记录见 [进度](docs/progress.md)和[实验日志](docs/experiment_log.md)。此前试跑与核心实现讲解见 [检查点 3](docs/checkpoint_3.md)、[检查点 2](docs/checkpoint_2.md)。
+## 研究问题
 
-[综合总结](docs/analysis/overnight_2026-10-26.md)汇总三项结果、待确认决定及下一步。最终 PNG/PDF 副本位于 `figures/`；正式运行的原始结果保持在各自 `experiments/` 目录中。核心发现是预算与多层组合影响忠实性，层差异温和；Pet 热图未优于中心高斯，不支持可靠物体定位的主张。
+| RQ | 问题 | 主要实验 |
+| --- | --- | --- |
+| RQ1 忠实 | 少数共享神经元能否复现一层注意力？ | E1 解剖（k、m 扫描） |
+| RQ2 结构 | 各层、各模型如何使用神经元？ | E1、探针逐层图 |
+| RQ3 常识 | 模型依赖的神经元是否就是物体和关键部件，而不只是画面中间？ | E2 Pet、E4 合理性、E5 移位裁剪、E6 中心配对删除、E7 人类一致性、E8 部件 |
+| RQ4 对比 | 在同一套检验下，探针和现有解释方法相比如何？ | E4 忠实性、健全性检验、成本 |
 
-用户随后授权的 RQ3 扩展已在 `feature/rq3-diagnosis-extension` 完成：[A1–A5 诊断](docs/analysis/rq3_diagnosis.md)、[B1–B5 结果与图4方案](docs/analysis/rq3_v2.md)。高范数位置主导空间热图强峰，但固定预算执行检验发现前景删除影响最大，汇聚点删除未比匹配数量随机删除更有破坏性。DINOv2寄存器对照改善了空间定位；两个checkpoint分别训练，不视为同权重纯开关实验。
+前提检验 E3：深层的 token 是否仍代表原来的图块。
 
-2026-10-27在 `feature/colab-rq1-verification` 完成同一张Colab L4的全部42组RQ1复算，见 [统一硬件报告与曲线](docs/analysis/rq1_colab_verification.md)。k128网格/K-means/随机五种子一致率为95.08%/96.38%/84.36%，原结论保持；报告还复核了RQ2的独立累积参照。45项测试、两次5000张恒等与42组统计审计通过。结果已取回，Colab已停止；[CLI接入与复现说明](docs/colab_setup.md)记录环境、运行入口和资源状态。
+模型：DeiT-S/16、DINO ViT-S/16（官方线性头）、DeiT-B/16（更大模型）；MiTA-DeiT-S 作对照。
 
-复现入口为 `scripts/run_rq3_extension.py`（`--mode observe/causal`、`--model deit/dino/register`），`scripts/analyze_rq3_extension.py --stage A/B1/B2/B3/B4`，`scripts/compare_rq3_registers.py`。定义与固定权重revision见 `configs/rq3_extension.yaml` 和 decisions.md E01–E07；大矩阵在各次实验的 ignored `raw/observations.npz`，可由固定版本重算。
+## 代码结构
 
-本地环境已通过验收，项目已同步到 [MITA-VIT 私有仓库](https://github.com/hhuang999/MITA-VIT)。默认分支为 `main`。
+```
+src/mita_probe/
+  models/         模型注册表（deit, deit_b, dino, mita），权重版本和校验值固定
+  probe/          探针：读取名单（landmark、top-k、路由）、按名单执行注意力
+  data/           ImageNet、ImageNet-S、Hard ImageNet、Pet、ClickMe、PartImageNet
+  explain.py      所有重要性图：探针和 CLS 注意力、Rollout、GAE、Grad-CAM、IG，以及中心、随机、掩码参照
+  faithfulness.py 删图块的忠实性检验（在每层注意力中屏蔽，等价于删 token）
+  plausibility.py 物体占比、AUROC、同距离环内富集等合理性指标
+  identity.py     token 身份检验
+  interventions.py 删除与替换读取名单中的 token
+  experiments/    每个实验一个模块（由 scripts/run.py 调用）
+  metrics.py stats.py results.py plotting.py
+scripts/          run.py（运行实验）、download_*.py、analyze_*.py（CPU 分析）、plot_*.py（作图）
+configs/          每个实验的配置；预设参数改动须先登记
+colab/            Colab 运行：local/ 上传代码，remote/ 在实例上建环境、下数据、排队运行
+tests/            单元测试和端到端测试（假数据、随机权重）
+experiments/      每次运行一个文件夹：配置、日志、CSV、git commit
+figures/          论文图（PNG 和 PDF）
+docs/             决策、进度、实验日志、分析报告、调研
+```
 
-## 本地快速开始
+## 运行
 
-在本目录打开终端，VS Code 解释器选择 `.venv/Scripts/python.exe`。环境为 Python 3.12.11、PyTorch 2.7.0 + CUDA 12.8、TorchVision 0.22.0、timm 1.0.30。Python 与邻近课程项目隔离。
+所有实验用同一个入口，源代码有未提交改动时拒绝运行（结果里记录 git commit）：
 
-从头重建时执行（`python` 须为 Python 3.11 或 3.12）：
+```bash
+python scripts/run.py explanations --config configs/explanations.yaml --model deit --output experiments/<日期>_e4_imagenet_s_deit
+python scripts/run.py human_alignment --config configs/human_alignment.yaml --model dino --output experiments/<日期>_e7_clickme_dino
+```
+
+| 实验名 | 内容 | 主要输出 |
+| --- | --- | --- |
+| `anatomy` | RQ1/RQ2 解剖（需要 `--stage`） | predictions.csv、settings.csv |
+| `explanations` | E4：所有方法的合理性和忠实性 | plausibility.csv、faithfulness.csv、saco.csv、cost.csv |
+| `shifted_crops` | E5：同一物体放在中间和四角 | crops.csv |
+| `matched_deletion` | E6：删除物体 token 与中心配对对照 | deletion.csv |
+| `identity` | E3：逐层位置分类器和自相似度 | identity.csv |
+| `human_alignment` | E7：与 ClickMe 人类重要性图的 Spearman 相关 | alignment.csv |
+| `parts` | E8：各部件的富集，以及删掉某部件对模型的影响 | parts.csv、reliance.csv |
+| `sanity` | 逐级重新初始化权重的健全性检验 | sanity.csv |
+| `gallery` | 定性图用的随机样例 | gallery_<数据集>.npz |
+| `center_control` | 探针读取名单对比"只读中间"（CPU） | — |
+
+常用参数：`--smoke N` 只跑前 N 张；`--resume` 接着中断的运行继续；`--batch-size`、`--workers` 覆盖配置。
+
+分析和作图只读结果文件：
+
+```bash
+bash scripts/analyze_v3.sh experiments/2026-10-29_v3_   # 全部 v3 分析和图
+python scripts/analyze_explanations.py <run>              # 单个运行
+```
+
+每个分析会在运行文件夹里写 `analysis_*.csv`；登记过的主比较在 `analysis_comparisons.csv`（配对 bootstrap 95% 区间）。
+
+## 环境
+
+本地 Windows：
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --upgrade pip
 .\.venv\Scripts\python.exe -m pip install torch==2.7.0 torchvision==0.22.0 --index-url https://download.pytorch.org/whl/cu128
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m pip install --no-deps -e .
-```
-
-CUDA 安装组合来自 [PyTorch 官方版本说明](https://pytorch.org/get-started/previous-versions/#v270)。本机 NVIDIA 驱动为 610.62；不需要另装完整 CUDA Toolkit。`requirements.txt` 锁定其余依赖；torch/torchvision 单独安装以免 HPC 装错平台。
-
-更新依赖锁定文件时使用 `uv pip compile pyproject.toml --extra dev --universal --excludes requirements-torch.txt --no-header --no-annotate -o requirements.txt`，然后重新验证环境。`requirements-torch.txt` 只用于声明单独安装的平台依赖；不把整个课程环境的包带入本项目。
-
-```powershell
 .\.venv\Scripts\python.exe scripts/download_models.py
-.\.venv\Scripts\python.exe scripts/download_data.py imagenette
-.\.venv\Scripts\python.exe scripts/download_data.py pet
 .\.venv\Scripts\python.exe -m pytest
-.\.venv\Scripts\python.exe scripts/check_environment.py
 ```
 
-P0 单图推理记录位于 `experiments/2026-10-24_environment/environment.json`。P1 已在 Imagenette 全部 3,925 张验证图上检查：原模型准确率 80.28%，读取模式和 k=197 全层执行的输出均与原模型完全一致；记录位于 `experiments/2026-10-24_p1_validation/`。P2 的 500 张完整试跑见 `experiments/2026-10-25_rq1_pilot/`。
+数据：`python scripts/download_data.py <imagenet|imagenet_s|hard_imagenet|pet|clickme|partimagenet>`。ImageNet 需要 `HF_TOKEN`（只从 `.env` 或环境变量读取）；其余数据在下载后核对固定的 SHA-256 或 MD5。默认缓存在 `checkpoints/`，数据在 `data/`（可用 `MITA_DATA_ROOT` 改位置）。
 
-正式 ImageNet 5,000 张 RQ1 已在 HPC A800 完成：35 组、175,000 条逐图结果；k=64 的 grid / random / K-means 一致率为 88.62% / 60.22% / 89.96%。[检查点 4 分析](docs/analysis/rq1.md)含曲线、置信区间、复现条件和下一步选项，完整输出位于 `experiments/2026-10-26_rq1_imagenet/`。
+Colab（GPU）：`colab/local/send_code.sh <会话> <分支> [基准提交]` 上传代码；在实例上依次运行 `colab/remote/setup.sh`、`data.sh`、`jobs.sh`（读取 `/content/jobs.txt` 排队运行）。已建好环境后更新代码用 `update.sh`，不要重跑 `setup.sh`（会删除已下载的数据）。
 
-`.env` 中保留 `HF_TOKEN`，通过 `python-dotenv` 读取。默认缓存为 `checkpoints/huggingface/` 和 `checkpoints/torch/`；可用 `HF_HOME`、`TORCH_HOME` 显式指定其他磁盘。
+## 文档
 
-## 资源
-
-| 资源 | 本地路径 | 用途 |
-| --- | --- | --- |
-| DeiT-S/16 | `checkpoints/huggingface/` | 核心模型 |
-| Imagenette 160px | `data/imagenette2-160/` | 调试；原模型输出是 ImageNet 1000 类，不能直接与 10 类编号比较 |
-| Oxford-IIIT Pet | `data/oxford-iiit-pet/` | RQ3 测试集与 trimap |
-| ImageNet 验证集 | `data/imagenet_val/` | 50,000 张已下载并校验；固定 seed=0 的 5,000 张索引，覆盖 994 类 |
-| 14 篇参考文献 | `references/papers/` | PDF 不进 Git；来源与校验和见 `references/manifest.json` |
-
-文献可通过 `python scripts/download_references.py` 重建，BibTeX 见 `references/references.bib`。DINO、DINOv2、Waterbirds 属于选做项目，本阶段不下载。资源实际完成情况以 `docs/progress.md` 为准。
-
-## 目录与文档
-
-`src/mita_probe/` 为可编辑安装的包，`scripts/` 放命令入口，`configs/` 保存研究设置；`tests/` 放测试，`hpc/` 放远程环境脚本。RQ1、RQ2、RQ3 入口均已实现；`configs/validate_p1.yaml` 保留用于早期实现验收。
-
-P2 完整试跑使用 Imagenette 500 张，包含 35 组设置及 k=197 恒等检查。先提交代码，再指定新的输出目录；入口拒绝覆盖已有实验：
-
-```powershell
-.\.venv\Scripts\python.exe scripts/run_rq1.py --config configs/rq1_pilot.yaml --output experiments/2026-10-25_rq1_pilot
-.\.venv\Scripts\python.exe scripts/make_figures.py experiments/2026-10-25_rq1_pilot
-```
-
-`results.csv` 每行对应一个方法/k/种子；`predictions.csv` 保留逐图结果；`summary.csv` 汇总方法均值及随机种子标准差；`contrasts.csv` 保存 grid 减随机对照的配对 bootstrap 95% 区间。图只读 CSV。区间按图片重采样，随机对照先对 5 个种子求平均，不把种子视为额外图片。
-
-用户授权的后续入口如下。运行前提交源代码，并把示例输出名换成尚不存在的新目录；这些命令不会覆盖已有结果：
-
-```powershell
-.\.venv\Scripts\python.exe scripts/run_rq1.py --config configs/identity_200.yaml --output experiments/NEW_identity_200
-.\.venv\Scripts\python.exe scripts/run_rq1.py --config configs/rq1_k128.yaml --output experiments/NEW_rq1_k128
-.\.venv\Scripts\python.exe scripts/run_rq2.py --config configs/rq2.yaml --output experiments/NEW_rq2
-.\.venv\Scripts\python.exe scripts/plot_rq2.py experiments/NEW_rq2
-.\.venv\Scripts\python.exe scripts/check_pet_alignment.py --output experiments/NEW_pet_alignment
-# Inspect the five alignment overlays before running the full Pet test set.
-.\.venv\Scripts\python.exe scripts/run_rq3.py --config configs/rq3.yaml --output experiments/NEW_rq3
-.\.venv\Scripts\python.exe scripts/plot_rq3.py experiments/NEW_rq3
-```
-
-`scripts/analyze_rq1.py` 合并原五点和 k=128，不重新运行模型；`mita_probe.evaluate.compare_runs` 按图片 ID 配对并核对原预测。RQ2 的层号在结果中是 1–12，`layer_index` 为 0–11。RQ3 图片与 trimap 共用 resize/crop 几何，边界和 CLS 从空间指标中排除。`scripts/audit_overnight.py` 可复算结果完整性和区间，分析报告记录具体命令及计算来源。
-
-- [研究设计](docs/research_design.md)：方法公式与实验依据。
-- [研究叙事](docs/research_narrative.md)：保留所有【待填】。
-- [课程评分标准](docs/course/rubric.pdf)：报告、视频与截止时间。
-- [进度](docs/progress.md)、[决策](docs/decisions.md)、[实验日志](docs/experiment_log.md)。
-- [交接](HANDOFF.md)：完整上下文与检查点；[代理规范](AGENTS.md)。
-
-实验输出放在 `experiments/`，保留小型配置、CSV、日志和 git commit；`raw/` 大文件不进 Git。最终图片放 `figures/`，正式实验分析放 `docs/analysis/`，论文放 `paper/`。数据、模型、`.env` 和 HPC 账号说明始终忽略。
-
-## 在 HPC 上运行
-
-先阅读本地 `docs/hpc/HPC.txt`。学校平台创建按需 JupyterLab 开发环境，镜像为 `admin/webide-jupyter:v6.2`，集群 `AI-X86_NVIDIA`。已在 CPU 2 核环境通过 SSH 检查网络和存储；这不是 Slurm。镜像解释器 `/opt/miniconda3/envs/pytorch/bin/python` 实测为 Python 3.10.13 / torch 2.3.1，不能直接使用。
-
-首次使用 GPU 环境和运行作业须用户确认。建立环境后，通过平台当次提供的 SSH 命令或 Web 终端进入，在持久化项目目录 clone 私有仓库；账号和动态连接信息只放本地 HPC 说明。
-
-```bash
-git clone https://github.com/hhuang999/MITA-VIT.git
-cd MITA-VIT
-git switch feature/hpc-adaptation
-# Use a project-owned persistent directory and leave the platform environment intact.
-/opt/miniconda3/bin/conda create --prefix /absolute/persistent/path/mita-python python=3.12 pip -y
-PYTHON_BIN=/absolute/persistent/path/mita-python/bin/python bash hpc/setup.sh
-```
-
-`setup.sh` 要求显式提供 Python 3.11/3.12 的 `PYTHON_BIN`，在项目内创建 `.venv` 并安装固定依赖；不运行模型推理。CUDA 默认 cu128；GPU 环境中的 preflight 和测试负责检查实际驱动兼容性。若需切换 CUDA wheel，使用 `TORCH_INDEX_URL` 指定受支持的索引，并记录实际环境后重新验收，不更改 torch 2.7.0 与研究参数。
-
-HPC 访问 PyPI 主站较慢，本轮安装通用依赖时另设 `PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple`；CUDA wheel 仍使用显式 PyTorch 官方索引。安装来源可因网络条件调整，依赖锁定版本保持不变。
-
-在 HPC 独立设置 `.env`，不要通过 Git 传密钥。将 `HF_HOME`、`TORCH_HOME` 指向项目 `checkpoints/` 或持久化数据盘，用 `MITA_DATA_ROOT` 指定数据盘目录。先确认 HPC 是否有与固定版本/顺序一致的共享副本，没有则直接在 HPC 下载：
-
-```bash
-bash hpc/download_data.sh imagenet
-.venv/bin/python scripts/verify_imagenet.py --skip-inference --output experiments/YYYY-MM-DD_hpc_environment/data_verification.json
-```
-
-该入口只下载 validation（50,000 张），保存 seed=0 的 5,000 张抽样索引，后续 RQ1/RQ2 共用。Hugging Face 的 parquet 分片与解码后的数据都会占空间，下载前核对存储余量。
-
-本地数据已于 2026-10-25 下载并验收。源分片约 6.69 GB，保存的数据集约 6.71 GB，另有缓存。数据版本见 `data/imagenet_manifest.json`，验收记录见 `experiments/2026-10-25_imagenet_download/verification.json`。`scripts/verify_imagenet.py --output <新的 JSON 路径>` 会核对源文件 SHA-256、标签顺序、固定子集解码及 32 张真实图片的模型前向。
-
-数据和模型下载固定为 P2 已接受的 revision。数据已存在时下载入口拒绝覆盖，应直接运行验证命令。`--skip-inference` 仅验证分片哈希、标签和 5,000 张解码，不启动模型实验。
-
-本轮 HPC 直连 Hugging Face API 出现连接重置，使用临时 SSH loopback 转发接入本机已有代理；官方 `.hf.co` CDN 可直连。Xet 传输过慢时设置 `HF_HUB_DISABLE_XET=1`，以普通 HTTP 获取相同 revision。代理仅用于资产准备，动态端口不写入脚本；GPU 作业使用本地缓存与离线模式。CPU 环境可用 `scripts/hpc_preflight.py --stage assets --output <新 JSON 路径>` 检查完整资产，无需启动 GPU。
-
-远程完整数据与环境已通过验收：14 个官方分片哈希、5,000 张解码、模型权重和抽样索引均通过，12 项跨机器核对一致；记录位于 `experiments/2026-10-25_hpc_environment/`。临时隧道已关闭。2026-10-26 经用户确认完成 GPU 首次验收及正式 RQ1，环境已停止，持久化目录保留。
-
-首次 GPU 作业使用 `bash hpc/first_job.sh experiments/YYYY-MM-DD_hpc_first`：离线 preflight → 完整 pytest → ImageNet 固定子集前 50 张 × 35 组 → 曲线。脚本和资源选择见 [审阅文档](docs/hpc_first_job_review.md)，用户确认后才运行。
-
-本轮实际使用可分配的 2×A800 / CPU 16 核规格，研究脚本使用单 GPU。首次验收记录为 `experiments/2026-10-26_hpc_first/`，29 项测试通过，恒等误差为 0。固定 CUDA 随机种子不保证不同 GPU 上的采样序列相同；本轮保存了 4060/A800 诊断，复现实验应同时保留 GPU 型号、PyTorch 版本、batch 和种子设置。
-
-`bash hpc/run.sh rq1 experiments/YYYY-MM-DD_rq1_formal` 使用正式配置（ImageNet 5,000 张）；首次脚本不自动调用它。RQ2/RQ3 可在相同项目环境中直接调用 `scripts/run_rq2.py` / `scripts/run_rq3.py`，参数与上述本地命令相同，将解释器换成 `.venv/bin/python`，先运行 preflight、pytest，并检查 Pet 对齐图。原有连通测试保留为 `hpc/train_smoke.py`。
-
-代码在私有 GitHub 分支保存。可通过本地 push / HPC pull 同步；本轮使用同一已提交分支的 Git bundle 经 SSH 传送，远程保留完整 Git 历史与 GitHub origin，不在计算节点保存 GitHub 凭据。远程结果小文件经检查后回传、提交并推送；数据不从本地上传。用完停止开发环境以释放资源。
+- [决策日志](docs/decisions.md)：每项设计、预测和判定标准（运行前登记）。
+- [进度](docs/progress.md)、[实验日志](docs/experiment_log.md)（包括失败的运行）。
+- [分析报告](docs/analysis/)：[探针综合报告](docs/analysis/probe_report.md)、[V2 解剖](docs/analysis/v2_anatomy.md)。
+- [代理规范](AGENTS.md)。
