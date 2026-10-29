@@ -1,10 +1,9 @@
 """Faithfulness of patch-importance maps by removing patch tokens (RQ1 sufficiency/necessity, RQ4).
 
-Removing a patch = no token may read it, in any layer. Removed tokens are still computed as queries but are
-never read, so the CLS token and every kept token compute exactly what they would if the removed tokens
-had been dropped from the sequence after the positional embedding (token dropping; Jain et al. ICLR 2022).
-This is the same operation the probe uses, so the probe and every baseline are tested alike. CLS and
-other prefix tokens are always kept.
+Removing a patch = no token may read it, in any layer. This equals dropping it from the sequence after the
+positional embedding (token dropping; Jain et al. ICLR 2022), which is how it is computed; the test suite
+checks the equality against masking the patch out of every layer's attention, the operation the probe uses.
+The probe and every baseline are tested alike. CLS and other prefix tokens are always kept.
 
 Measures per image, against the original model's prediction: top-1 agreement, probability of the original
 top-1 class, and KL(original || reduced).
@@ -13,7 +12,7 @@ top-1 class, and KL(original || reduced).
 import torch
 
 from .metrics import kl_divergence
-from .probe import Plan, execute
+from .models.dino import N_LAST_BLOCKS, DinoLinear
 
 CONDITIONS = ('keep_top', 'drop_top', 'drop_bottom')  # insertion (MoRF), deletion MoRF, deletion LeRF
 
@@ -37,12 +36,30 @@ def keep_mask(order, counts, prefix=1, top=True):
 
 
 def run_kept(model, images, keep):
-    """Model output when every layer may read only the kept tokens."""
-    heads = model.blocks[0].attn.num_heads
-    batch, tokens = keep.shape
-    mask = keep[:, None, None, :].expand(batch, heads, tokens, tokens)
-    with execute(model, {layer: Plan(token_mask=mask) for layer in range(1, len(model.blocks) + 1)}):
-        return model(images)
+    """Model output when every layer may read only the kept tokens.
+
+    Computed by dropping the other tokens after the positional embedding, which equals masking them out of
+    every layer's attention (tests/test_explain.py) and runs the fused attention on a shorter sequence.
+    Rows are grouped by how many tokens they keep.
+    """
+    counts = keep.sum(1)
+    groups = [(counts == count).nonzero()[:, 0] for count in counts.unique().tolist()]
+    logits = torch.cat([_dropped_forward(model, images[rows], keep[rows]) for rows in groups])
+    return logits[torch.cat(groups).argsort()]
+
+
+def _dropped_forward(model, images, keep):
+    backbone = getattr(model, 'backbone', model)
+    x = backbone.norm_pre(backbone.patch_drop(backbone._pos_embed(backbone.patch_embed(images))))
+    x = x[keep].reshape(len(images), -1, x.shape[-1])
+    if not isinstance(model, DinoLinear):
+        return backbone.forward_head(backbone.norm(backbone.blocks(x)))
+    features = []
+    for i, block in enumerate(backbone.blocks):
+        x = block(x)
+        if i >= len(backbone.blocks) - N_LAST_BLOCKS:
+            features.append(backbone.norm(x)[:, 0])
+    return model.linear(torch.cat(features, -1))
 
 
 def measures(original, reduced):

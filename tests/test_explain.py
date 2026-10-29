@@ -7,7 +7,7 @@ from mita_probe import explain
 from mita_probe.faithfulness import curve, keep_mask, measures, rank, run_kept, saco
 from mita_probe.models.deit import load_deit
 from mita_probe.models.dino import load_dino_model
-from mita_probe.probe import capture_qk, resolve
+from mita_probe.probe import Plan, capture_qk, execute, resolve
 
 SPEC = resolve(dict(mode='L3'), dict(m_side=4, k=16, routing='spatial', cls='own', scoring='query',
                                       summary_scale='mita'))
@@ -25,19 +25,13 @@ def dino():
     return load_dino_model(None, pretrained=False)
 
 
-def dropped_forward(model, images, keep):
-    """Reference: physically drop tokens after the positional embedding (equal counts per image)."""
-    backbone = getattr(model, 'backbone', model)
-    x = backbone.norm_pre(backbone.patch_drop(backbone._pos_embed(backbone.patch_embed(images))))
-    x = x[keep].reshape(len(images), -1, x.shape[-1])
-    features = []
-    for i, block in enumerate(backbone.blocks):
-        x = block(x)
-        if hasattr(model, 'linear') and i >= len(backbone.blocks) - 4:
-            features.append(backbone.norm(x)[:, 0])
-    if hasattr(model, 'linear'):
-        return model.linear(torch.cat(features, -1))
-    return backbone.forward_head(backbone.norm(x))
+def masked_forward(model, images, keep):
+    """Reference: every layer's attention may read only the kept tokens (the probe's execution path)."""
+    heads = model.blocks[0].attn.num_heads
+    batch, tokens = keep.shape
+    mask = keep[:, None, None, :].expand(batch, heads, tokens, tokens)
+    with execute(model, {layer: Plan(token_mask=mask) for layer in range(1, len(model.blocks) + 1)}):
+        return model(images)
 
 
 @pytest.mark.parametrize('name', ['deit', 'dino'])
@@ -45,10 +39,10 @@ def test_masking_tokens_equals_dropping_them(name, request):
     model = request.getfixturevalue(name)
     images = torch.randn(2, 3, 224, 224)
     order = rank(torch.randn(2, 196), torch.Generator().manual_seed(0))
-    keep = keep_mask(order, 40)
-    assert keep.sum(1).tolist() == [41, 41] and keep[:, 0].all()
+    keep = keep_mask(order, torch.tensor([40, 120]))  # unequal counts: rows are grouped by kept count
+    assert keep.sum(1).tolist() == [41, 121] and keep[:, 0].all()
     with torch.inference_mode():
-        torch.testing.assert_close(run_kept(model, images, keep), dropped_forward(model, images, keep),
+        torch.testing.assert_close(run_kept(model, images, keep), masked_forward(model, images, keep),
                                    atol=2e-5, rtol=0)
         full = keep_mask(order, 196)
         torch.testing.assert_close(run_kept(model, images, full), model(images), atol=2e-5, rtol=0)
