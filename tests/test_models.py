@@ -58,7 +58,7 @@ def test_probes_see_backbone_blocks():
 
 
 def test_registry_names_and_data_reference(tmp_path):
-    assert NAMES == ('deit', 'dino', 'mita')
+    assert NAMES == ('deit', 'deit_b', 'dino', 'mita')
     model = make_model()
     assert data_reference(model) is model.backbone
     with pytest.raises(ValueError):
