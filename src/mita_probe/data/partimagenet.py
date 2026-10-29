@@ -11,7 +11,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from PIL import Image
+from PIL import Image, ImageOps
 from torchvision.transforms import InterpolationMode
 from torchvision.transforms import functional as TF
 
@@ -72,7 +72,8 @@ class PartImageNet(MaskDataset):
 
     def sample(self, index):
         split, name = self.items[index]
-        image = Image.open(self.root / 'images' / split / f'{name}.JPEG').convert('RGB')
+        # 6 images carry an EXIF rotation; their masks were drawn on the rotated (displayed) image.
+        image = ImageOps.exif_transpose(Image.open(self.root / 'images' / split / f'{name}.JPEG')).convert('RGB')
         trimap = np.where(self.labels(index) < BACKGROUND, 1, 2).astype(np.uint8)
         return image, wnid_index(name.split('_')[0]), Image.fromarray(trimap)
 
