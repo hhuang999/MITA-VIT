@@ -1,0 +1,5 @@
+{
+  "model": "deit",
+  "dataset": "imagenet",
+  "faithfulness_duplicates": 0
+}
