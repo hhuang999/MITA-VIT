@@ -11,6 +11,7 @@ import torch
 from mita_probe import explain
 from mita_probe.experiments import common, explanations, human_alignment, layer_reading, parts
 from mita_probe.experiments.explanations import layerwise_methods
+from mita_probe.interventions import sink_tokens
 from mita_probe.io import load_config
 from mita_probe.models.deit import load_deit
 from mita_probe.probe import resolve
@@ -43,10 +44,11 @@ def test_layerwise_families_keep_the_probe_default():
     assert {m['method'] for m in entries} == {'probe', 'attention', 'cls_attention'}
 
 
-def test_high_norm_is_relative_to_the_image_median():
-    norms = torch.tensor([[1., 1., 1., 3.1, 10.], [2., 2., 2., 6., 7.]])
-    assert layer_reading.high_norm(norms, 3).tolist() == [[False, False, False, True, True],
-                                                         [False, False, False, False, True]]
+def test_high_norm_uses_the_midpoint_median():
+    # Even count: the median is the midpoint of the two middle norms (2 and 4 -> 3), so only 10 > 9 is high.
+    norms = torch.tensor([[1., 2., 4., 8.5, 10., 1.], [2., 2., 2., 6., 7., 2.]])
+    assert sink_tokens(norms, 3).tolist() == [[False, False, False, False, True, False],
+                                              [False, False, False, False, True, False]]
 
 
 @pytest.fixture
