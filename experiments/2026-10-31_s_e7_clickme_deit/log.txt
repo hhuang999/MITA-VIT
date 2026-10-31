@@ -1,0 +1,31 @@
+2026-10-31 07:24:06,266 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-31 07:24:06,269 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-31 07:25:36,683 clickme_deit 640/17408 images; 90.2s
+2026-10-31 07:27:01,822 clickme_deit 1280/17408 images; 175.3s
+2026-10-31 07:28:26,808 clickme_deit 1920/17408 images; 260.3s
+2026-10-31 07:29:51,809 clickme_deit 2560/17408 images; 345.3s
+2026-10-31 07:31:16,790 clickme_deit 3200/17408 images; 430.3s
+2026-10-31 07:32:41,868 clickme_deit 3840/17408 images; 515.3s
+2026-10-31 07:34:06,823 clickme_deit 4480/17408 images; 600.3s
+2026-10-31 07:35:31,903 clickme_deit 5120/17408 images; 685.4s
+2026-10-31 07:36:57,006 clickme_deit 5760/17408 images; 770.5s
+2026-10-31 07:38:22,096 clickme_deit 6400/17408 images; 855.6s
+2026-10-31 07:39:47,136 clickme_deit 7040/17408 images; 940.6s
+2026-10-31 07:41:12,215 clickme_deit 7680/17408 images; 1025.7s
+2026-10-31 07:42:37,170 clickme_deit 8320/17408 images; 1110.6s
+2026-10-31 07:44:02,315 clickme_deit 8960/17408 images; 1195.8s
+2026-10-31 07:45:27,258 clickme_deit 9600/17408 images; 1280.7s
+2026-10-31 07:46:52,275 clickme_deit 10240/17408 images; 1365.7s
+2026-10-31 07:48:17,256 clickme_deit 10880/17408 images; 1450.7s
+2026-10-31 07:49:42,239 clickme_deit 11520/17408 images; 1535.7s
+2026-10-31 07:51:07,231 clickme_deit 12160/17408 images; 1620.7s
+2026-10-31 07:52:32,152 clickme_deit 12800/17408 images; 1705.6s
+2026-10-31 07:53:57,017 clickme_deit 13440/17408 images; 1790.5s
+2026-10-31 07:55:21,975 clickme_deit 14080/17408 images; 1875.4s
+2026-10-31 07:56:47,005 clickme_deit 14720/17408 images; 1960.5s
+2026-10-31 07:58:11,985 clickme_deit 15360/17408 images; 2045.5s
+2026-10-31 07:59:36,767 clickme_deit 16000/17408 images; 2130.2s
+2026-10-31 08:01:01,713 clickme_deit 16640/17408 images; 2215.2s
+2026-10-31 08:02:26,671 clickme_deit 17280/17408 images; 2300.1s
+2026-10-31 08:02:43,635 clickme_deit 17408/17408 images; 2317.1s
+2026-10-31 08:02:43,686 Complete: ClickMe alignment for deit
