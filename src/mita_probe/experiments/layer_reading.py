@@ -4,7 +4,8 @@ For each image of a mask dataset (ImageNet-S) and each layer l, three single-lay
 explanations.layerwise_methods): the probe (attention mass under the reading sets), dense attention mass
 and CLS attention. Per image, family and layer:
 - high_fraction: share of patches that are high-norm at layer l, i.e. whose block-l input norm (before norm1)
-  exceeds `norm_ratio` times the image's median patch norm at that layer (the RQ3 diagnosis definition);
+  exceeds `norm_ratio` times the image's midpoint median patch norm at that layer (interventions.sink_tokens,
+  the RQ3 diagnosis definition);
 - high_share: share of the map's mass on those patches;
 - mass and enrichment: object mass share and same-distance-ring enrichment (mita_probe.plausibility).
 Output layer_reading.csv.
@@ -16,6 +17,7 @@ import time
 import torch
 
 from .. import plausibility
+from ..interventions import sink_tokens
 from ..io import write_json
 from ..models import load_model
 from ..probe import capture_input_norms, resolve
@@ -24,11 +26,6 @@ from .common import Sink
 from .explanations import layerwise_methods, method_scores
 
 FIELDS = ['model', 'index', 'family', 'layer', 'high_fraction', 'high_share', 'mass', 'enrichment']
-
-
-def high_norm(norms, ratio):
-    """[batch, patches] bool: patch norm above `ratio` times the image's median patch norm."""
-    return norms > ratio * norms.median(-1, keepdim=True).values
 
 
 def run(args, config, output, commit):
@@ -53,7 +50,7 @@ def run(args, config, output, commit):
         images, foreground, valid = (tensor.to(device) for tensor in batch[:3])
         with torch.no_grad(), capture_input_norms(model) as norms:
             model(images)
-        high = {layer: high_norm(value, settings['norm_ratio']) for layer, value in norms.items()}
+        high = {layer: sink_tokens(value, settings['norm_ratio']) for layer, value in norms.items()}
         other = foreground.roll(1, 0) if len(ids) > 1 else torch.zeros_like(foreground)
         rows = []
         for entry in methods:
