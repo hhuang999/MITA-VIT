@@ -2,7 +2,8 @@
 
 PartImageNet_Seg (ImageNet training images; see mita_probe.data.partimagenet), each model's own ImageNet
 preprocessing. The methods are the explanations list (without the object mask) plus, when `layerwise` is
-set, the probe at each single layer. Two outputs:
+set, single-layer maps of each family in `layerwise_families` (default: the probe only). Two outputs (the
+second only when `reliance` is true, the default):
 
 parts.csv, one row per image, method and part present in the crop:
 - area: the part's share of the object pixels;
@@ -97,7 +98,7 @@ def run(args, config, output, commit):
     indices = indices[:args.smoke] if args.smoke else indices
     methods = [entry for entry in explain_settings['methods'] if entry['method'] != 'mask']
     if settings['layerwise']:
-        methods += layerwise_methods(len(model.blocks))
+        methods += layerwise_methods(len(model.blocks), settings.get('layerwise_families', ['probe']))
     spec = resolve(explain_settings['probe_spec'], config['main'])
     progress_path, done = common.progress(output, args.resume)
     write_json(output / f'metadata{"_resume" if done else ""}.json', common.provenance(
@@ -105,7 +106,8 @@ def run(args, config, output, commit):
         methods=[entry['name'] for entry in methods], probe_spec=spec, smoke_images=args.smoke, resumed_from=done))
     started = time.perf_counter()
     batches = common.make_batches(config, done, progress_path, started)
-    part_sink, reliance_sink = Sink(output / 'parts.csv', PART_FIELDS), Sink(output / 'reliance.csv', RELIANCE_FIELDS)
+    part_sink = Sink(output / 'parts.csv', PART_FIELDS)
+    reliance_sink = Sink(output / 'reliance.csv', RELIANCE_FIELDS) if settings.get('reliance', True) else None
     prefix = model.num_prefix_tokens
     for start, ids, (images, _, _, fractions, _) in batches(f'parts_{args.model}', dataset, indices):
         images, fractions = images.to(device), fractions.to(device)
@@ -122,6 +124,8 @@ def run(args, config, output, commit):
                           patches=int(values['patches'][n][p]))
                      for n, index in enumerate(ids) for p in range(BACKGROUND) if values['area'][n][p] > 0]
         part_sink.write(rows)
+        if reliance_sink is None:
+            continue
         plan = removals(assign, fractions, settings, start, device)
         rows = []
         for chunk in range(0, len(plan), config['batch_size']):

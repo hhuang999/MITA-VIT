@@ -40,6 +40,25 @@ def describe(frame, value, by, **labels):
     return out
 
 
+def part_drops(reliance):
+    """Log-probability drop and agreement per removal count, image, condition and part (seeds averaged)."""
+    reliance = reliance.assign(log_drop=np.log(reliance.p_original) - np.log(reliance.p_target.clip(lower=1e-12)))
+    return reliance.groupby(['removed', 'index', 'condition', 'part'])[['log_drop', 'agree']].mean().reset_index()
+
+
+def agreement(parts, main_drop):
+    """Per image with at least two removable parts: does each map's most enriched removable part equal the part
+    whose removal hurts most? Returns the match table [image x method] and each image's chance level."""
+    removable = main_drop.groupby('index').filter(lambda g: len(g) >= 2)
+    causal = removable.loc[removable.groupby('index').log_drop.idxmax(), ['index', 'part']].set_index('index').part
+    count = removable.groupby('index').size()
+    candidates = parts.merge(removable[['index', 'part']], on=['index', 'part'])
+    top = candidates.loc[candidates.dropna(subset=['enrichment']).groupby(['index', 'method']).enrichment.idxmax()]
+    match = top.assign(match=(top.part.to_numpy() == causal.reindex(top['index']).to_numpy()).astype(float))
+    wide = match.pivot(index='index', columns='method', values='match').dropna()
+    return wide, (1 / count.loc[wide.index]).to_numpy()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('run', type=Path)
@@ -67,8 +86,7 @@ def main():
 
     reliance, reliance_duplicates = load(args.run, 'reliance.csv', keys=['index', 'condition', 'part', 'seed',
                                                                          'removed'])
-    reliance = reliance.assign(log_drop=np.log(reliance.p_original) - np.log(reliance.p_target.clip(lower=1e-12)))
-    drop = reliance.groupby(['removed', 'index', 'condition', 'part'])[['log_drop', 'agree']].mean().reset_index()
+    drop = part_drops(reliance)
     named = drop.assign(supercategory=drop.part.map(dict(enumerate(SUPERCATEGORY))).fillna('control'),
                         name=drop.part.map(dict(enumerate(PART))).fillna(drop.condition))
     pd.DataFrame(describe(named, 'log_drop', ['removed', 'supercategory', 'name'], **labels)).to_csv(
@@ -82,19 +100,12 @@ def main():
                           n=len(both), **labels)
 
     # (c) agreement between each map's most enriched part and the part whose removal hurts most.
-    removable = main_drop.groupby('index').filter(lambda g: len(g) >= 2)
-    causal = removable.loc[removable.groupby('index').log_drop.idxmax(), ['index', 'part']].set_index('index').part
-    count = removable.groupby('index').size()
-    candidates = parts.merge(removable[['index', 'part']], on=['index', 'part'])
-    top = candidates.loc[candidates.dropna(subset=['enrichment']).groupby(['index', 'method']).enrichment.idxmax()]
-    match = top.assign(match=(top.part.to_numpy() == causal.reindex(top['index']).to_numpy()).astype(float))
-    wide = match.pivot(index='index', columns='method', values='match').dropna()
-    agreement = summarise(wide, resample_indices(len(wide)), measure='agreement', n=len(wide), **labels)
-    chance = (1 / count.loc[wide.index]).to_numpy()
-    agreement.append(dict(labels, measure='agreement', n=len(wide), quantity='chance',
-                          **dict(zip(('mean', 'low', 'high'), interval(chance, resample_indices(len(chance)))))))
-    pd.DataFrame(agreement).rename(columns={'quantity': 'method'}).to_csv(args.run / 'analysis_agreement.csv',
-                                                                          index=False)
+    wide, chance = agreement(parts, main_drop)
+    rows = summarise(wide, resample_indices(len(wide)), measure='agreement', n=len(wide), **labels)
+    rows.append(dict(labels, measure='agreement', n=len(wide), quantity='chance',
+                     **dict(zip(('mean', 'low', 'high'), interval(chance, resample_indices(len(chance)))))))
+    pd.DataFrame(rows).rename(columns={'quantity': 'method'}).to_csv(args.run / 'analysis_agreement.csv',
+                                                                     index=False)
     comparisons += [row for method in ['probe_mass', 'gae', 'cls_attention', 'rollout'] if method in wide
                     for row in paired(wide, method, ['centre', 'random'], resample_indices(len(wide)),
                                       measure='agreement', n=len(wide), **labels)]

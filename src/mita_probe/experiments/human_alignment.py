@@ -2,8 +2,8 @@
 
 ClickMe validation set (ImageNet validation images with human maps; Fel et al. 2022 protocol, see
 mita_probe.data.clickme). The methods are the explanations list (without the object mask), plus the mean
-human map of the evaluated images (Fel et al.'s centre-bias control) and, when `layerwise` is set, the
-probe at each single layer. Per image and method:
+human map of the evaluated images (Fel et al.'s centre-bias control) and, when `layerwise` is set, single-layer
+maps of each family in `layerwise_families` (default: the probe only). Per image and method:
 - spearman_token: Spearman between the 196 patch scores and the human map averaged per patch;
 - spearman_pixel: Spearman between the map upsampled (bilinear) to 224 x 224 and the human map; this is
   the Harmonization metric (divide by HUMAN_CEILING for their 'alignment');
@@ -88,7 +88,7 @@ def run(args, config, output, commit):
     indices = indices[:args.smoke] if args.smoke else indices
     methods = [entry for entry in explain_settings['methods'] if entry['method'] != 'mask']
     if settings['layerwise']:
-        methods += layerwise_methods(len(model.blocks))
+        methods += layerwise_methods(len(model.blocks), settings.get('layerwise_families', ['probe']))
     spec = resolve(explain_settings['probe_spec'], config['main'])
     progress_path, done = common.progress(output, args.resume)
     write_json(output / f'metadata{"_resume" if done else ""}.json', common.provenance(

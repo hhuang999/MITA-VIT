@@ -43,10 +43,17 @@ def timer():
     result.append(time.perf_counter() - started)
 
 
-def layerwise_methods(depth):
-    """The probe (attention mass) at each single layer, named probe_layer<l>."""
-    return [dict(name=f'probe_layer{layer}', method='probe', weight='mass', layers=[layer])
-            for layer in range(1, depth + 1)]
+LAYERWISE = {
+    'probe': lambda layer: dict(name=f'probe_layer{layer}', method='probe', weight='mass', layers=[layer]),
+    'attention': lambda layer: dict(name=f'attention_layer{layer}', method='attention', layers=[layer]),
+    'cls_attention': lambda layer: dict(name=f'cls_layer{layer}', method='cls_attention', layers=[layer]),
+}
+
+
+def layerwise_methods(depth, families=('probe',)):
+    """Single-layer maps for each family: the probe (attention mass under the reading sets), dense attention
+    mass, CLS attention; named probe_layer<l>, attention_layer<l>, cls_layer<l>."""
+    return [LAYERWISE[family](layer) for family in families for layer in range(1, depth + 1)]
 
 
 def method_scores(entry, model, images, foreground, spec, generator, target=None):
