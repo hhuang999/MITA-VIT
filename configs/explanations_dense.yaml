@@ -1,0 +1,8 @@
+# S1 (decision B22): dense attention mass against the probe on ImageNet-S, faithfulness on every image (DeiT-S, DINO).
+# Same data, subsets and tests as explanations.yaml. probe_mass is recomputed in the same run, for paired
+# comparisons and as the cross-hardware reproduction check.
+base: explanations.yaml
+explanations:
+  methods:
+    - {name: probe_mass, method: probe, weight: mass, layers: [9, 10, 11, 12]}
+    - {name: attention_mass, method: attention, layers: [9, 10, 11, 12]}

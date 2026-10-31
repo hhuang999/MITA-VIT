@@ -6,6 +6,7 @@ top-1 class, so all of them can be ranked, thresholded and tested the same way:
 | method | needs gradients | idea |
 | --- | --- | --- |
 | probe | no | attention each patch-neuron receives when the model reads only through the probe's sets |
+| attention | no | attention each patch receives from every query, no top-k (token pruning's "attention received") |
 | cls_attention | no | CLS-to-patch attention of the layers the classifier reads, averaged over heads |
 | rollout | no | Attention Rollout (Abnar & Zuidema 2020): 0.5 A + 0.5 I multiplied through the layers |
 | gae | yes | Chefer et al. ICCV 2021: rollout of head-averaged positive (grad * attention) |
@@ -25,8 +26,8 @@ from .models.dino import N_LAST_BLOCKS, DinoLinear
 from .probe import base_pattern, capture_qk, selected_layers, token_mask
 from .probe.execute import split_qkv
 
-METHODS = ('probe', 'cls_attention', 'rollout', 'gae', 'gradcam', 'integrated_gradients', 'centre', 'random',
-           'mask')
+METHODS = ('probe', 'attention', 'cls_attention', 'rollout', 'gae', 'gradcam', 'integrated_gradients', 'centre',
+           'random', 'mask')
 
 
 def head_layers(model):
@@ -83,6 +84,17 @@ def cls_attention(model, images, layers=None):
         model(images)
     prefix = model.num_prefix_tokens
     return torch.stack([probs[layer][:, :, 0, prefix:].mean(1) for layer in layers]).mean(0)
+
+
+def attention_mass(model, images, layers):
+    """Attention each patch receives from all queries and heads, unrestricted, summed over the layers.
+
+    The probe's 'mass' without the top-k sets (equal to it with k = all tokens); in token pruning this is the
+    'attention received' importance (PoWER-BERT, LTP).
+    """
+    with torch.no_grad(), record_attention(model, layers) as probs:
+        model(images)
+    return sum(probs[layer].sum((1, 2)) for layer in layers)[:, model.num_prefix_tokens:]
 
 
 def _rollout_rows(probs, prefix, rows_at):
@@ -211,6 +223,8 @@ def compute(method, model, images, *, spec=None, layers=None, weight='mass', for
     methods (default: the model's own top-1)."""
     if method == 'probe':
         return probe(model, images, spec, layers, weight)
+    if method == 'attention':
+        return attention_mass(model, images, layers)
     if method == 'cls_attention':
         return cls_attention(model, images, layers)
     if method == 'rollout':

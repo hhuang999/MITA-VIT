@@ -8,6 +8,11 @@
 | explanations | explanations.py | RQ3/RQ4: probe and baseline maps; plausibility, deletion/insertion, SaCo |
 | shifted_crops | shifted_crops.py | RQ3: the same object at five places in the frame |
 | identity | identity.py | premise: does token j still stand for patch j at each layer? |
+| human_alignment | human_alignment.py | RQ3: maps against ClickMe human importance maps |
+| parts | parts.py | RQ3: part preference of every map and the model's own part reliance |
+| sanity | sanity.py | RQ4: cascading weight randomisation |
+| gallery | gallery.py | maps on randomly drawn images, for figures |
+| layer_reading | layer_reading.py | per-layer reading: share on high-norm patches, object focus |
 
 To add an experiment, write a module with `run(...)` and list it in EXPERIMENTS.
 """
@@ -25,6 +30,7 @@ EXPERIMENTS = {
     'parts': 'Part preference of every map and the model\'s own part reliance (PartImageNet)',
     'sanity': 'Cascading weight randomisation: do the maps depend on the trained model?',
     'gallery': 'Every map and the per-layer probe on randomly drawn images, for figures',
+    'layer_reading': 'Single-layer probe, dense and CLS attention: share on high-norm patches, object focus',
 }
 
 

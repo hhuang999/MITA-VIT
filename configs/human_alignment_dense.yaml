@@ -1,0 +1,9 @@
+# S1 and S2 (decisions B22, B23) on ClickMe: dense attention mass against the probe, and single-layer maps of the
+# probe, dense attention and CLS attention.
+base: human_alignment.yaml
+explanations:
+  methods:
+    - {name: probe_mass, method: probe, weight: mass, layers: [9, 10, 11, 12]}
+    - {name: attention_mass, method: attention, layers: [9, 10, 11, 12]}
+human_alignment:
+  layerwise_families: [probe, attention, cls_attention]

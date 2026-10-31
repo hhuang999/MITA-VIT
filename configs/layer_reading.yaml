@@ -1,0 +1,7 @@
+# S3 (decision B24; mita_probe.experiments.layer_reading): single-layer probe, dense attention and CLS attention on
+# ImageNet-S; share of each map on high-norm patches, object mass share and same-distance-ring enrichment.
+base: explanations.yaml
+layer_reading:
+  dataset: imagenet_s
+  families: [probe, attention, cls_attention]
+  norm_ratio: 3                 # high-norm: block-input norm > 3 x the image's median patch norm (RQ3 diagnosis)
