@@ -10,9 +10,9 @@
 
 - **可执行**：只按探针名单计算，模型保留大部分预测（DeiT-S 12 层同时 71%，DeiT-B 83%；单层 92%–97%）。
 - **便宜**：约等于一次前向计算（GAE 约要 2.5 次前向的时间，IG 约 45 次）。
-- **忠实性**：在只看注意力的方法中总体最好或持平（DeiT-S、DeiT-B 高于 CLS 注意力和 Rollout；DINO 上低于 CLS 注意力）；低于用梯度的 GAE、Grad-CAM。
-- **常识**：扣除中心偏差后仍偏向物体；物体移到角落时跟着物体走；与人类重要性图的一致明显超出中心偏差；对动物头部的偏爱在三个模型上都是所有方法中最高，而模型自己也确实更依赖头。
-- **逐层**：最像人的读取在中后层；有监督模型的最后一层离开物体。
+- **忠实性**：探针高于 Rollout，在 DeiT-S、DeiT-B 上高于 CLS 注意力；但不加 top-k 的完整注意力图（与探针图逐图相关约 0.90）还要略好一些；所有注意力类图都低于用梯度的 GAE、Grad-CAM（[补充实验](docs/analysis/supplement_s1_s3.md)）。
+- **常识**：扣除中心偏差后仍偏向物体；物体移到角落时跟着物体走；与人类重要性图的一致明显超出中心偏差；模型自己确实更依赖动物的头。探针对头部的偏爱最强，但这主要是 top-k 截断放大的结果。
+- **逐层**：最像人的读取在中后层；有监督模型的最后一层离开物体，DINO 不明显。这一规律在探针、完整注意力和 CLS 注意力上都出现，是模型本身的性质。有监督模型的中后层把大量读取给了极少数高范数 token（DINO 没有），但它们不能解释最后一层的下降。
 
 ## 研究问题
 
@@ -34,7 +34,7 @@ src/mita_probe/
   models/         模型注册表（deit, deit_b, dino, mita），权重版本和校验值固定
   probe/          探针：读取名单（landmark、top-k、路由）、按名单执行注意力
   data/           ImageNet、ImageNet-S、Hard ImageNet、Pet、ClickMe、PartImageNet
-  explain.py      所有重要性图：探针和 CLS 注意力、Rollout、GAE、Grad-CAM、IG，以及中心、随机、掩码参照
+  explain.py      所有重要性图：探针、完整注意力（不加 top-k）、CLS 注意力、Rollout、GAE、Grad-CAM、IG，以及中心、随机、掩码参照
   faithfulness.py 删图块的忠实性检验（在每层注意力中屏蔽，等价于删 token）
   plausibility.py 物体占比、AUROC、同距离环内富集等合理性指标
   identity.py     token 身份检验
@@ -68,6 +68,7 @@ python scripts/run.py human_alignment --config configs/human_alignment.yaml --mo
 | `identity` | E3：逐层位置分类器和自相似度 | identity.csv |
 | `human_alignment` | E7：与 ClickMe 人类重要性图的 Spearman 相关 | alignment.csv |
 | `parts` | E8：各部件的富集，以及删掉某部件对模型的影响 | parts.csv、reliance.csv |
+| `layer_reading` | S3：逐层的探针、完整注意力、CLS 注意力读取量落在高范数图块上的比例，以及物体聚焦 | layer_reading.csv |
 | `sanity` | 逐级重新初始化权重的健全性检验 | sanity.csv |
 | `gallery` | 定性图用的随机样例 | gallery_<数据集>.npz |
 | `center_control` | 探针读取名单对比"只读中间"（CPU） | — |
@@ -104,6 +105,6 @@ Colab（GPU）：`colab/local/send_code.sh <会话> <分支> [基准提交]` 上
 
 - [决策日志](docs/decisions.md)：每项设计、预测和判定标准（运行前登记）。
 - [进度](docs/progress.md)、[实验日志](docs/experiment_log.md)（包括失败的运行）。
-- [分析报告](docs/analysis/)：[v3 完整报告](docs/analysis/v3_report.md)、[探针综合报告](docs/analysis/probe_report.md)、[V2 解剖](docs/analysis/v2_anatomy.md)。
+- [分析报告](docs/analysis/)：[v3 完整报告](docs/analysis/v3_report.md)、[补充实验 S1–S3](docs/analysis/supplement_s1_s3.md)、[探针综合报告](docs/analysis/probe_report.md)、[V2 解剖](docs/analysis/v2_anatomy.md)。
 - [研究笔记本](notebooks/mita_probe_research.ipynb)：方法的参考实现（在 CPU 上现场运行并与项目代码核对）、指标定义、全部正式实验的核心表格和图（只读结果文件），以及由代码自动判定的预测对账。
 - [代理规范](AGENTS.md)。

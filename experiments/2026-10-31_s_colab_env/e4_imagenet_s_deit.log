@@ -1,0 +1,23 @@
+2026-10-31 11:27:07,361 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-10-31 11:27:07,363 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-31 11:28:35,531 explain_deit 640/12419 images; 87.2s
+2026-10-31 11:29:52,899 explain_deit 1280/12419 images; 164.5s
+2026-10-31 11:31:10,033 explain_deit 1920/12419 images; 241.7s
+2026-10-31 11:32:26,246 explain_deit 2560/12419 images; 317.9s
+2026-10-31 11:33:42,219 explain_deit 3200/12419 images; 393.8s
+2026-10-31 11:34:56,884 explain_deit 3840/12419 images; 468.5s
+2026-10-31 11:36:12,820 explain_deit 4480/12419 images; 544.4s
+2026-10-31 11:37:28,586 explain_deit 5120/12419 images; 620.2s
+2026-10-31 11:38:43,996 explain_deit 5760/12419 images; 695.6s
+2026-10-31 11:40:00,179 explain_deit 6400/12419 images; 771.8s
+2026-10-31 11:41:16,032 explain_deit 7040/12419 images; 847.7s
+2026-10-31 11:42:32,194 explain_deit 7680/12419 images; 923.8s
+2026-10-31 11:43:47,794 explain_deit 8320/12419 images; 999.4s
+2026-10-31 11:45:04,171 explain_deit 8960/12419 images; 1075.8s
+2026-10-31 11:46:19,675 explain_deit 9600/12419 images; 1151.3s
+2026-10-31 11:47:35,614 explain_deit 10240/12419 images; 1227.2s
+2026-10-31 11:48:51,323 explain_deit 10880/12419 images; 1302.9s
+2026-10-31 11:50:07,021 explain_deit 11520/12419 images; 1378.6s
+2026-10-31 11:51:22,184 explain_deit 12160/12419 images; 1453.8s
+2026-10-31 11:51:53,804 explain_deit 12419/12419 images; 1485.4s
+2026-10-31 11:51:53,876 Complete: explanations on imagenet_s
