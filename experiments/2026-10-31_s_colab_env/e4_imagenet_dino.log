@@ -1,0 +1,11 @@
+2026-10-31 14:57:58,639 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
+2026-10-31 14:57:58,641 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-31 14:58:33,596 explain_dino 640/5000 images; 34.3s
+2026-10-31 14:59:06,285 explain_dino 1280/5000 images; 67.0s
+2026-10-31 14:59:38,483 explain_dino 1920/5000 images; 99.2s
+2026-10-31 15:00:12,794 explain_dino 2560/5000 images; 133.5s
+2026-10-31 15:00:47,447 explain_dino 3200/5000 images; 168.1s
+2026-10-31 15:01:20,485 explain_dino 3840/5000 images; 201.2s
+2026-10-31 15:01:52,461 explain_dino 4480/5000 images; 233.1s
+2026-10-31 15:02:19,404 explain_dino 5000/5000 images; 260.1s
+2026-10-31 15:02:19,462 Complete: explanations on imagenet

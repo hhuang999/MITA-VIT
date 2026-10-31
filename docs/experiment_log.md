@@ -11,6 +11,8 @@
 - 速度：E7（DeiT-S）约 7.5 张/秒（每批 39 种图，其中 36 种逐层图各需一次前向）。估计全部任务约 10 小时、约 20 单元。
 - 08:02–11:08 E7 ×3、E8 ×3 完成并取回（代码 490f05a）。L4 上重算的探针逐层 ClickMe 曲线与 v3（A100）最大差 0.00005。E4 冒烟运行（DeiT-B，64 张）通过。
 - 11:08 `layer_reading` 冒烟运行失败：`torch.median`（返回索引）在 CUDA 上没有确定性实现，而运行要求确定性算法。检查发现它在图块数为偶数时取较小的中间值，与 B24 引用的 RQ3 诊断定义（中点中位数）不一致。改为复用 `interventions.sink_tokens`（quantile 0.5），测试加入偶数个图块的例子；本地 85 项测试通过，代码 0269534。此改动只涉及尚未正式运行的 `layer_reading`。实例更新代码后从 `smoke_layers` 重新排队（原状态文件改名为 `run_status_first_queue.txt` 保留）。
+- 11:27–15:02 其余 14 个任务全部成功（`smoke_layers` 通过；E4 ImageNet-S ×3、`layer_reading` ×3、E4 Hard ImageNet ×3、Pet ×2、ImageNet 子集 ×2）。16:12 全部 21 个正式运行取回；实例日志打包为 `experiments/2026-10-31_s_colab_env/`。停止实例后服务器确认 0 个活动实例、0 计费，余额 93.86 单元（本轮用去约 18.6）。取回的文件中没有找到令牌。
+- 分析：`scripts/analyze_supplement.py` 按 B22–B24 自动判定，图 15–17 由 `scripts/plot_supplement.py` 从分析表生成。结果和讨论见 `docs/analysis/supplement_s1_s3.md`，对账记为 B26；v3 报告和 README 中三处过时的说法已加注更正。
 
 ## 2026-10-31 研究笔记本（本地 CPU，不是新实验）
 
