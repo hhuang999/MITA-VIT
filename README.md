@@ -104,5 +104,6 @@ Colab（GPU）：`colab/local/send_code.sh <会话> <分支> [基准提交]` 上
 
 - [决策日志](docs/decisions.md)：每项设计、预测和判定标准（运行前登记）。
 - [进度](docs/progress.md)、[实验日志](docs/experiment_log.md)（包括失败的运行）。
-- [分析报告](docs/analysis/)：[探针综合报告](docs/analysis/probe_report.md)、[V2 解剖](docs/analysis/v2_anatomy.md)。
+- [分析报告](docs/analysis/)：[v3 完整报告](docs/analysis/v3_report.md)、[探针综合报告](docs/analysis/probe_report.md)、[V2 解剖](docs/analysis/v2_anatomy.md)。
+- [研究笔记本](notebooks/mita_probe_research.ipynb)：方法的参考实现（在 CPU 上现场运行并与项目代码核对）、指标定义、全部正式实验的核心表格和图（只读结果文件），以及由代码自动判定的预测对账。
 - [代理规范](AGENTS.md)。
