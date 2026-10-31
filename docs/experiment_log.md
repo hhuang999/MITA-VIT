@@ -1,5 +1,15 @@
 # 实验日志
 
+## 2026-10-31 补充实验 S1–S3（B22–B25，Colab L4）
+
+- 预测和判定标准在写代码前登记（提交 a96a7aa）；代码 490f05a。本地 CPU 完整测试 85 项通过（含新增 7 项：k = 197 时探针图等于完整注意力加总、三类逐层图、只算图的部件实验、layer_reading 端到端）。`analyze_parts.py` 把"对得上"的计算提成函数，重跑 DeiT-B 的 v3 分析，输出与已提交的文件逐字节相同。
+- Colab 余额 112.46 单元（此前 12.46）。L4 实例 `mita-s-l4`，1.94 单元/小时。
+- 代码包约 300 MB（36 个 8 MB 分块）。上传脚本被我设的 15 分钟时间上限终止，当时分块已全部上传、尚未合并；手动合并后 SHA-256 一致，再补传辅助脚本。
+- ImageNet 沿用 v3 的做法：先用 `snapshot_download` 把 14 个固定版本的分片下载到项目缓存，再构建、核对，然后下载 ImageNet-S、Hard ImageNet、Pet。
+- 07:18 ImageNet 核对通过（50,000 张、1,000 类），ImageNet-S、Hard ImageNet、ClickMe、PartImageNet 下载完成。Oxford-IIIT Pet 从实例连接牛津服务器连续超时（重试 5 次）；改为从本地上传原始压缩包（MD5 与 torchvision 固定值一致，上传后在实例上再核对一次）。Pet 只用于队尾的 E4 Pet 任务。
+- 07:23 GPU 测试通过；E7、E8 冒烟运行（各 32 张）成功，输出取回为 `experiments/2026-10-31_smoke_e7`、`_smoke_e8`，用来检查分析脚本（32 张图的数字不作为证据）。
+- 速度：E7（DeiT-S）约 7.5 张/秒（每批 39 种图，其中 36 种逐层图各需一次前向）。估计全部任务约 10 小时、约 20 单元。
+
 ## 2026-10-31 研究笔记本（本地 CPU，不是新实验）
 
 - 云端容器重建后重新安装环境：系统 Python 为 3.13，而 `pyproject.toml` 要求 <3.13，`pip install -e .` 被拒绝；改为把 `src/` 加入 `sys.path`（笔记本的第一个单元会自动这样做），没有修改项目配置。Debian 自带的 pyparsing 无法卸载，用 `--ignore-installed` 安装锁定版本。
