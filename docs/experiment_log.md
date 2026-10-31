@@ -9,6 +9,8 @@
 - 07:18 ImageNet 核对通过（50,000 张、1,000 类），ImageNet-S、Hard ImageNet、ClickMe、PartImageNet 下载完成。Oxford-IIIT Pet 从实例连接牛津服务器连续超时（重试 5 次）；改为从本地上传原始压缩包（MD5 与 torchvision 固定值一致，上传后在实例上再核对一次）。Pet 只用于队尾的 E4 Pet 任务。
 - 07:23 GPU 测试通过；E7、E8 冒烟运行（各 32 张）成功，输出取回为 `experiments/2026-10-31_smoke_e7`、`_smoke_e8`，用来检查分析脚本（32 张图的数字不作为证据）。
 - 速度：E7（DeiT-S）约 7.5 张/秒（每批 39 种图，其中 36 种逐层图各需一次前向）。估计全部任务约 10 小时、约 20 单元。
+- 08:02–11:08 E7 ×3、E8 ×3 完成并取回（代码 490f05a）。L4 上重算的探针逐层 ClickMe 曲线与 v3（A100）最大差 0.00005。E4 冒烟运行（DeiT-B，64 张）通过。
+- 11:08 `layer_reading` 冒烟运行失败：`torch.median`（返回索引）在 CUDA 上没有确定性实现，而运行要求确定性算法。检查发现它在图块数为偶数时取较小的中间值，与 B24 引用的 RQ3 诊断定义（中点中位数）不一致。改为复用 `interventions.sink_tokens`（quantile 0.5），测试加入偶数个图块的例子；本地 85 项测试通过，代码 0269534。此改动只涉及尚未正式运行的 `layer_reading`。实例更新代码后从 `smoke_layers` 重新排队（原状态文件改名为 `run_status_first_queue.txt` 保留）。
 
 ## 2026-10-31 研究笔记本（本地 CPU，不是新实验）
 
