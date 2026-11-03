@@ -3,7 +3,7 @@
 ## 2026-11-03 注意力预算研究：阶段一（分支 `study/attention-budget`，B27–B30，Colab L4）
 
 - 登记 B27–B30（提交 2cae9af）后写代码（d5a5609）。本地 CPU 完整测试 101 项通过（新增 16 项：MiTA 分回后 A·V 与原输出一致、各类预算之和为 1、"不读"与"置零"、同数量对照、测试时额外 token、神经元打分、12 层注意力全部删掉等于只走残差和 FFN、T0–T7 端到端）。真实权重检查：DeiT-T、DeiT-III-S、MiTA-DeiT-S 在记录预算时输出与原模型最大差 ≤ 1e-5。
-- 新模型版本：DeiT-T `80e9686…`、DeiT-III-S `f3f500f…`（timm），MiTA-DeiT-T 来自官方 Drive 文件夹（首次下载时记录 SHA-256）。MiTA 的 m、k 从检查点的训练参数读取（kv_topk 在官方代码中取平方：5 → 25）；MiTA-DeiT-S 的检查点没有保存这两个参数，沿用默认值 5、5。
+- 新模型版本：DeiT-T `80e9686…`、DeiT-III-S `f3f500f…`（timm）；MiTA-DeiT-T 来自官方 Drive 文件夹，首次下载的 SHA-256 为 `c13fbbb2…3fe8`，已写入注册表。timm 给 DeiT-III-S 的默认预处理是 Resize 248、裁剪 0.9（工程设计中"整图缩放"的说法有误，不影响统一预处理）。MiTA 的 m、k 从检查点的训练参数读取（kv_topk 在官方代码中取平方：5 → 25）；MiTA-DeiT-S 的检查点没有保存这两个参数，沿用默认值 5、5。
 - Colab 余额 93.86 单元。L4 实例 `ab-stage1`，1.94 单元/小时。队列：T1 预试验 ×7 → T2 神经元搜索（DeiT-B、DeiT-S、DINO）→ T7 ×3 → T0 ×7。
 
 ## 2026-10-31 补充实验 S1–S3（B22–B25，Colab L4）
