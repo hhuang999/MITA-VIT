@@ -111,7 +111,7 @@ def sinks(analysis, out):
         axes[1].set_yticks(range(len(keep)), [labels[c] for c in keep.index])
         axes[1].invert_yaxis()
         axes[1].set_xlabel(f'Layer-11 budget, {LABELS[registers[0].stem.split("_", 1)[1]]}')
-        axes[1].legend(loc='upper center', ncol=5, fontsize=7, bbox_to_anchor=(.5, 1.18))
+        axes[1].legend(loc='center left', fontsize=7, bbox_to_anchor=(1.0, .5))
         axes[1].grid(False)
     else:
         axes[1].set_visible(False)
