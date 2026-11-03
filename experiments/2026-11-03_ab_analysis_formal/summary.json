@@ -1,8 +1,15 @@
 {
   "H1": "fails",
   "H2": "fails",
-  "H6": "untestable",
-  "H4": {},
+  "H6": "holds",
+  "H4": {
+    "deit": {
+      "reduction": 0.9149615523766317,
+      "accuracy_R0": 79.828,
+      "accuracy_R2": 79.828,
+      "passed": true
+    }
+  },
   "sinks": {
     "deit": {
       "use": "uncertain",
@@ -75,7 +82,7 @@
   "story": {
     "h2_definitive": true,
     "same_direction": false,
-    "rq3_causal": false,
+    "rq3_causal": true,
     "use_clear": true,
     "main_story": "existing paper + new section"
   }
