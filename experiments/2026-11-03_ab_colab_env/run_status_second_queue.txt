@@ -1,0 +1,10 @@
+2026-11-03T10:54:11Z gpu_tests exit=0
+2026-11-03T10:55:31Z s_t1_deit exit=0
+2026-11-03T10:56:20Z s_t1_mita_t exit=0
+2026-11-03T10:57:45Z s_t3_mita exit=0
+2026-11-03T10:57:58Z s_t4_deit exit=0
+2026-11-03T10:58:24Z s_t2_deit_b exit=0
+2026-11-03T10:58:41Z s_t6_deit exit=0
+2026-11-03T10:58:49Z s_t7_dino exit=0
+2026-11-03T10:58:56Z s_t0_deit3_s exit=0
+2026-11-03T11:08:07Z t1_deit exit=0

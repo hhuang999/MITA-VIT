@@ -1,0 +1,2 @@
+d5a5609 Add attention-budget study code: budget ledger, sink use, test-time registers
+mv: target 'checkpoints/mita_tiny/best_checkpoint.pth': No such file or directory
