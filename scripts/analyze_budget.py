@@ -214,6 +214,16 @@ def formal(prefix, out):
                 mean, low, high, n = bootstrap(diff, 10000, level=.995)
                 judged.append(dict(hypothesis=hypothesis, a=a, b=b, n=n, mean=mean, low=low, high=high,
                                    verdict=verdict(hypothesis, low, high)))
+    for hypothesis, pairs in (('H1', [('dino', m) for m in SUPERVISED]), ('H2', list(PAIRS))):
+        for a, b in pairs:  # secondary (B28): every patch kept, descriptive 95% intervals
+            if a in raw and b in raw:
+                common, ia, ib = np.intersect1d(raw[a]['index'], raw[b]['index'], return_indices=True)
+                pick = lambda r, idx: {key: value[idx] for key, value in r.items()}  # noqa: E731
+                ra, rb = pick(raw[a], ia), pick(raw[b], ib)
+                none = np.zeros_like(ra['valid'])
+                mean, low, high, n = bootstrap(enrichment(ra, none) - enrichment(rb, none), 1000)
+                judged.append(dict(hypothesis=f'{hypothesis} (all patches)', a=a, b=b, n=n, mean=mean, low=low,
+                                   high=high, verdict='secondary (95%)'))
     if 'deit3_s' in raw and 'deit' in raw:
         _, diff = paired(raw['deit3_s'], raw['deit'])
         mean, low, high, n = bootstrap(diff, 1000)
@@ -275,8 +285,8 @@ def formal(prefix, out):
             means = part.groupby('layer')[[f'share_{c}' for c in CATEGORIES]].mean()
             for layer, r in means.iterrows():
                 rows.append(dict(model=model, query=query, layer=layer, **{c: r[f'share_{c}'] for c in CATEGORIES}))
-        enrichment = read(path / 'enrichment.csv')
-        for (scope, exclude), part in enrichment.groupby([enrichment.scope.astype(str), 'exclude']):
+        per_image = read(path / 'enrichment.csv')
+        for (scope, exclude), part in per_image.groupby([per_image.scope.astype(str), 'exclude']):
             mean, low, high, n = bootstrap(part.enrichment.to_numpy(), 1000)
             curves.append(dict(model=model, scope=scope, exclude=exclude, mean=mean, low=low, high=high, n=n,
                                mass=float(part.mass.mean())))
