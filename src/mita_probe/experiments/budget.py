@@ -76,7 +76,8 @@ def head_rows(start, store, high, prefix, n_images):
         dominant = share > .5
         norms = record['value_norm'][:, :, prefix:].float()
         has = high[:, layer - 1].any(1)
-        ordinary = norms.masked_fill(high[:, None, layer - 1], float('nan')).nanmedian(-1).values
+        # nanquantile: midpoint median with a deterministic CUDA kernel (nanmedian returns indices and has none)
+        ordinary = norms.masked_fill(high[:, None, layer - 1], float('nan')).nanquantile(.5, dim=-1)
         high_norm = (norms * high[:, None, layer - 1]).sum(-1) / high[:, None, layer - 1].sum(-1).clamp_min(1)
         ratio = torch.where(has[:, None], high_norm / ordinary, torch.full_like(high_norm, float('nan')))
         rank = record['rank']
