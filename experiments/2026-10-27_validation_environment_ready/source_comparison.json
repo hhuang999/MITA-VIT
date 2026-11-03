@@ -1,7 +1,0 @@
-{
-  "all_passed": true,
-  "same_14_parquet_hashes": true,
-  "same_indices_file": true,
-  "same_model_sha256": true,
-  "decoded_images": 5000
-}

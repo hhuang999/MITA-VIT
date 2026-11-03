@@ -1,2 +1,0 @@
-Combined 35 original and 7 approved extension settings; exact image/label/original-prediction pairing passed.
-Confidence intervals: 1000 paired image bootstrap resamples, seed=0.

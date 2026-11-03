@@ -1,6 +1,0 @@
-k,contrast,difference,ci_low,ci_high
-4,grid_minus_random,0.26,0.14,0.38
-8,grid_minus_random,0.512,0.37990000000000007,0.64
-16,grid_minus_random,0.6679999999999999,0.5439,0.7801
-32,grid_minus_random,0.496,0.376,0.624
-64,grid_minus_random,0.31999999999999995,0.196,0.436

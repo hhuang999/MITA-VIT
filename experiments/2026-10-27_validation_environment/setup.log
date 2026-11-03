@@ -1,2 +1,0 @@
-Running: /content/MITA_vit/.venv/bin/python -m pip install --no-deps -r requirements-torch.txt --index-url https://download.pytorch.org/whl/cu128
-ERROR: Could not open requirements file: [Errno 2] No such file or directory: 'requirements-torch.txt'

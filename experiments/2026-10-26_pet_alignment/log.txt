@@ -1,4 +1,0 @@
-Verified original dataset README labels 1/2/3.
-Image and mask share Resize(size=248) then CenterCrop(224); mask uses nearest.
-Image tensors exactly match pinned timm eval transform.
-Visual review passed: all five images, trimaps and token overlays align; red all-boundary tokens remain excluded.

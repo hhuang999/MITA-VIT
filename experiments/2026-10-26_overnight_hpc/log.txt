@@ -1,6 +1,0 @@
-2026-10-26: Reused the existing development environment; no model run started on HPC.
-Job 97900: 2x A800 request waited for job slots, then canceled.
-Job 97902: single A800 request waited: Job slot limit reached: 3 hosts; Closed by unischeduler administrator: 1 host. Canceled.
-Job 97903: MIG 40 GB waited: Job's MIG GPU resource requirements not satisfied: 1 host. Canceled.
-Environment stop verified through platform status; see cleanup.json. Persistent files retained.
-Formal runs use the validated local RTX 4060 under recorded overnight decision N05.

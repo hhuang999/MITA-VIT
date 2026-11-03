@@ -1,5 +1,0 @@
-k,scope,contrast,mean,low,high,n
-16,all12,random_minus_sink_agreement,-0.018749999999999992,-0.05624999999999998,0.018750000000000006,32
-16,last4,random_minus_sink_agreement,-0.05,-0.125,0.0,32
-32,all12,random_minus_sink_agreement,0.02500000000000001,-0.03749999999999999,0.09375,32
-32,last4,random_minus_sink_agreement,0.0125,-0.012656249999999989,0.056249999999999994,32

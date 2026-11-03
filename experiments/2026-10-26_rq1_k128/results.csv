@@ -1,3 +1,0 @@
-run_id,timestamp,git_commit,model,dataset,n_images,rq,replace_scope,layer,grouping,readset,seed,mode,m,k,agree,agree_ci_low,agree_ci_high,kl,acc_original,acc_executed,notes
-2026-10-26_rq1_k128,2026-10-26T01:04:29.918901+08:00,295d014631da6461e893c426424cd855fa55fde0,deit_small_patch16_224.fb_in1k,imagenet_val,5000,rq1,all,,grid,ours,0,strict,16,128,0.9508,0.9452,0.9566,0.030823443554748007,0.7962,0.7952,frozen original summaries; seconds=48.563
-2026-10-26_rq1_k128,2026-10-26T01:04:29.918901+08:00,295d014631da6461e893c426424cd855fa55fde0,deit_small_patch16_224.fb_in1k,imagenet_val,5000,rq1,all,,grid,random,0,strict,16,128,0.8462,0.836795,0.8562,0.26459158669906635,0.7962,0.7516,frozen original summaries; seconds=47.663

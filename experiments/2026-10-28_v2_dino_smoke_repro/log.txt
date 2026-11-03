@@ -1,4 +1,0 @@
-2026-10-28 07:09:59,595 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
-2026-10-28 07:09:59,597 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
-2026-10-28 07:10:00,913 dino_repro 64/64 images; 1.1s
-2026-10-28 07:10:00,942 Complete: repro

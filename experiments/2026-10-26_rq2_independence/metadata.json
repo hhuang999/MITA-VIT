@@ -1,9 +1,0 @@
-{
-  "git_commit": "43d15cec81612f2949002eefa5b5e4be2c85bce7",
-  "rq2_source": "2026-10-26_rq2_imagenet",
-  "rq1_source": "2026-10-26_rq1_imagenet",
-  "bootstrap_resamples": 1000,
-  "seed": 0,
-  "confidence": 0.95,
-  "no_new_model_inference": true
-}
