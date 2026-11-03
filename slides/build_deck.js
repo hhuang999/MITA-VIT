@@ -335,27 +335,41 @@ s.addNotes("Reading layer by layer, human alignment and head preference rise and
   "curves are the same for all three readouts, so this is a property of the models' attention, not an artefact of " +
   "our probe.");
 
-// ---------- 11. High-norm ----------
-s = content("Results", "High-norm tokens absorb reading, but do not explain the drift");
-const layers = Array.from({ length: 12 }, (_, i) => String(i + 1));
-s.addChart(pres.charts.LINE, [
-  { name: "DeiT-S", labels: layers, values: DATA.high_share.deit },
-  { name: "DINO ViT-S", labels: layers, values: DATA.high_share.dino },
-  { name: "DeiT-B", labels: layers, values: DATA.high_share.deit_b },
-], chartStyle({ x: 0.6, y: 1.4, w: 7.6, h: 5.2, chartColors: [HEX.accent1, HEX.accent6, HEX.dk2], lineSize: 2.5,
-  lineDataSymbol: "circle", lineDataSymbolSize: 6, valAxisMinVal: 0, valAxisMaxVal: 0.7, valAxisLabelFormatCode: "0%",
-  showTitle: true, title: "Share of the probe's reading on high-norm patches, per layer", titleFontFace: "+mj-lt",
-  titleFontSize: 14, titleColor: HEX.dk2, showCatAxisTitle: true, catAxisTitle: "Layer", catAxisTitleFontSize: 12,
-  catAxisTitleColor: HEX.accent5, objectName: "high-norm chart" }));
-stat(s, { x: 8.7, y: 1.5, w: 4.0, value: "3% → 61%", label: "in DeiT-B layer 11, 3% of patches receive 61% of the probe's reading",
-  color: C.text2 });
-bullets(s, ["DINO has no high-norm patches at all, as Darcet et al. (2024) report",
-  "But the share falls at layer 12, exactly where the drift happens",
-  "Why the last layer leaves the object remains open"], { x: 8.7, y: 3.45, w: 4.0, h: 3.1 });
-s.addNotes("Could high-norm artefact tokens explain the drift? Supervised ViTs do send a lot of their mid-to-late " +
-  "reading to a handful of high-norm patches; in DeiT-B layer 11, three percent of patches get 61 percent of the " +
-  "reading. DINO has none, as Darcet et al. reported. But at layer 12 the share goes down, not up, so these tokens " +
-  "do not explain why the last layer leaves the object. That question remains open.");
+// ---------- 11. Attention budget ----------
+s = content("Results", "High-norm tokens take up to half of deep attention");
+s.addImage({ path: path.join(ROOT, "figures/figure18_budget_ledger.png"), x: 0.6, y: 1.3, w: 12.1, h: 12.1 * 520 / 2800,
+  altText: "Share of each layer's attention budget on object, background, high-norm patches and CLS in seven ViTs",
+  objectName: "budget ledger figure" });
+stat(s, { x: 0.6, y: 3.85, w: 3.8, value: "43%", label: "of DeiT-B layer-11 attention lands on 3% of patches (MiTA-DeiT-S: 50%)",
+  color: C.accent2 });
+stat(s, { x: 4.75, y: 3.85, w: 3.8, value: "0.052", label: "nats lost when no query reads them in DeiT-B, more than for the top ordinary patches (0.037)",
+  color: C.accent2 });
+stat(s, { x: 8.9, y: 3.85, w: 3.8, value: "≈ 0", label: "lost when their values are replaced by a fixed mean: they act like a constant",
+  color: C.accent2 });
+s.addNotes("Every query spends a budget of one over the tokens. In a registered follow-up we traced this budget in seven " +
+  "ViTs on twelve thousand ImageNet-S images. In DeiT-B and in both MiTA models, a handful of high-norm tokens take " +
+  "thirty to fifty percent of deep attention; DeiT-T, DeiT-III and DINO have none. In DeiT-B this budget is used: " +
+  "blocking these tokens hurts more than blocking as many of the most-attended ordinary patches. Yet a fixed mean " +
+  "value works just as well, so they behave like a constant term rather than carrying image content.");
+
+// ---------- 12. Two levers ----------
+s = content("Results", "Neither sparsity nor registers moves attention to objects");
+s.addImage({ path: path.join(ROOT, "figures/figure20_sinks.png"), x: 0.6, y: 1.3, w: 7.6, h: 7.6 * 640 / 2000,
+  altText: "Left: cost of removing high-norm patches vs controls. Right: DeiT-S layer-11 budget under register conditions",
+  objectName: "levers figure" });
+stat(s, { x: 0.6, y: 4.3, w: 3.6, value: "−92%", label: "high-norm patches after moving 8 FFN units to a test-time register (accuracy 79.83% → 79.83%)",
+  color: C.accent1 });
+stat(s, { x: 4.5, y: 4.3, w: 3.6, value: "+0.006", label: "object enrichment: the freed budget goes to the register (+5.9 points), not the object (+0.5)",
+  color: C.accent2 });
+bullets(s, ["Top-k training (MiTA vs DeiT): object enrichment lower at both sizes as maps are drawn (−0.039, −0.020); without high-norm patches −0.011 (Small), +0.037 (Tiny)",
+  "Test-time register (DeiT-S, 8 FFN units): 92% of high-norm patches gone, accuracy unchanged, but the freed budget goes to the register; enrichment +0.006",
+  "The last-layer drift stays in all seven models, also with the register"],
+  { x: 8.5, y: 1.35, w: 4.2, h: 5.4 });
+s.addNotes("Two levers are said to make attention maps cleaner. Top-k training, as in MiTA, does not focus maps on " +
+  "objects as they are usually drawn; it creates more high-norm tokens. Only after removing those does the Tiny model " +
+  "look more focused, so the effect depends on scale. Moving the eight FFN units that make high-norm tokens in DeiT-S " +
+  "to a test-time register removes them at no cost in accuracy, but the freed attention goes to the register, not to " +
+  "the object. And these tokens do not explain why the last layer leaves the object.");
 
 // ---------- 12. Takeaways ----------
 pres.addSection({ title: "Closing" });
@@ -364,20 +378,22 @@ s.addText("Takeaways", { placeholder: "title" });
 const takeaways = [
   "Top-k reading sets make attention checkable: run the model through them and the prediction survives",
   "Under centre control, ViTs read objects and animal heads, and rely on them",
-  "Reading is most human-like in mid-to-late layers; supervised ViTs drift at the last layer, DINO does not",
+  "Reading is most human-like in mid-to-late layers; supervised ViTs lose this at the last layer",
+  "A cleaner-looking map is not more object focus: sparsity and registers only move the sink",
   "Honest limits: attention maps trail GAE, and top-k does not beat dense attention as a map",
 ];
 takeaways.forEach((t, i) => {
-  const y = 1.45 + i * 1.15;
-  badge(s, { x: 0.8, y: y + 0.1, label: String(i + 1), color: i === 3 ? C.accent2 : C.accent1 });
+  const y = 1.35 + i * 0.98;
+  badge(s, { x: 0.8, y: y + 0.1, label: String(i + 1), color: i === 4 ? C.accent2 : C.accent1 });
   s.addText(t, { x: 1.65, y, w: 10.9, h: 0.8, fontSize: 20, color: C.background1, margin: 0, valign: "middle",
     isTextBox: true });
 });
-s.addText("Registered before the runs: of 29 directional predictions, 19 held, 7 held partly, 3 failed.   Questions?",
+s.addText("Registered before the runs: of 32 directional predictions, 20 held, 7 held partly, 5 failed.   Questions?",
   { x: 0.8, y: 6.2, w: 11.8, h: 0.5, fontSize: 15, italic: true, color: C.background2, margin: 0, isTextBox: true });
 s.addNotes("To sum up. Top-k reading sets make attention checkable. Under centre control, ViTs read objects and animal " +
   "heads and rely on them. Reading is most human-like in mid-to-late layers, and supervised models drift at the last " +
-  "layer while DINO does not. And the limits: attention maps trail gradient methods, and top-k selection does not beat " +
+  "layer. A cleaner-looking map, from sparsity or from registers, is not more object focus: the attention just moves " +
+  "to a new sink. And the limits: attention maps trail gradient methods, and top-k selection does not beat " +
   "plain attention as a map. We registered every prediction in advance; most held, and we report the ones that failed. " +
   "Thank you, I'm happy to take questions.");
 
