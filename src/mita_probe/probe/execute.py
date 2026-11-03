@@ -91,13 +91,17 @@ def capture_cls_attention(model):
 
 
 @contextmanager
-def capture_input_norms(model):
-    """Capture each block's input norm per spatial token (before norm1; prefix tokens excluded)."""
+def capture_input_norms(model, prefix=None):
+    """Capture each block's input norm per spatial token (before norm1; prefix tokens excluded).
+
+    prefix: number of leading non-patch tokens (default model.num_prefix_tokens; 2 with a test-time register).
+    """
     norms, handles = {}, []
+    prefix = model.num_prefix_tokens if prefix is None else prefix
 
     def hook(layer):
         def capture(module, inputs):
-            norms[layer] = inputs[0][:, model.num_prefix_tokens:].float().norm(dim=-1)
+            norms[layer] = inputs[0][:, prefix:].float().norm(dim=-1)
         return capture
 
     try:

@@ -28,8 +28,9 @@ def main():
     parser.add_argument('experiment', choices=sorted(EXPERIMENTS))
     parser.add_argument('--config', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--stage', help='anatomy only: noise, rq1, rq2, repro, mita_repro, mita_anatomy, pet')
-    parser.add_argument('--model', default='deit', help='model name: deit, deit_b, dino or mita')
+    parser.add_argument('--stage', help='anatomy: noise, rq1, rq2, repro, mita_repro, mita_anatomy, pet; '
+                        'budget: pilot, formal; register: search, formal')
+    parser.add_argument('--model', default='deit', help='model name: deit, deit_b, dino, mita, deit_t, mita_t, deit3_s')
     parser.add_argument('--batch-size', type=int)
     parser.add_argument('--workers', type=int)
     parser.add_argument('--device', default='cuda', choices=['cuda', 'cpu'])

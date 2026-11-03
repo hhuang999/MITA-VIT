@@ -9,13 +9,18 @@
 | partimagenet | PartImageNet_Seg part masks, 24,080 ImageNet training images (config partimagenet_splits
   selects splits) | the model's ImageNet evaluation |
 
+Config keys used by the attention-budget study (decision B28): `preprocessing: uniform` runs every model
+with models.UNIFORM_PREPROCESSING; `split: pilot|formal` (with `pilot_images`, `split_seed`) keeps one part
+of a mask dataset (data.splits).
+
 Mask datasets yield (image, object, valid, index); `imagenet` yields (image, label) — experiments that
 need masks reject it; `partimagenet` adds per-patch part fractions: (image, object, valid, parts, index).
 """
 
 from ..data import (HardImageNet, ImageNetFiles, ImageNetS, ImageNetValidation, PartImageNet, PetSegmentation,
                     experiment_indices)
-from ..models import IMAGENET_PREPROCESSING, data_reference
+from ..data.splits import split_indices
+from ..models import IMAGENET_PREPROCESSING, UNIFORM_PREPROCESSING, data_reference
 from ..runtime import data_root, project_path
 
 MASK_DATASETS = ('pet', 'imagenet_s', 'hard_imagenet')
@@ -33,7 +38,8 @@ def imagenet_files():
 def build(name, model, model_name, config, deit_reference=None):
     """Return (dataset, indices). deit_reference: the DeiT-S model whose geometry Pet uses for all models."""
     reference = data_reference(model)
-    preprocessing = IMAGENET_PREPROCESSING[model_name]
+    preprocessing = UNIFORM_PREPROCESSING if config.get('preprocessing') == 'uniform' \
+        else IMAGENET_PREPROCESSING[model_name]
     if name == 'imagenet':
         dataset = ImageNetValidation(data_root() / 'imagenet_val', reference, preprocessing=preprocessing)
         return dataset, experiment_indices(len(dataset), config['n_images'], config['subset_seed'],
@@ -52,4 +58,5 @@ def build(name, model, model_name, config, deit_reference=None):
                                splits=splits)
     else:
         raise ValueError(f'Unknown dataset {name}; choose from {NAMES}')
-    return dataset, list(range(len(dataset)))
+    split = config.get('split', 'all')
+    return dataset, split_indices(len(dataset), split, config.get('pilot_images', 500), config.get('split_seed', 0))

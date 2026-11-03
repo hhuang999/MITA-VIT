@@ -15,6 +15,9 @@ uv pip install -q --python $PY gdown
 mkdir -p checkpoints/mita
 .venv/bin/gdown -q --folder https://drive.google.com/drive/folders/175gOzODWbS_6sap-tXz-9ufh8-y2Mq7k -O /content/mita_ckpt
 mv /content/mita_ckpt/best_checkpoint.pth /content/mita_ckpt/log.txt checkpoints/mita/
+mkdir -p checkpoints/mita_tiny   # MiTA-DeiT-T (attention budget); folder from the MiTA model zoo
+.venv/bin/gdown -q --folder https://drive.google.com/drive/folders/1KnFqHpJLc_NddIjKnRJEb9McQjN4DXgk -O /content/mita_tiny_ckpt
+mv /content/mita_tiny_ckpt/*.pth checkpoints/mita_tiny/best_checkpoint.pth
 $PY scripts/download_models.py   # DeiT-S, DINO + head; verifies every SHA-256
 $PY scripts/check_environment.py
 echo SETUP_DONE

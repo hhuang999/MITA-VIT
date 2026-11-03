@@ -1,6 +1,7 @@
-"""Download and verify the studied models: DeiT-S and DINO (timm, pinned revisions) and the DINO linear head.
+"""Download and verify the studied models: DeiT-S/B/T, DeiT-III-S and DINO (timm, pinned revisions) and the
+DINO linear head.
 
-The MiTA-DeiT-S checkpoint comes from the authors' Google Drive folder; see colab/setup.sh for the gdown
+The MiTA-DeiT-S and MiTA-DeiT-T checkpoints come from the authors' Google Drive folder; see colab/setup.sh for the gdown
 command. Every checkpoint is checked against the SHA-256 recorded in mita_probe.models.
 """
 
@@ -21,7 +22,7 @@ def main():
     if not head.exists():
         head.parent.mkdir(parents=True, exist_ok=True)
         urllib.request.urlretrieve(HEAD_URL, head)
-    for name in ('deit', 'deit_b', 'dino'):
+    for name in ('deit', 'deit_b', 'dino', 'deit_t', 'deit3_s'):
         model = load_model(name)
         print(f'{name}: {sum(p.numel() for p in model.parameters()):,} parameters, '
               f'{timm.data.resolve_model_data_config(getattr(model, "backbone", model))}')
@@ -30,6 +31,13 @@ def main():
         print('mita: checkpoint verified')
     else:
         print('mita: checkpoint missing (download it with gdown, see colab/setup.sh)')
+    tiny = project_path('checkpoints/mita_tiny/best_checkpoint.pth')
+    if tiny.exists():
+        import hashlib
+        load_model('mita_t')
+        print('mita_t: loaded; SHA-256', hashlib.sha256(tiny.read_bytes()).hexdigest())
+    else:
+        print('mita_t: checkpoint missing (download it with gdown, see colab/setup.sh)')
 
 
 if __name__ == '__main__':
