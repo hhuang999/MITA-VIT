@@ -40,10 +40,13 @@ class Edits:
 
 
 def effective_rank(matrix):
-    """exp(entropy of the normalised singular values) of [..., rows, cols]."""
-    values = torch.linalg.svdvals(matrix.double())
+    """exp(entropy of the normalised singular values) of [..., rows, cols].
+
+    Computed in float64 on the CPU: batched CUDA SVD is ~50x slower on an L4 (weak float64 throughput).
+    """
+    values = torch.linalg.svdvals(matrix.detach().double().cpu())
     p = values / values.sum(-1, keepdim=True).clamp_min(1e-30)
-    return torch.exp(-(p * p.clamp_min(1e-30).log()).sum(-1)).float()
+    return torch.exp(-(p * p.clamp_min(1e-30).log()).sum(-1)).float().to(matrix.device)
 
 
 def mita_attention(attention, q, k, plan, grid, prefix):
