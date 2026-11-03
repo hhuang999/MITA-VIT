@@ -27,7 +27,7 @@
 \begin{abstract}
 Attention maps are the most common way to look inside Vision Transformers (ViTs), but they are hard to verify and easily confused with the centre bias of photographs.
 We read, from unmodified pretrained ViTs, which tokens each image region attends to: following the fast-weight view of attention and the top-$k$ reading rule of MiTA, each of 16 regions keeps the 16 keys that its mean query scores highest.
-Because these reading sets can be executed, we can check that they are what the model uses: restricting one layer to them keeps 92--96\% of DeiT-S top-1 predictions, and restricting all twelve layers keeps 72\% against 9\% for random sets of the same size.
+Because these reading sets can be executed, we can check that they are what the model uses: restricting all twelve layers to them keeps 72\% of DeiT-S top-1 predictions, against 9\% for random sets of the same size and 0.1\% with no attention at all.
 We then ask what three attention readouts---the top-$k$ sets, dense attention received, and CLS attention---reveal about DeiT-S, DINO ViT-S and DeiT-B under tests that control for centre bias.
 Attention goes to objects beyond the centre prior, follows objects moved off-centre, and agrees with human importance maps image by image; the models themselves rely more on animal heads than bodies.
 Layer by layer, reading is most human-like in mid-to-late layers, and the last layer of the supervised ViTs, but not of DINO, drifts off the object.
@@ -48,7 +48,7 @@ MiTA~\citep{wen2026mita} trains models that read only the top-$k$ such neurons p
 Around this probe we build tests that remove centre bias and compare three attention readouts with gradient-based explanations on three models and five datasets.
 
 \textbf{Contributions.}
-(i)~Executable reading sets that reproduce single layers almost exactly and the network largely (Sec.~\ref{sec:execution}).
+(i)~Executable reading sets that keep 62--83\% of predictions when every layer reads only them, against 4--30\% for random sets (Sec.~\ref{sec:execution}).
 (ii)~A centre-controlled protocol: same-distance-ring enrichment, image-specific human alignment, centre-matched and part-wise token removal (Sec.~\ref{sec:protocol}).
 (iii)~Findings that hold for three readouts: attention and the model's reliance go to objects and animal heads beyond the centre; reading is most human-like in mid-to-late layers; the last layer of supervised ViTs drifts off the object, DINO's does not; high-norm tokens absorb much mid-to-late reading but do not explain the drift (Sec.~\ref{sec:findings}).
 (iv)~A negative result: attention readouts trail GAE on deletion faithfulness, and top-$k$ selection does not improve the map over dense attention (Sec.~\ref{sec:compare}).
@@ -101,8 +101,8 @@ Intervals are 95\% paired bootstrap intervals over images (1,000 resamples).
 \end{figure}
 
 \subsection{The reading sets are what the model computes with}
-Restricting one layer to its sets keeps 92--96\% of DeiT-S and 95--97\% of DeiT-B predictions (Fig.~\ref{fig:execution}c); DINO is lower in a few layers (77\% at layer~1, 81\% at layer~12).
-Restricting all twelve layers keeps 72\% (DeiT-S), 62\% (DINO) and 83\% (DeiT-B) at $k=16$, against 9\%, 4\% and 30\% for random sets.
+The test is the whole network: restricting all twelve layers keeps 72\% (DeiT-S), 62\% (DINO) and 83\% (DeiT-B) at $k=16$, against 9\%, 4\% and 30\% for random sets and 0.1--0.2\% with no attention at all.
+Single layers are no such test: one layer restricted to its sets keeps 92--96\% of DeiT-S predictions (Fig.~\ref{fig:execution}c), but deleting that layer's attention outright already keeps 93--97\% (69\% at layer~1), so they only show which layers are harder to replace.
 Reading concentrates with depth: in DeiT-S the union of all sets covers 75\% of patches at layer~3 but 12\% at layer~12.
 Attention reading can therefore be treated as a measured quantity rather than a picture.
 
