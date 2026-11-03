@@ -1,0 +1,24 @@
+t (9/14 shards):  66%|██████▋   | 33145/50000 [00:13<00:05, 2995.69 examples/s]Saving the dataset (9/14 shards):  68%|██████▊   | 34145/50000 [00:14<00:05, 3108.21 examples/s]Saving the dataset (9/14 shards):  70%|███████   | 35145/50000 [00:14<00:04, 3304.66 examples/s]Saving the dataset (9/14 shards):  71%|███████▏  | 35716/50000 [00:14<00:04, 3325.59 examples/s]Saving the dataset (10/14 shards):  71%|███████▏  | 35716/50000 [00:14<00:04, 3325.59 examples/s]Saving the dataset (10/14 shards):  73%|███████▎  | 36716/50000 [00:14<00:04, 3105.26 examples/s]Saving the dataset (10/14 shards):  75%|███████▌  | 37716/50000 [00:15<00:03, 3247.20 examples/s]Saving the dataset (10/14 shards):  77%|███████▋  | 38716/50000 [00:15<00:03, 3288.95 examples/s]Saving the dataset (10/14 shards):  79%|███████▊  | 39287/50000 [00:15<00:03, 3382.16 examples/s]Saving the dataset (11/14 shards):  79%|███████▊  | 39287/50000 [00:15<00:03, 3382.16 examples/s]Saving the dataset (11/14 shards):  81%|████████  | 40287/50000 [00:15<00:03, 3199.18 examples/s]Saving the dataset (11/14 shards):  83%|████████▎ | 41287/50000 [00:16<00:02, 3261.57 examples/s]Saving the dataset (11/14 shards):  85%|████████▍ | 42287/50000 [00:16<00:02, 3362.83 examples/s]Saving the dataset (11/14 shards):  86%|████████▌ | 42858/50000 [00:16<00:02, 3474.56 examples/s]Saving the dataset (12/14 shards):  86%|████████▌ | 42858/50000 [00:16<00:02, 3474.56 examples/s]Saving the dataset (12/14 shards):  88%|████████▊ | 43858/50000 [00:17<00:01, 3132.57 examples/s]Saving the dataset (12/14 shards):  90%|████████▉ | 44858/50000 [00:17<00:01, 3102.87 examples/s]Saving the dataset (12/14 shards):  92%|█████████▏| 45858/50000 [00:17<00:01, 3028.34 examples/s]Saving the dataset (12/14 shards):  93%|█████████▎| 46429/50000 [00:17<00:01, 2935.75 examples/s]Saving the dataset (13/14 shards):  93%|█████████▎| 46429/50000 [00:17<00:01, 2935.75 examples/s]Saving the dataset (13/14 shards):  95%|█████████▍| 47429/50000 [00:18<00:00, 2754.27 examples/s]Saving the dataset (13/14 shards):  97%|█████████▋| 48429/50000 [00:18<00:00, 2846.29 examples/s]Saving the dataset (13/14 shards):  99%|█████████▉| 49429/50000 [00:19<00:00, 2860.14 examples/s]Saving the dataset (13/14 shards): 100%|██████████| 50000/50000 [00:19<00:00, 2861.74 examples/s]Saving the dataset (14/14 shards): 100%|██████████| 50000/50000 [00:19<00:00, 2861.74 examples/s]Saving the dataset (14/14 shards): 100%|██████████| 50000/50000 [00:19<00:00, 2598.48 examples/s]
+ImageNet validation: 50000 images; saved 5,000 indices (seed 0)
+Verified data/validation-00000-of-00014.parquet
+Verified data/validation-00001-of-00014.parquet
+Verified data/validation-00002-of-00014.parquet
+Verified data/validation-00003-of-00014.parquet
+Verified data/validation-00004-of-00014.parquet
+Verified data/validation-00005-of-00014.parquet
+Verified data/validation-00006-of-00014.parquet
+Verified data/validation-00007-of-00014.parquet
+Verified data/validation-00008-of-00014.parquet
+Verified data/validation-00009-of-00014.parquet
+Verified data/validation-00010-of-00014.parquet
+Verified data/validation-00011-of-00014.parquet
+Verified data/validation-00012-of-00014.parquet
+Verified data/validation-00013-of-00014.parquet
+Decoded 1000/5000 subset images
+Decoded 2000/5000 subset images
+Decoded 3000/5000 subset images
+Decoded 4000/5000 subset images
+Decoded 5000/5000 subset images
+ImageNet validation download verified
+imagenet_s: annotations extracted to /content/MITA-VIT/data/imagenet_s
+DATA_DONE

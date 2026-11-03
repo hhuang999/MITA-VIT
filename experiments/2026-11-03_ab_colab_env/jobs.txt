@@ -1,0 +1,10 @@
+t3_deit	.venv/bin/python scripts/run.py budget --stage formal --model deit --config configs/attention_budget.yaml --output experiments/2026-11-03_ab_t3_deit
+t3_dino	.venv/bin/python scripts/run.py budget --stage formal --model dino --config configs/attention_budget.yaml --output experiments/2026-11-03_ab_t3_dino
+t3_deit_b	.venv/bin/python scripts/run.py budget --stage formal --model deit_b --config configs/attention_budget.yaml --output experiments/2026-11-03_ab_t3_deit_b
+t3_mita	.venv/bin/python scripts/run.py budget --stage formal --model mita --config configs/attention_budget.yaml --output experiments/2026-11-03_ab_t3_mita
+t3_deit_t	.venv/bin/python scripts/run.py budget --stage formal --model deit_t --config configs/attention_budget.yaml --output experiments/2026-11-03_ab_t3_deit_t
+t3_mita_t	.venv/bin/python scripts/run.py budget --stage formal --model mita_t --config configs/attention_budget.yaml --output experiments/2026-11-03_ab_t3_mita_t
+t3_deit3_s	.venv/bin/python scripts/run.py budget --stage formal --model deit3_s --config configs/attention_budget.yaml --output experiments/2026-11-03_ab_t3_deit3_s
+t4_deit	.venv/bin/python scripts/run.py sink_use --model deit --config configs/attention_budget.yaml --output experiments/2026-11-03_ab_t4_deit
+t4_deit_b	.venv/bin/python scripts/run.py sink_use --model deit_b --config configs/attention_budget.yaml --output experiments/2026-11-03_ab_t4_deit_b
+t6_deit	.venv/bin/python scripts/run.py register --stage formal --model deit --config configs/attention_budget.yaml --output experiments/2026-11-03_ab_t6_deit
