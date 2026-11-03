@@ -1,0 +1,188 @@
+\documentclass{article}
+% NeurIPS 2025 style (course requirement: NeurIPS preprint format, 4 content pages + appendix).
+% The style file is not in Git (third-party); run paper/get_style.sh first.
+\usepackage[preprint]{neurips_2025}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts,amsmath}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+
+\title{What Do Vision Transformers Read?\\Executable Attention Reading Sets under Centre-Bias Control}
+
+% TODO(author): name, affiliation and e-mail.
+\author{Author Name \\ HKUST(GZ) \\ \texttt{email@example.com}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Attention maps are the most common way to look inside Vision Transformers (ViTs), but they are hard to verify and easily confused with the centre bias of photographs.
+We read, from unmodified pretrained ViTs, which tokens each image region attends to: following the fast-weight view of attention and the top-$k$ reading rule of MiTA, each of 16 regions keeps the 16 keys that its mean query scores highest.
+Because these reading sets can be executed, we can check that they are what the model uses: restricting one layer to them keeps 92--96\% of DeiT-S top-1 predictions, and restricting all twelve layers keeps 72\% against 9\% for random sets of the same size.
+We then ask what three attention readouts---the top-$k$ sets, dense attention received, and CLS attention---reveal about DeiT-S, DINO ViT-S and DeiT-B under tests that control for centre bias.
+Attention goes to objects beyond the centre prior, follows objects moved off-centre, and agrees with human importance maps image by image; the models themselves rely more on animal heads than bodies.
+Layer by layer, reading is most human-like in mid-to-late layers, and the last layer of the supervised ViTs, but not of DINO, drifts off the object.
+Supervised ViTs route up to 61\% of mid-to-late reading to about 3\% of high-norm tokens, which DINO lacks, yet this does not explain the drift.
+As saliency maps, all attention readouts remain clearly less faithful than gradient-based GAE, and the top-$k$ step does not improve the map over dense attention.
+\end{abstract}
+
+\section{Introduction}
+
+Attention maps are cheap and look plausible, which makes them the default view into ViTs~\citep{abnar2020rollout,caron2021dino}.
+Two problems limit what they tell us.
+A map is a picture, not a computation: nothing guarantees that the model relies on the highlighted tokens~\citep{jain2019attention,wiegreffe2019attention}.
+And objects in photographs sit near the centre, so a map that always highlights the centre already scores well; a fixed centred Gaussian correlates at 0.41 with ClickMe human importance maps~\citep{fel2022harmonizing}, more than our probe does on any of three models.
+
+One attention layer computes the same function as a two-layer network whose first-layer weights are the keys, whose activation is the softmax and whose second-layer weights are the values~\citep{schlag2021fastweights,wen2026mita}.
+Each token is then a hidden neuron tied to an image position.
+MiTA~\citep{wen2026mita} trains models that read only the top-$k$ such neurons per image region; we instead \emph{read} these sets from unmodified pretrained ViTs and \emph{execute} the model through them, so the reading is checked by the model's own output.
+Around this probe we build tests that remove centre bias and compare three attention readouts with gradient-based explanations on three models and five datasets.
+
+\textbf{Contributions.}
+(i)~Executable reading sets that reproduce single layers almost exactly and the network largely (Sec.~\ref{sec:execution}).
+(ii)~A centre-controlled protocol: same-distance-ring enrichment, image-specific human alignment, centre-matched and part-wise token removal (Sec.~\ref{sec:protocol}).
+(iii)~Findings that hold for three readouts: attention and the model's reliance go to objects and animal heads beyond the centre; reading is most human-like in mid-to-late layers; the last layer of supervised ViTs drifts off the object, DINO's does not; high-norm tokens absorb much mid-to-late reading but do not explain the drift (Sec.~\ref{sec:findings}).
+(iv)~A negative result: attention readouts trail GAE on deletion faithfulness, and top-$k$ selection does not improve the map over dense attention (Sec.~\ref{sec:compare}).
+All predictions and pass criteria were registered before the runs (Appendix~\ref{app:ledger}).
+
+\textbf{Related work.}
+Rollout~\citep{abnar2020rollout} propagates attention through layers; GAE and related methods combine attention with gradients~\citep{chefer2021transformer,chefer2021gae}; AttnLRP, TokenTM and LibraGrad refine relevance propagation~\citep{achtibat2024attnlrp,wu2024tokentm,mehri2025libragrad}.
+We evaluate with deletion curves~\citep{petsiuk2018rise} summarised by SRG~\citep{bluecher2024srg} under token removal~\citep{jain2022missingness,mehri2025libragrad}, SaCo~\citep{wu2024saco}, the randomisation sanity check~\citep{adebayo2018sanity} and the Harmonization protocol~\citep{fel2022harmonizing}.
+Top-$k$ attention~\citep{gupta2021topk,wen2026mita} targets efficiency, and ``attention received'' scores tokens for pruning~\citep{goyal2020powerbert,kim2022ltp,wang2024zerotprune}; our dense readout is this score, used here as an explanation.
+High-norm artefact tokens~\citep{darcet2024registers} appear in supervised ViTs but not in the original DINO, which our measurements reproduce.
+
+\section{Method}
+\label{sec:method}
+
+\textbf{Reading sets.}
+For a layer and head with queries $q_i$ and keys $k_j$ ($j$ over 197 tokens), we pool the $14\times14$ patch grid into $m=16$ regions ($4\times4$), take each region's mean query $\bar q_r$, and keep
+$S_r=\operatorname{top-}k_j\,\bar q_r^{\top}k_j$ with $k=16$. Every patch query reads only the set of its region; CLS reads its own top-$k$ set.
+Sets come from one ordinary forward pass and do not change the model.
+To check them (\emph{execution test}), we run the model with selected layers restricted to the sets and measure top-1 agreement with the unmodified model, against random sets of the same size.\label{sec:execution}
+
+\textbf{Three readouts.}
+For layers $\ell\in\mathcal L$, we score patch $j$ by the attention it receives:
+\begin{equation}
+s_j=\sum_{\ell\in\mathcal L}\sum_{h}\sum_{i}\frac{\exp(q_i^{\top}k_j/\sqrt d)\,[j\in S_{r(i)}]}{\sum_{j'\in S_{r(i)}}\exp(q_i^{\top}k_{j'}/\sqrt d)} .
+\end{equation}
+The \emph{probe} uses the reading sets as written; \emph{dense attention received} drops the indicator (all 197 tokens, the token-pruning score~\citep{goyal2020powerbert}); \emph{CLS attention} keeps only the CLS query.
+Maps use layers 9--12 unless a single layer is stated; none needs gradients or a class label, and the probe costs 1.1 forward passes (GAE 2.6, Integrated Gradients 46).
+
+\section{Evaluation protocol}
+\label{sec:protocol}
+
+\textbf{Models and data.}
+DeiT-S/16 and DeiT-B/16 (supervised)~\citep{touvron2021deit} and DINO ViT-S/16 with its official linear head~\citep{caron2021dino}.
+ImageNet-S val (12,419 images with masks)~\citep{gao2022imagenets}, Hard ImageNet (750; small, off-centre objects)~\citep{moayeri2022hardimagenet}, Oxford Pet~\citep{parkhi2012pets}, ClickMe val (17,408 human importance maps)~\citep{fel2022harmonizing} and PartImageNet (24,080 part masks; images from the ImageNet \emph{training} set)~\citep{he2022partimagenet}.
+
+\textbf{Measures.}
+\emph{Faithfulness}: patches are removed from every layer by dropping their tokens; SRG is the area between the least- and most-relevant-first deletion curves of top-1 agreement (0 for random scores).
+\emph{Same-ring enrichment}: among patches at the same distance from the centre, the object share of a map's top patches minus the ring's object share; a centre prior scores 0.
+\emph{Image-specific human alignment}: Spearman correlation with the image's own ClickMe map minus that with another image's map; a fixed prior scores 0.
+\emph{Parts}: head enrichment is a map's mass share on the head divided by the head's area share; the model's own reliance is the drop in log-probability when four patches of one part are removed.
+Intervals are 95\% paired bootstrap intervals over images (1,000 resamples).
+
+\section{Results}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/execution.pdf}
+  \caption{\textbf{Reading sets are executable.} (a) Single-layer probe maps of a random ImageNet-S image. (b) Top-1 agreement when all 12 layers read only the reading sets; the sweep uses a first-generation setting (CLS shares its region's set), markers the main setting at $k=16$ for each model (grey: random sets). (c) One layer executed at a time (5,000 ImageNet images; bands: 95\% intervals).}
+  \label{fig:execution}
+\end{figure}
+
+\subsection{The reading sets are what the model computes with}
+Restricting one layer to its sets keeps 92--96\% of DeiT-S and 95--97\% of DeiT-B predictions (Fig.~\ref{fig:execution}c); DINO is lower in a few layers (77\% at layer~1, 81\% at layer~12).
+Restricting all twelve layers keeps 72\% (DeiT-S), 62\% (DINO) and 83\% (DeiT-B) at $k=16$, against 9\%, 4\% and 30\% for random sets.
+Reading concentrates with depth: in DeiT-S the union of all sets covers 75\% of patches at layer~3 but 12\% at layer~12.
+Attention reading can therefore be treated as a measured quantity rather than a picture.
+
+\subsection{Attention readouts as saliency maps}
+\label{sec:compare}
+
+\begin{table}[t]
+  \centering
+  \caption{\textbf{Attention readouts and gradient methods under the same tests} (S: DeiT-S, D: DINO ViT-S, B: DeiT-B). SRG and enrichment on ImageNet-S, human alignment on ClickMe, head enrichment on PartImageNet animals (1 = no preference). $^\dagger$Uses gradients and the predicted class. Bold: best attention readout. Dense attention comes from a second run on another GPU; the probe re-run there differs from these values by at most 0.001 SRG.}
+  \label{tab:main}
+  \scriptsize
+  \setlength{\tabcolsep}{2.5pt}
+  \resizebox{\linewidth}{!}{\input{tables/main.tex}}
+\end{table}
+
+Table~\ref{tab:main} compares the readouts with GAE~\citep{chefer2021gae}, Grad-CAM~\citep{selvaraju2017gradcam} and Integrated Gradients~\citep{sundararajan2017ig}.
+(1)~A model-free centre Gaussian already reaches SRG 0.10--0.14 and beats Rollout on DeiT-B, so centre bias matters for faithfulness metrics too.
+(2)~Among attention readouts, dense attention received is the most faithful on DeiT-S and DeiT-B and CLS attention on DINO, whose classifier reads the CLS token of the last four blocks; even the best of them trails GAE by 0.10--0.14 SRG. The same ordering holds on Hard ImageNet, Pet and an ImageNet subset (Appendix~\ref{app:extra}).
+(3)~The top-$k$ probe and dense attention are nearly the same map (median per-image Spearman 0.90 on ImageNet-S). Dense attention is equal or better on faithfulness (higher in all 10 dataset--model pairs, by 0.006--0.050, significantly in 9), object focus and human alignment; the probe's stronger head preference (1.54 vs.\ 1.25 on DeiT-S) comes from truncation and does not make it better at naming the part the model relies on most (46.7\% vs.\ 46.4\%, chance 40\%).
+The attention readouts we tested (probe, CLS attention, Rollout) pass the randomisation sanity check (median Spearman after re-initialising all blocks: probe 0.08/0.32/0.10), while Integrated Gradients fails on all three models (0.53--0.61).
+We therefore use dense attention as the map and the top-$k$ sets as its verification.
+
+\subsection{What the models read}
+\label{sec:findings}
+
+\textbf{Beyond the centre.}
+All readouts have positive same-ring enrichment (Table~\ref{tab:main}): reading favours objects even among patches equally far from the centre.
+When an object is shifted 48 pixels towards a corner, the probe's object mass drops less than a centre prior's (by 0.021, 0.053, 0.010 for DeiT-S, DINO, DeiT-B).
+DeiT-S and DINO depend on objects, not positions: removing object tokens from the reading sets hurts agreement more than removing as many tokens at matched distances from the centre, and 63--79\% of the object effect survives this matching on ImageNet-S and Hard ImageNet.
+
+\textbf{Heads.}
+Removing four head patches lowers the log-probability of the predicted class more than removing four body patches of the same image ($+0.017$ [0.014, 0.020] DeiT-S, $+0.021$ DINO, $+0.008$ DeiT-B), 2--3.4 times as much for quadrupeds and bipeds; the probe, dense attention and GAE favour heads on all three models (enrichment $>1$).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/layers.pdf}
+  \caption{\textbf{Reading layer by layer.} Columns 1--3: image-specific human alignment (ClickMe, top) and head enrichment (PartImageNet, bottom) of single-layer maps for three readouts. Column 4: share of single-layer reading on high-norm patches (block-input norm $>3\times$ the image's median) and share of such patches on ImageNet-S; DINO has none.}
+  \label{fig:layers}
+\end{figure}
+
+\textbf{Layers.}
+Human alignment and head preference rise through the network and peak in mid-to-late layers (DeiT-S layer~9, DINO layer~11, DeiT-B layers~6--10; Fig.~\ref{fig:layers}).
+In the supervised models the last layer drops sharply (dense attention, layer~12 vs.\ the best of layers~8--11: ClickMe $-0.086$ DeiT-S, $-0.116$ DeiT-B; head enrichment $-0.42$, $-0.40$), whereas DINO drops little ($-0.032$; CLS attention $-0.004$).
+The pattern is the same for all three readouts (correlation of layer curves with the probe's: 0.77--0.99), so it is a property of the models' attention, not of the probe.
+
+\textbf{High-norm tokens.}
+Supervised ViTs route much mid-to-late reading to a few high-norm patches: in DeiT-B layer~11, 3\% of patches receive 61\% of the probe's and 44\% of dense attention. DINO has no such patches, as reported by~\citet{darcet2024registers}.
+Yet this does not explain the last-layer drift: the probe's high-norm share is lower at layer~12 than at layers~10--11 in both supervised models (our registered prediction failed for DeiT-S), so why the last layer leaves the object remains open.
+
+\section{Discussion and limitations}
+Executable reading sets make attention a checkable measurement, and centre-controlled tests show that what ViTs read goes beyond where photographers put objects.
+Attention readouts are class-agnostic and less faithful than gradient-based, class-specific GAE; we did not test whether class specificity explains the gap.
+Part results use ImageNet training images, which the models have seen.
+Deep tokens drift from their patches: a linear probe recovers a layer-12 token's exact patch only 15--25\% of the time (chance 0.5\%), so deep maps localise to about 1--3 patches.
+Each configuration ran once; intervals reflect image sampling only.
+\emph{Broader impact.} Plausible-looking explanations can create unjustified trust, which is why we report centre references and negative results; the datasets are public benchmarks with known demographic and geographic biases.
+
+% TODO(author): describe AI assistance as required by the course policy.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+
+\section{Reproducibility}
+\label{app:repro}
+Pretrained weights are pinned by revision and checksum (timm DeiT-S/B, official DINO ViT-S/16 and its linear head). All runs use float32 without autocast and deterministic algorithms, on one NVIDIA A100 (main runs) or L4 (dense-attention runs). Each run stores its configuration, log, git commit and result tables; tables and figures are generated from those files by scripts (\texttt{scripts/paper\_assets.py}). Faithfulness uses all ImageNet-S and Hard ImageNet images for DeiT-S and DINO and a fixed random 2,000-image subset (seed 0) for DeiT-B, Pet and the ImageNet subset. Removing a patch drops its token after the positional embedding, which equals masking it in every layer's attention (unit-tested to $2\times10^{-5}$ in the logits).
+
+\section{Additional results}
+\label{app:extra}
+\begin{table}[h]
+  \centering
+  \caption{SRG on every dataset and model (S: DeiT-S, D: DINO, B: DeiT-B).}
+  \tiny
+  \setlength{\tabcolsep}{2pt}
+  \resizebox{\linewidth}{!}{\input{tables/srg_all.tex}}
+\end{table}
+
+\section{Registered predictions}
+\label{app:ledger}
+Every prediction and its pass criterion was written down before the runs. Of the 29 directional predictions in our ledger, 19 held, 7 held partly and 3 failed. Failed: the probe is \emph{not} as faithful as GAE (all 10 pairs); the centre prior's head enrichment is about 1, not below 1; and, in a direction favourable to us, the DeiT-S and DeiT-B probes do show object preference beyond the centre (ring enrichment $+0.114$, $+0.067$) where we expected none. Partly held: the probe beats CLS attention on DeiT-S and DeiT-B but not on DINO; Integrated Gradients fails the sanity check and does not beat random scores on DeiT-B; ``dense attention is comparable to the probe'' held for SRG but not fully for object focus and human alignment, where dense attention is better; the high-norm share rises at the last layer for DeiT-B but not DeiT-S.
+
+\end{document}

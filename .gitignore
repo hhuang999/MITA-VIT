@@ -19,3 +19,13 @@ docs/hpc/HPC.txt
 .ipynb_checkpoints/
 build/
 dist/
+
+# LaTeX build files and the third-party NeurIPS style (paper/get_style.sh downloads it)
+/paper/*.aux
+/paper/*.log
+/paper/*.out
+/paper/*.bbl
+/paper/*.blg
+/paper/*.fls
+/paper/*.fdb_latexmk
+/paper/neurips_2025.sty
