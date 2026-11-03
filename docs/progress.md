@@ -5,17 +5,20 @@
 | 交付物 | 位置 | 状态 |
 | --- | --- | --- |
 | 课程论文（NeurIPS 格式，正文 4 页） | `paper/main.pdf` | 初稿；待作者补充姓名信息和 AI 辅助说明，并审阅措辞 |
-| 报告幻灯片（12 页，含英文讲稿） | `slides/mita_probe_talk.pptx` | 初稿；待作者修改后导出 PDF |
+| 报告幻灯片（13 页，含英文讲稿） | `slides/mita_probe_talk.pptx` | 初稿；待作者修改后导出 PDF |
 | 报告视频（8–10 分钟） | — | 未开始 |
 | 研究笔记本 | `notebooks/mita_probe_research.ipynb` | 完成（CPU 约 2 分钟可重跑） |
-| 完整结果报告 | `docs/analysis/v3_report.md`、`docs/analysis/supplement_s1_s3.md` | 完成 |
+| 完整结果报告 | `docs/analysis/v3_report.md`、`docs/analysis/supplement_s1_s3.md`、`docs/budget/report.md` | 完成 |
 
 课程截止：论文、幻灯片、视频均为 12 月 11 日。
 
-## 进行中：注意力预算研究（分支 `study/attention-budget`，待用户确认）
+## 注意力预算研究（分支 `study/attention-budget`，2026-11-03 完成）
 
-- 研究设计：`docs/budget/research_design.md`（用户提供）；评估与工程设计：`docs/budget/engineering_design.md`。
-- 状态（2026-11-03）：评估结论为"建议做，需按 M1–M5 修改"；等待用户确认，确认前不跑实验。`main` 上的交付版本不变。
+- 文档：[研究设计](budget/research_design.md)（用户提供）、[工程设计](budget/engineering_design.md)、[预试验报告](budget/pilot_report.md)、[正式报告](budget/report.md)；决策 B27–B32。
+- 判定：H1 不成立（MiTA-DeiT-T 与 DINO 一样聚焦）；H2 不成立（Small −0.011，Tiny +0.037，方向依赖规模）；H6 成立（DeiT-S 移走 8 个神经元后，高范数 token 减少 92%，物体聚焦只 +0.006）。DeiT-B 没通过 H3 关卡，RQ3 只作描述。
+- 按事先写定的规则，论文以原有主线为主，新增第 4.4 节和附录 C；同时修正执行证据（12 层全部删掉注意力只剩 0.1%）。幻灯片 13 页，笔记本新增 5.12 节。
+- Colab：本轮约用 7.6 单元，余额 182.10；实例已停止。
+- 这一分支还没有合并到 `main`，也没有推送（GitHub 需要重新连接）。
 
 ## 研究过程（摘要）
 
@@ -23,6 +26,7 @@
 2. **研究重新定位与 v3（10-29）**：把探针作为解释方法，与 5 种方法在统一检验下比较；3 个模型、5 个数据集，33 个正式运行。报告：`docs/analysis/v3_report.md`；决策 B01–B20。
 3. **定位 C 与补充实验 S1–S3（10-31）**：完整注意力对照、三类逐层图、高范数 token；21 个正式运行。报告：`docs/analysis/supplement_s1_s3.md`；决策 B21–B26。
 4. **交付物（11-01 至 11-03）**：研究笔记本、论文初稿、幻灯片初稿；仓库整理（旧材料归档，见 `docs/archive/README.md`）。
+5. **注意力预算研究（11-03）**：7 个模型、11,919 张图，检验 top-k 训练和测试时额外 token 能否把注意力引向物体；报告 `docs/budget/report.md`，决策 B27–B32。
 
 逐日的详细看板保存在 `docs/archive/progress_history.md`；每次运行（包括失败的）见 `docs/experiment_log.md`。
 
