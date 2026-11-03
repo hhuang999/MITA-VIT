@@ -17,7 +17,7 @@ mkdir -p checkpoints/mita
 mv /content/mita_ckpt/best_checkpoint.pth /content/mita_ckpt/log.txt checkpoints/mita/
 mkdir -p checkpoints/mita_tiny   # MiTA-DeiT-T (attention budget); folder from the MiTA model zoo
 .venv/bin/gdown -q --folder https://drive.google.com/drive/folders/1KnFqHpJLc_NddIjKnRJEb9McQjN4DXgk -O /content/mita_tiny_ckpt
-mv /content/mita_tiny_ckpt/*.pth checkpoints/mita_tiny/best_checkpoint.pth
+mv /content/mita_tiny_ckpt/best_checkpoint.pth /content/mita_tiny_ckpt/log.txt checkpoints/mita_tiny/
 $PY scripts/download_models.py   # DeiT-S, DINO + head; verifies every SHA-256
 $PY scripts/check_environment.py
 echo SETUP_DONE
