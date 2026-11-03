@@ -1,0 +1,22 @@
+2026-11-03 15:13:07,201 Loading pretrained weights from Hugging Face hub (timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6)
+2026-11-03 15:13:07,203 [timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-03 15:14:12,960 sink_use_deit_b 640/11919 images; 64.6s
+2026-11-03 15:15:12,992 sink_use_deit_b 1280/11919 images; 124.6s
+2026-11-03 15:16:13,033 sink_use_deit_b 1920/11919 images; 184.7s
+2026-11-03 15:17:13,024 sink_use_deit_b 2560/11919 images; 244.7s
+2026-11-03 15:18:13,206 sink_use_deit_b 3200/11919 images; 304.8s
+2026-11-03 15:19:13,271 sink_use_deit_b 3840/11919 images; 364.9s
+2026-11-03 15:20:13,370 sink_use_deit_b 4480/11919 images; 425.0s
+2026-11-03 15:21:13,368 sink_use_deit_b 5120/11919 images; 485.0s
+2026-11-03 15:22:13,685 sink_use_deit_b 5760/11919 images; 545.3s
+2026-11-03 15:23:14,175 sink_use_deit_b 6400/11919 images; 605.8s
+2026-11-03 15:24:14,341 sink_use_deit_b 7040/11919 images; 666.0s
+2026-11-03 15:25:14,589 sink_use_deit_b 7680/11919 images; 726.2s
+2026-11-03 15:26:14,762 sink_use_deit_b 8320/11919 images; 786.4s
+2026-11-03 15:27:15,183 sink_use_deit_b 8960/11919 images; 846.8s
+2026-11-03 15:28:15,413 sink_use_deit_b 9600/11919 images; 907.1s
+2026-11-03 15:29:15,922 sink_use_deit_b 10240/11919 images; 967.6s
+2026-11-03 15:30:15,990 sink_use_deit_b 10880/11919 images; 1027.6s
+2026-11-03 15:31:15,913 sink_use_deit_b 11520/11919 images; 1087.6s
+2026-11-03 15:31:52,824 sink_use_deit_b 11919/11919 images; 1124.5s
+2026-11-03 15:31:52,875 Complete: sink use for deit_b
