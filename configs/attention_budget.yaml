@@ -14,7 +14,7 @@ budget:
   deep_layers: [9, 10, 11, 12]
 sink_use:
   seeds: [0, 1, 2, 3, 4]        # C2 ring-matched random draws
-  value_means: experiments/2026-11-0X_ab_t1_{model}/value_means.pt   # set to the pilot run before T4 (B31)
+  value_means: experiments/2026-11-03_ab_t1_{model}/value_means.pt   # the pilot runs (B31)
 register:
   presence_share: 0.5           # L*: first layer where >= 50% of pilot images have a high-norm patch
   counts: [1, 2, 4, 8, 16, 32]
@@ -22,4 +22,4 @@ register:
   min_reduction: 0.8            # H3 gate: found units remove >= 80% of high-norm patch-layers at L* and later
   min_agreement: 0.95           #   top-1 agreement >= 95%
   max_random_reduction: 0.2     #   random units (mean over seeds) remove <= 20%
-  gate: experiments/2026-11-0X_ab_t2_{model}/gate.json   # set to the search run before T6 (B31)
+  gate: experiments/2026-11-03_ab_t2_{model}/gate.json   # the search runs (B31)
