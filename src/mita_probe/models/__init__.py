@@ -8,7 +8,7 @@
 | mita | MiTA-DeiT-S (dense re-implementation) | MiTA evaluation (Resize 256, crop 0.875) |
 | deit_t | DeiT-T/16, supervised (attention budget) | timm default for the checkpoint (Resize 248, crop 0.9) |
 | mita_t | MiTA-DeiT-T (dense re-implementation; attention budget) | MiTA evaluation (Resize 256, crop 0.875) |
-| deit3_s | DeiT-III-S/16, supervised (attention budget) | timm default for the checkpoint (Resize 224, crop 1.0) |
+| deit3_s | DeiT-III-S/16, supervised (attention budget) | timm default for the checkpoint (Resize 248, crop 0.9) |
 
 The attention-budget study (decision B28) runs every model with UNIFORM_PREPROCESSING (Resize 256, crop
 0.875) so that paired models cut each image into the same patches.
@@ -33,8 +33,8 @@ CROP_0875 = dict(input_size=(3, 224, 224), interpolation='bicubic', crop_pct=0.8
 IMAGENET_PREPROCESSING = {'deit': None, 'deit_b': None, 'dino': CROP_0875, 'mita': CROP_0875, 'deit_t': None,
                           'mita_t': CROP_0875, 'deit3_s': None}
 UNIFORM_PREPROCESSING = CROP_0875
-# MiTA-DeiT-T is pinned on first download (decision B31); None means "record the digest, do not check".
-TINY_CHECKPOINT_SHA256 = None
+# MiTA-DeiT-T: digest recorded on its first download (2026-11-03, Colab).
+TINY_CHECKPOINT_SHA256 = 'c13fbbb2eafd260b47d4e3d0b55eb449e6179a07de46ebad1725a1be07633fe8'
 
 
 def verified(path, sha256):
@@ -59,9 +59,7 @@ def load_model(name, device='cpu'):
     if name == 'deit3_s':
         return load_deit(device, size='deit3_small')
     if name == 'mita_t':
-        path = verified(TINY_CHECKPOINT, TINY_CHECKPOINT_SHA256) if TINY_CHECKPOINT_SHA256 else \
-            project_path(str(TINY_CHECKPOINT))
-        return load_mita_model(path, device)
+        return load_mita_model(verified(TINY_CHECKPOINT, TINY_CHECKPOINT_SHA256), device)
     raise ValueError(f'Unknown model {name}; choose from {NAMES}')
 
 
