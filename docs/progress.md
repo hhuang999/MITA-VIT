@@ -12,6 +12,11 @@
 
 课程截止：论文、幻灯片、视频均为 12 月 11 日。
 
+## 进行中：注意力预算研究（分支 `study/attention-budget`，待用户确认）
+
+- 研究设计：`docs/budget/research_design.md`（用户提供）；评估与工程设计：`docs/budget/engineering_design.md`。
+- 状态（2026-11-03）：评估结论为"建议做，需按 M1–M5 修改"；等待用户确认，确认前不跑实验。`main` 上的交付版本不变。
+
 ## 研究过程（摘要）
 
 1. **第一、二代（10-24 至 10-28）**：建立探针、RQ1/RQ2 解剖（DeiT-S、DINO、MiTA-DeiT-S）、Pet 上的 RQ3 和中心对照。报告：`docs/analysis/probe_report.md`、`docs/analysis/v2_anatomy.md`、`docs/analysis/rq3_diagnosis.md`。
