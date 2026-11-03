@@ -27,6 +27,11 @@ Z_DECISION = 2.807  # two-sided 99.5% (Bonferroni over 10 judged comparisons)
 MARGIN = 0.03
 
 
+def read(path):
+    """A result table, plain or gzip-compressed (large per-image tables are committed as .csv.gz)."""
+    return pd.read_csv(path if path.exists() else path.with_name(path.name + '.gz'))
+
+
 def load_raw(run):
     parts = [np.load(path) for path in sorted((run / 'raw').glob('batch_*.npz'))]
     index = np.concatenate([p['index'] for p in parts])
@@ -86,7 +91,7 @@ def pilot(prefix, out):
     raw = {model: load_raw(path) for model, path in t1.items()}
     rows = []
     for model, path in t1.items():
-        budget = pd.read_csv(path / 'budget.csv')
+        budget = read(path / 'budget.csv')
         allq = budget[budget['query'] == 'all']
         presence = (allq.assign(has=allq.share_high > 0).groupby('layer').has.mean())
         shares = allq.groupby('layer')[[f'share_{c}' for c in CATEGORIES]].mean()
@@ -100,7 +105,7 @@ def pilot(prefix, out):
 
     rows = []
     for model, path in t1.items():
-        table = pd.read_csv(path / 'enrichment.csv')
+        table = read(path / 'enrichment.csv')
         for scope in ['deep'] + [str(layer) for layer in range(1, 13)]:
             for exclude in ('high', 'none'):
                 values = table[(table.scope.astype(str) == scope) & (table.exclude == exclude)].enrichment.to_numpy()
@@ -125,7 +130,7 @@ def pilot(prefix, out):
 
     rows = []
     for model, path in t1.items():
-        heads = pd.read_csv(path / 'heads.csv').groupby(['layer', 'head']).sum(numeric_only=True)
+        heads = read(path / 'heads.csv').groupby(['layer', 'head']).sum(numeric_only=True)
         for (layer, head), r in heads.iterrows():
             rows.append(dict(model=model, layer=layer, head=head, high_share=r.high_share / r.images,
                              dominant=r.dominant / r.images,
@@ -136,7 +141,7 @@ def pilot(prefix, out):
 
     rows = []
     for model, path in t1.items():
-        selected = pd.read_csv(path / 'selected.csv').groupby('layer').mean(numeric_only=True)
+        selected = read(path / 'selected.csv').groupby('layer').mean(numeric_only=True)
         for layer, r in selected.iterrows():
             rows.append(dict(model=model, layer=layer, fraction=r.fraction, object_fraction=r.object_fraction,
                              enrichment=r.enrichment))
@@ -148,7 +153,7 @@ def pilot(prefix, out):
         row = dict(model=model, first_high_layer=gate['first_high_layer'], found=gate['found'], n=gate['n'],
                    neurons=json.dumps(gate['neurons']))
         if (path / 'gate.csv').exists():
-            g = pd.read_csv(path / 'gate.csv')
+            g = read(path / 'gate.csv')
             for n, part in g.groupby('n'):
                 found = part[part.condition == 'found'].iloc[0]
                 row[f'n{n}_reduction'] = found.reduction
@@ -159,7 +164,7 @@ def pilot(prefix, out):
 
     rows = []
     for model, path in runs(prefix, 't0').items():
-        p = pd.read_csv(path / 'predictions.csv')
+        p = read(path / 'predictions.csv')
         rows.append(dict(model=model, n=len(p), own=float((p.own == p.label).mean() * 100),
                          uniform=float((p.uniform == p.label).mean() * 100),
                          change=float(((p.uniform == p.label).mean() - (p.own == p.label).mean()) * 100)))
@@ -167,7 +172,7 @@ def pilot(prefix, out):
 
     rows = []
     for model, path in runs(prefix, 't7').items():
-        off = pd.read_csv(path / 'attention_off.csv')
+        off = read(path / 'attention_off.csv')
         for layers, part in off.groupby(off.layers.astype(str)):
             mean, low, high_, n = bootstrap(part.agree.to_numpy() * 100., 1000)
             rows.append(dict(model=model, layers=layers, agreement=mean, low=low, high=high_, n=n))
@@ -200,11 +205,12 @@ def effect(drop, agree):
 def formal(prefix, out):
     t3 = runs(prefix, 't3')
     raw = {model: load_raw(path) for model, path in t3.items()}
-    judged = []
+    judged, diffs = [], []
     for hypothesis, pairs in (('H1', [('dino', m) for m in SUPERVISED]), ('H2', list(PAIRS))):
         for a, b in pairs:
             if a in raw and b in raw:
-                _, diff = paired(raw[a], raw[b])
+                index, diff = paired(raw[a], raw[b])
+                diffs.append(pd.DataFrame(dict(comparison=f'{hypothesis}:{a}-{b}', index=index, diff=diff)))
                 mean, low, high, n = bootstrap(diff, 10000, level=.995)
                 judged.append(dict(hypothesis=hypothesis, a=a, b=b, n=n, mean=mean, low=low, high=high,
                                    verdict=verdict(hypothesis, low, high)))
@@ -222,14 +228,15 @@ def formal(prefix, out):
         if not gate['found'] or model not in t6:
             judged.append(dict(hypothesis='H6', a=f'{model}:R2', b=f'{model}:R0', verdict='untestable'))
             continue
-        deep = pd.read_csv(t6[model] / 'deep.csv')
+        deep = read(t6[model] / 'deep.csv')
         deep = deep[deep.exclude == 'high'].pivot(index='index', columns='condition', values='enrichment')
         diff = (deep['R2'] - deep['R0']).to_numpy()
+        diffs.append(pd.DataFrame(dict(comparison=f'H6:{model}:R2-R0', index=deep.index, diff=diff)))
         mean, low, high, n = bootstrap(diff, 10000, level=.995)
-        per_layer = pd.read_csv(t6[model] / 'register.csv')
+        per_layer = read(t6[model] / 'register.csv')
         later = per_layer[per_layer.layer >= gate['first_high_layer']]
         counts = later.groupby('condition').high_count.sum()
-        accuracy = pd.read_csv(t6[model] / 'accuracy.csv')
+        accuracy = read(t6[model] / 'accuracy.csv')
         acc = accuracy.assign(ok=accuracy.prediction == accuracy.label).groupby('condition').ok.mean() * 100
         reduction = 1 - counts['R2'] / max(counts['R0'], 1)
         h4[model] = dict(reduction=float(reduction), accuracy_R0=float(acc['R0']), accuracy_R2=float(acc['R2']),
@@ -241,7 +248,7 @@ def formal(prefix, out):
             row = dict(model=model, condition=condition, accuracy=float(acc[condition]),
                        high_reduction=float(1 - counts[condition] / max(counts['R0'], 1)))
             for exclude in ('high', 'none'):
-                values = pd.read_csv(t6[model] / 'deep.csv')
+                values = read(t6[model] / 'deep.csv')
                 part = values[(values.condition == condition) & (values.exclude == exclude)]
                 row[f'enrichment_{exclude}'] = float(part.enrichment.mean())
                 row['agreement'] = float(part.agree.mean() * 100)
@@ -254,6 +261,8 @@ def formal(prefix, out):
         pd.DataFrame(rows).to_csv(out / f'register_{model}.csv', index=False)
     table = pd.DataFrame(judged)
     table.to_csv(out / 'judgements.csv', index=False)
+    if diffs:  # per-image paired differences: the judgements can be re-bootstrapped without raw/
+        pd.concat(diffs).to_csv(out / 'paired_differences.csv.gz', index=False)
     summary = {h: overall(h, [v for v in table[table.hypothesis == h].verdict if v in ('holds', 'fails', 'uncertain')])
                for h in ('H1', 'H2', 'H6')}
     summary['H4'] = h4
@@ -261,12 +270,12 @@ def formal(prefix, out):
 
     rows, curves = [], []
     for model, path in t3.items():
-        budget = pd.read_csv(path / 'budget.csv')
+        budget = read(path / 'budget.csv')
         for query, part in budget.groupby('query'):
             means = part.groupby('layer')[[f'share_{c}' for c in CATEGORIES]].mean()
             for layer, r in means.iterrows():
                 rows.append(dict(model=model, query=query, layer=layer, **{c: r[f'share_{c}'] for c in CATEGORIES}))
-        enrichment = pd.read_csv(path / 'enrichment.csv')
+        enrichment = read(path / 'enrichment.csv')
         for (scope, exclude), part in enrichment.groupby([enrichment.scope.astype(str), 'exclude']):
             mean, low, high, n = bootstrap(part.enrichment.to_numpy(), 1000)
             curves.append(dict(model=model, scope=scope, exclude=exclude, mean=mean, low=low, high=high, n=n,
@@ -276,14 +285,14 @@ def formal(prefix, out):
 
     rows = []
     for model, path in t3.items():
-        selected = pd.read_csv(path / 'selected.csv').groupby('layer').mean(numeric_only=True)
+        selected = read(path / 'selected.csv').groupby('layer').mean(numeric_only=True)
         rows += [dict(model=model, layer=layer, fraction=r.fraction, object_fraction=r.object_fraction,
                       enrichment=r.enrichment) for layer, r in selected.iterrows()]
     write('selected.csv', rows)
 
     heads = {}
     for model, path in t3.items():
-        h = pd.read_csv(path / 'heads.csv').groupby(['layer', 'head']).sum(numeric_only=True).reset_index()
+        h = read(path / 'heads.csv').groupby(['layer', 'head']).sum(numeric_only=True).reset_index()
         deep = h[h.layer.isin(DEEP)]
         by_layer = deep.groupby('layer').sum(numeric_only=True)
         ratio = (by_layer.value_ratio / by_layer.value_ratio_n.replace(0, np.nan)).mean()
@@ -298,7 +307,7 @@ def formal(prefix, out):
 
     rows, kinds = [], {}
     for model, path in runs(prefix, 't4').items():
-        use = pd.read_csv(path / 'use.csv')
+        use = read(path / 'use.csv')
         c2 = use[use.condition.str.startswith('c2_s')].groupby('index')[['drop', 'agree']].mean()
         wide = use.pivot(index='index', columns='condition', values='drop')
         wide['c2'] = c2['drop']
