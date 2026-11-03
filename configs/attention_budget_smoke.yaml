@@ -1,0 +1,8 @@
+# GPU smoke runs of the attention-budget experiments (64 images; not evidence). T4 reads the smoke pilot's value
+# means; T6 uses a fixed two-unit gate (tests/fixtures/forced_gate.json) so its code path runs whatever T2 finds.
+base: attention_budget.yaml
+sink_use:
+  value_means: experiments/2026-11-03_ab_smoke_t1_{model}/value_means.pt
+register:
+  gate: tests/fixtures/forced_gate.json
+  smoke_accuracy: true
