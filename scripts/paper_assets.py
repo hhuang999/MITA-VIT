@@ -151,7 +151,7 @@ def execution_figure():
     fig.subplots_adjust(left=0.01, right=0.99, top=0.86, bottom=0.2)
     (OUT / 'figures').mkdir(parents=True, exist_ok=True)
     fig.savefig(OUT / 'figures' / 'execution.pdf')
-    fig.savefig(OUT / 'figures' / 'execution.png', dpi=150)
+    fig.savefig(OUT / 'figures' / 'execution.png', dpi=300)
     plt.close(fig)
 
 
@@ -189,7 +189,7 @@ def layers_figure():
     fig.tight_layout(pad=0.6)
     fig.subplots_adjust(left=0.075)
     fig.savefig(OUT / 'figures' / 'layers.pdf')
-    fig.savefig(OUT / 'figures' / 'layers.png', dpi=150)
+    fig.savefig(OUT / 'figures' / 'layers.png', dpi=300)
     plt.close(fig)
 
 
