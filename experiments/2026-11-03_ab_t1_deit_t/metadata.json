@@ -1,0 +1,23 @@
+{
+  "git_commit": "efe6287bcfa1e37afbc552827c76f8c6d01fd187",
+  "timestamp": "2026-11-03T11:26:24.024918+00:00",
+  "torch": "2.7.0+cu128",
+  "timm": "1.0.30",
+  "device": "NVIDIA L4",
+  "dtype": "float32, no autocast",
+  "model": "deit_t",
+  "stage": "pilot",
+  "dataset": "imagenet_s",
+  "images": 500,
+  "preprocessing": "uniform",
+  "norm_ratio": 3,
+  "deep_layers": [
+    9,
+    10,
+    11,
+    12
+  ],
+  "mita_plan": "None",
+  "smoke_images": 0,
+  "resumed_from": {}
+}
