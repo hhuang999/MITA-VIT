@@ -211,15 +211,16 @@ s.addNotes("Here is the probe. For each layer and head, we split the patch grid 
 s = content("Method", "The reading sets are what the model computes with");
 s.addImage({ path: path.join(ROOT, "paper/figures/execution.png"), x: 0.6, y: 1.35, w: 12.1, h: 12.1 * 585 / 2025,
   altText: "Probe maps per layer, execution k sweep and single-layer agreement", objectName: "execution figure" });
-stat(s, { x: 0.6, y: 5.05, w: 3.8, value: "92–96%", label: "of DeiT-S predictions kept when one layer reads only its sets",
+stat(s, { x: 0.6, y: 5.05, w: 3.8, value: "72% vs 9%", label: "DeiT-S predictions kept when all 12 layers read only their sets vs random sets",
   color: C.accent1 });
-stat(s, { x: 4.75, y: 5.05, w: 3.8, value: "72% vs 9%", label: "all 12 layers executed (k = 16) vs random sets of equal size",
+stat(s, { x: 4.75, y: 5.05, w: 3.8, value: "0.1%", label: "kept with no attention at all: the 72% is not the FFNs alone",
   color: C.accent1 });
 stat(s, { x: 8.9, y: 5.05, w: 3.8, value: "83%", label: "for the larger DeiT-B (random: 30%)", color: C.accent1 });
-s.addNotes("Does the model really compute with these sets? Restricting one layer keeps 92 to 96 percent of DeiT-S " +
-  "predictions. Restricting all twelve layers at once keeps 72 percent, against 9 percent for random sets of the same " +
-  "size, and the larger DeiT-B keeps 83 percent. So the sets are a faithful summary of each layer, and we can treat " +
-  "attention reading as a measured quantity.");
+s.addNotes("Does the model really compute with these sets? The test is the whole network. Restricting all twelve " +
+  "layers at once keeps 72 percent of DeiT-S predictions, against 9 percent for random sets of the same size and 0.1 " +
+  "percent with no attention at all; the larger DeiT-B keeps 83 percent. One layer at a time is not a test: deleting " +
+  "a single layer's attention outright already keeps 93 to 97 percent, so panel c only shows which layers are harder " +
+  "to replace. So we can treat attention reading as a measured quantity.");
 
 // ---------- 6. Protocol ----------
 s = content("Method", "Every test controls for centre bias");

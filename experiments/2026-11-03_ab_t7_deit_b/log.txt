@@ -1,0 +1,11 @@
+2026-11-03 11:37:49,332 Loading pretrained weights from Hugging Face hub (timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6)
+2026-11-03 11:37:49,334 [timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-03 11:38:37,004 attention_off_deit_b 640/5000 images; 46.9s
+2026-11-03 11:39:22,205 attention_off_deit_b 1280/5000 images; 92.1s
+2026-11-03 11:40:07,710 attention_off_deit_b 1920/5000 images; 137.6s
+2026-11-03 11:40:53,133 attention_off_deit_b 2560/5000 images; 183.0s
+2026-11-03 11:41:38,574 attention_off_deit_b 3200/5000 images; 228.5s
+2026-11-03 11:42:24,051 attention_off_deit_b 3840/5000 images; 273.9s
+2026-11-03 11:43:09,536 attention_off_deit_b 4480/5000 images; 319.4s
+2026-11-03 11:43:46,488 attention_off_deit_b 5000/5000 images; 356.4s
+2026-11-03 11:43:46,526 Complete: attention off for deit_b

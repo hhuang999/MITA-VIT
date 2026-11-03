@@ -1,0 +1,11 @@
+2026-11-03 11:35:50,593 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
+2026-11-03 11:35:50,596 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-03 11:36:06,414 attention_off_dino 640/5000 images; 15.2s
+2026-11-03 11:36:20,971 attention_off_dino 1280/5000 images; 29.7s
+2026-11-03 11:36:35,332 attention_off_dino 1920/5000 images; 44.1s
+2026-11-03 11:36:49,534 attention_off_dino 2560/5000 images; 58.3s
+2026-11-03 11:37:03,640 attention_off_dino 3200/5000 images; 72.4s
+2026-11-03 11:37:17,784 attention_off_dino 3840/5000 images; 86.5s
+2026-11-03 11:37:31,990 attention_off_dino 4480/5000 images; 100.7s
+2026-11-03 11:37:43,555 attention_off_dino 5000/5000 images; 112.3s
+2026-11-03 11:37:43,596 Complete: attention off for dino
