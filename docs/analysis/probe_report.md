@@ -1,6 +1,6 @@
 # 用 MiTA 探针读 ViT：三个研究问题的综合结果
 
-2026-10-28 · 原设计见 [研究设计书](../research_design.md) · 细节见 [V2 报告](v2_anatomy.md) · 决策见 [decisions.md](../decisions.md)
+2026-10-28 · 原设计见 [研究设计书](../archive/research_design.md) · 细节见 [V2 报告](v2_anatomy.md) · 决策见 [decisions.md](../decisions.md)
 
 ## 一句话结论
 

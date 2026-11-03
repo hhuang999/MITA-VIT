@@ -1,6 +1,6 @@
 # V2 anatomy experiments. Frozen before any V2 result is viewed; see
-# docs/research_design_v2.md section 7 and the prediction table in section 8.
-design: docs/research_design_v2.md
+# docs/archive/research_design_v2.md section 7 and the prediction table in section 8.
+design: docs/archive/research_design_v2.md
 model: deit_small_patch16_224.fb_in1k
 device: cuda
 batch_size: 32

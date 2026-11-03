@@ -1,6 +1,0 @@
-{
-  "passed": false,
-  "cause": "Bundle branch not checked out; requirements file missing",
-  "formal_inference_started": false,
-  "recovery": "2026-10-27_validation_environment_ready"
-}

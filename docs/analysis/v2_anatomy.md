@@ -1,6 +1,6 @@
 # V2 结果：用 MiTA 的压缩与路由解剖 DeiT-S 的注意力
 
-2026-10-28 · 设计见 [研究设计书 v2](../research_design_v2.md) · 决策 A01–A12 见 [decisions.md](../decisions.md)
+2026-10-28 · 设计见 [研究设计书 v2](../archive/research_design_v2.md) · 决策 A01–A12 见 [decisions.md](../decisions.md)
 
 ## 1. 一句话结论
 

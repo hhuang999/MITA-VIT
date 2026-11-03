@@ -1,6 +1,6 @@
 # Anatomy on the larger model DeiT-B/16 (decisions B03, B09). Frozen before any DeiT-B result is viewed.
 # Same procedures, budgets, image subset and seeds as anatomy_v2.yaml; RQ2 keeps only the main budget.
-design: docs/research_design_v2.md
+design: docs/archive/research_design_v2.md
 primary: deit_b
 model: deit_base_patch16_224.fb_in1k
 device: cuda

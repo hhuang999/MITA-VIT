@@ -1,9 +1,0 @@
-{
-  "cuda_visible_devices": "",
-  "tests_passed": 49,
-  "elapsed_seconds": 10.93,
-  "source_commit": "348b417",
-  "no_local_gpu": false,
-  "cuda_tests_inadvertently_run": 3,
-  "correction": "Empty CUDA_VISIBLE_DEVICES did not disable CUDA on this Windows host; use -1 and assert unavailable."
-}

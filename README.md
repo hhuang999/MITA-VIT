@@ -1,110 +1,102 @@
-# MITA-VIT：把 MiTA 的 top-k 读取用作 ViT 的解释方法
+# What Do Vision Transformers Read?
 
-**一句话：** 注意力可以看成一个"快权重 MLP"，图片的每个图块（token）就是它的一个隐藏神经元；我们借用 MiTA 的做法，只让每层读取少数几个神经元，再检验这些神经元能否复现模型的判断（忠实），以及它们是否落在人认为重要的物体和部件上（常识）。
+**Executable attention reading sets under centre-bias control** — DSAA 2012 Deep Learning 课程项目（HKUST(GZ)，2026 秋）。
 
-研究主线、研究问题和每项实验的判定标准见 [决策日志](docs/decisions.md)（B01–B16）和 [实验计划 v3](docs/experiment_plan_v3.md)；相关工作见 [综述](docs/related_work.md)。旧版说明（第一、二代设计、HPC 记录）保存在 [docs/history/](docs/history/README_2026-10-27.md)。
+**一句话：** 注意力可以看成一个"快权重 MLP"，每个图块（token）是一个神经元。我们按 MiTA 的规则，从**未改动**的预训练 ViT 中读出每块区域读取的 16 个神经元，并让模型只按这些名单计算，用模型自己的输出检验读取是否真实；再用扣除中心偏差的检验，分析 ViT 逐层读了什么。
 
-## 主要结果（[完整报告](docs/analysis/v3_report.md)）
+## 交付物
 
-在 DeiT-S、DINO、DeiT-B 三个模型和 ImageNet-S、Hard ImageNet、Pet、ClickMe、PartImageNet 等数据集上，与 5 种常用解释方法在同一套检验下比较：
+| 内容 | 文件 |
+| --- | --- |
+| 论文初稿（NeurIPS 格式，正文 4 页 + 附录） | [`paper/main.pdf`](paper/main.pdf)，源文件 [`paper/main.tex`](paper/main.tex) |
+| 报告幻灯片初稿（12 页，含英文讲稿） | [`slides/mita_probe_talk.pptx`](slides/mita_probe_talk.pptx) |
+| 研究笔记本（方法演示、指标、全部核心结果、预测对账） | [`notebooks/mita_probe_research.ipynb`](notebooks/mita_probe_research.ipynb) |
+| 完整结果报告 | [v3 报告](docs/analysis/v3_report.md)、[补充实验 S1–S3](docs/analysis/supplement_s1_s3.md) |
 
-- **可执行**：只按探针名单计算，模型保留大部分预测（DeiT-S 12 层同时 71%，DeiT-B 83%；单层 92%–97%）。
-- **便宜**：约等于一次前向计算（GAE 约要 2.5 次前向的时间，IG 约 45 次）。
-- **忠实性**：探针高于 Rollout，在 DeiT-S、DeiT-B 上高于 CLS 注意力；但不加 top-k 的完整注意力图（与探针图逐图相关约 0.90）还要略好一些；所有注意力类图都低于用梯度的 GAE、Grad-CAM（[补充实验](docs/analysis/supplement_s1_s3.md)）。
-- **常识**：扣除中心偏差后仍偏向物体；物体移到角落时跟着物体走；与人类重要性图的一致明显超出中心偏差；模型自己确实更依赖动物的头。探针对头部的偏爱最强，但这主要是 top-k 截断放大的结果。
-- **逐层**：最像人的读取在中后层；有监督模型的最后一层离开物体，DINO 不明显。这一规律在探针、完整注意力和 CLS 注意力上都出现，是模型本身的性质。有监督模型的中后层把大量读取给了极少数高范数 token（DINO 没有），但它们不能解释最后一层的下降。
+## 主要结果
 
-## 研究问题
+在 DeiT-S、DINO ViT-S、DeiT-B 三个模型和 ImageNet-S、Hard ImageNet、Pet、ClickMe、PartImageNet 五个数据集上：
 
-| RQ | 问题 | 主要实验 |
-| --- | --- | --- |
-| RQ1 忠实 | 少数共享神经元能否复现一层注意力？ | E1 解剖（k、m 扫描） |
-| RQ2 结构 | 各层、各模型如何使用神经元？ | E1、探针逐层图 |
-| RQ3 常识 | 模型依赖的神经元是否就是物体和关键部件，而不只是画面中间？ | E2 Pet、E4 合理性、E5 移位裁剪、E6 中心配对删除、E7 人类一致性、E8 部件 |
-| RQ4 对比 | 在同一套检验下，探针和现有解释方法相比如何？ | E4 忠实性、健全性检验、成本 |
+- **读取名单可以执行**：只替换一层时保留 92%–97% 的预测；12 层同时替换（k = 16）时 DeiT-S 保留 72%，随机名单只有 9%。
+- **不只是看中间**：所有注意力读取在扣除中心偏差后仍偏向物体；物体移到角落时跟着走；与人类重要性图的一致超出中心偏差；模型确实依赖物体本身，也更依赖动物的头（删头部的伤害是删身体的 2–3.4 倍）。
+- **逐层**：最像人的读取在中后层；有监督模型的最后一层离开物体，DINO 不明显。这一规律在 top-k 探针、完整注意力和 CLS 注意力上都出现。有监督模型中后层的读取大量落在极少数高范数 token 上（DINO 没有），但它们不能解释最后一层的下降。
+- **如实的负面结果**：作为热图，所有注意力读取的忠实性都明显低于用梯度的 GAE；top-k 截断也没有让解释图比完整注意力更好。
 
-前提检验 E3：深层的 token 是否仍代表原来的图块。
+所有预测和判定标准都在运行前登记（[决策日志](docs/decisions.md)）：29 条有方向的预测中，19 条成立，7 条部分成立，3 条不成立。
 
-模型：DeiT-S/16、DINO ViT-S/16（官方线性头）、DeiT-B/16（更大模型）；MiTA-DeiT-S 作对照。
-
-## 代码结构
+## 仓库结构
 
 ```
+paper/        论文：main.tex、references.bib；tables/ 和 figures/ 由 scripts/paper_assets.py 生成
+slides/       幻灯片：mita_probe_talk.pptx；slide_data.py 取数，build_deck.js 生成
+notebooks/    研究笔记本
 src/mita_probe/
-  models/         模型注册表（deit, deit_b, dino, mita），权重版本和校验值固定
-  probe/          探针：读取名单（landmark、top-k、路由）、按名单执行注意力
-  data/           ImageNet、ImageNet-S、Hard ImageNet、Pet、ClickMe、PartImageNet
-  explain.py      所有重要性图：探针、完整注意力（不加 top-k）、CLS 注意力、Rollout、GAE、Grad-CAM、IG，以及中心、随机、掩码参照
-  faithfulness.py 删图块的忠实性检验（在每层注意力中屏蔽，等价于删 token）
-  plausibility.py 物体占比、AUROC、同距离环内富集等合理性指标
-  identity.py     token 身份检验
-  interventions.py 删除与替换读取名单中的 token
-  experiments/    每个实验一个模块（由 scripts/run.py 调用）
-  metrics.py stats.py results.py plotting.py
-scripts/          run.py（运行实验）、download_*.py、analyze_*.py（CPU 分析）、plot_*.py（作图）
-configs/          每个实验的配置；预设参数改动须先登记
-colab/            Colab 运行：local/ 上传代码，remote/ 在实例上建环境、下数据、排队运行
-tests/            单元测试和端到端测试（假数据、随机权重）
-experiments/      每次运行一个文件夹：配置、日志、CSV、git commit
-figures/          论文图（PNG 和 PDF）
-docs/             决策、进度、实验日志、分析报告、调研
+  models/       模型注册表（deit, deit_b, dino, mita），权重版本和校验值固定
+  probe/        探针：读取名单（landmark、top-k、路由）、按名单执行注意力
+  data/         ImageNet、ImageNet-S、Hard ImageNet、Pet、ClickMe、PartImageNet
+  experiments/  每个实验一个模块（由 scripts/run.py 调用）
+  explain.py    所有重要性图：探针、完整注意力、CLS 注意力、Rollout、GAE、Grad-CAM、IG 和参照图
+  faithfulness.py  删图块的忠实性检验（在所有层删除 token）
+  plausibility.py  物体占比、AUROC、同距离环内富集等
+configs/      每个实验的配置（预设参数改动须先登记）
+scripts/      run.py（运行实验）、download_*.py、analyze_*.py（CPU 分析）、plot_*.py（作图）
+colab/        Colab GPU 运行：local/ 上传代码和取回结果，remote/ 在实例上建环境、下数据、排队运行
+tests/        单元测试和端到端测试（假数据、随机权重；85 项）
+experiments/  正式运行结果：每次运行一个文件夹，含配置、日志、结果表、git commit（大表在被忽略的 raw/）
+figures/      报告中的图（PNG 和 PDF）
+docs/         决策日志、实验日志、进度、相关工作、分析报告；docs/archive/ 是早期设计和中间报告
 ```
+
+### 结果文件夹
+
+| 前缀 | 内容 |
+| --- | --- |
+| `2026-10-27_rq1_colab*` | RQ1：k 扫描（第一代设置） |
+| `2026-10-28_v2_*`、`2026-10-26_rq2_imagenet` | RQ1/RQ2 解剖（DeiT-S、DINO、MiTA-DeiT-S）、Pet 合理性 |
+| `2026-10-26_rq3_diagnosis`、`2026-10-28_center_control`、`2026-10-29_center_matched_deletion*` | Pet 上的高范数诊断、中心对照、中心配对删除 |
+| `2026-10-29_v3_*` | v3：E3–E8、健全性检验、成本、定性图、DeiT-B 解剖 |
+| `2026-10-31_s_*` | 补充实验 S1–S3 及其分析（`2026-10-31_s_analysis`） |
 
 ## 运行
 
-所有实验用同一个入口，源代码有未提交改动时拒绝运行（结果里记录 git commit）：
+环境（Python 3.11–3.12）：
+
+```bash
+python -m venv .venv
+.venv/bin/pip install torch==2.7.0 torchvision==0.22.0 --index-url https://download.pytorch.org/whl/cu128
+.venv/bin/pip install -r requirements.txt
+.venv/bin/pip install --no-deps -e .
+.venv/bin/python scripts/download_models.py
+.venv/bin/python -m pytest
+```
+
+数据：`python scripts/download_data.py <imagenet|imagenet_s|hard_imagenet|pet|clickme|partimagenet>`。ImageNet 需要 `HF_TOKEN`（只从 `.env` 或环境变量读取）；其余数据下载后核对固定的 SHA-256 或 MD5。
+
+所有实验用同一个入口；源代码有未提交改动时程序拒绝运行，结果中记录 git commit：
 
 ```bash
 python scripts/run.py explanations --config configs/explanations.yaml --model deit --output experiments/<日期>_e4_imagenet_s_deit
-python scripts/run.py human_alignment --config configs/human_alignment.yaml --model dino --output experiments/<日期>_e7_clickme_dino
+python scripts/run.py layer_reading --config configs/layer_reading.yaml --model deit_b --output experiments/<日期>_layers_deit_b
 ```
 
-| 实验名 | 内容 | 主要输出 |
-| --- | --- | --- |
-| `anatomy` | RQ1/RQ2 解剖（需要 `--stage`） | predictions.csv、settings.csv |
-| `explanations` | E4：所有方法的合理性和忠实性 | plausibility.csv、faithfulness.csv、saco.csv、cost.csv |
-| `shifted_crops` | E5：同一物体放在中间和四角 | crops.csv |
-| `matched_deletion` | E6：删除物体 token 与中心配对对照 | deletion.csv |
-| `identity` | E3：逐层位置分类器和自相似度 | identity.csv |
-| `human_alignment` | E7：与 ClickMe 人类重要性图的 Spearman 相关 | alignment.csv |
-| `parts` | E8：各部件的富集，以及删掉某部件对模型的影响 | parts.csv、reliance.csv |
-| `layer_reading` | S3：逐层的探针、完整注意力、CLS 注意力读取量落在高范数图块上的比例，以及物体聚焦 | layer_reading.csv |
-| `sanity` | 逐级重新初始化权重的健全性检验 | sanity.csv |
-| `gallery` | 定性图用的随机样例 | gallery_<数据集>.npz |
-| `center_control` | 探针读取名单对比"只读中间"（CPU） | — |
-
-常用参数：`--smoke N` 只跑前 N 张；`--resume` 接着中断的运行继续；`--batch-size`、`--workers` 覆盖配置。
-
-分析和作图只读结果文件：
+分析和作图只读取结果文件（CPU）：
 
 ```bash
-bash scripts/analyze_v3.sh experiments/2026-10-29_v3_   # 全部 v3 分析和图
-python scripts/analyze_explanations.py <run>              # 单个运行
+bash scripts/analyze_v3.sh experiments/2026-10-29_v3_     # v3 分析和图 8–14
+python scripts/analyze_supplement.py && python scripts/plot_supplement.py   # 补充实验和图 15–17
+python scripts/paper_assets.py                             # 论文的表和图
+python slides/slide_data.py                                # 幻灯片的图表数字
 ```
 
-每个分析会在运行文件夹里写 `analysis_*.csv`；登记过的主比较在 `analysis_comparisons.csv`（配对 bootstrap 95% 区间）。
+Colab（GPU）：`colab/local/send_code.sh <会话> <分支> [基准提交]` 上传代码；在实例上依次运行 `colab/remote/setup.sh`、`data.sh`、`jobs.sh`（读取 `/content/jobs.txt` 排队运行）；`colab/local/fetch_runs.sh` 分块取回结果。
 
-## 环境
-
-本地 Windows：
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install torch==2.7.0 torchvision==0.22.0 --index-url https://download.pytorch.org/whl/cu128
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m pip install --no-deps -e .
-.\.venv\Scripts\python.exe scripts/download_models.py
-.\.venv\Scripts\python.exe -m pytest
-```
-
-数据：`python scripts/download_data.py <imagenet|imagenet_s|hard_imagenet|pet|clickme|partimagenet>`。ImageNet 需要 `HF_TOKEN`（只从 `.env` 或环境变量读取）；其余数据在下载后核对固定的 SHA-256 或 MD5。默认缓存在 `checkpoints/`，数据在 `data/`（可用 `MITA_DATA_ROOT` 改位置）。
-
-Colab（GPU）：`colab/local/send_code.sh <会话> <分支> [基准提交]` 上传代码；在实例上依次运行 `colab/remote/setup.sh`、`data.sh`、`jobs.sh`（读取 `/content/jobs.txt` 排队运行）。已建好环境后更新代码用 `update.sh`，不要重跑 `setup.sh`（会删除已下载的数据）。
+论文编译：`bash paper/get_style.sh`，然后 `cd paper && latexmk -pdf main.tex`。
 
 ## 文档
 
-- [决策日志](docs/decisions.md)：每项设计、预测和判定标准（运行前登记）。
-- [进度](docs/progress.md)、[实验日志](docs/experiment_log.md)（包括失败的运行）。
-- [分析报告](docs/analysis/)：[v3 完整报告](docs/analysis/v3_report.md)、[补充实验 S1–S3](docs/analysis/supplement_s1_s3.md)、[探针综合报告](docs/analysis/probe_report.md)、[V2 解剖](docs/analysis/v2_anatomy.md)。
-- [研究笔记本](notebooks/mita_probe_research.ipynb)：方法的参考实现（在 CPU 上现场运行并与项目代码核对）、指标定义、全部正式实验的核心表格和图（只读结果文件），以及由代码自动判定的预测对账。
+- [决策日志](docs/decisions.md)：每项设计、预测、判定标准和结果对账（B01–B26），均在运行前登记。
+- [实验日志](docs/experiment_log.md)：每次运行，包括失败的。[进度](docs/progress.md)：当前状态和待办。
+- [相关工作](docs/related_work.md)及[调研细节](docs/research/)；[实验计划 v3](docs/experiment_plan_v3.md)。
+- 分析报告：[v3 完整报告](docs/analysis/v3_report.md)、[补充实验 S1–S3](docs/analysis/supplement_s1_s3.md)、[RQ1/RQ2 解剖](docs/analysis/probe_report.md)、[V2 解剖细节](docs/analysis/v2_anatomy.md)、[高范数诊断](docs/analysis/rq3_diagnosis.md)。
+- [归档](docs/archive/README.md)：早期设计、交接文档和中间报告；移出主线的运行在分支 `archive/pre-cleanup-2026-11-03`。
 - [代理规范](AGENTS.md)。
