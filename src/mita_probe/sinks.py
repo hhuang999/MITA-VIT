@@ -50,7 +50,8 @@ def ring_random(high, generator, grid=14):
 
 
 def equal_mass(received, high):
-    """Returns (mask, feasible)."""
+    """Returns (mask, feasible). Computed on the CPU (cumulative sums in a fixed order)."""
+    device, received, high = received.device, received.cpu(), high.cpu()
     target = (received * high).sum(1)
     ordinary = received.masked_fill(high, -torch.inf)
     values, order = ordinary.sort(dim=1, descending=True, stable=True)
@@ -58,4 +59,4 @@ def equal_mass(received, high):
     before = values.cumsum(1) - values  # budget of the patches ranked above
     take = (before < target[:, None]) & (target[:, None] > 0) & torch.isfinite(ordinary.gather(1, order))
     feasible = (values.sum(1) >= target) | (target == 0)
-    return torch.zeros_like(high).scatter_(1, order, take), feasible
+    return torch.zeros_like(high).scatter_(1, order, take).to(device), feasible.to(device)
