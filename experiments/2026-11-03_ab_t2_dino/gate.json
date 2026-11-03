@@ -1,0 +1,22 @@
+{
+  "model": "dino",
+  "first_high_layer": null,
+  "presence": [
+    0.0,
+    0.0020000000949949026,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "found": false,
+  "n": null,
+  "neurons": [],
+  "matched": []
+}
