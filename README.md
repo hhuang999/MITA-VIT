@@ -4,6 +4,8 @@
 
 **一句话：** 注意力可以看成一个"快权重 MLP"，每个图块（token）是一个神经元。我们按 MiTA 的规则，从**未改动**的预训练 ViT 中读出每块区域读取的 16 个神经元，并让模型只按这些名单计算，用模型自己的输出检验读取是否真实；再用扣除中心偏差的检验，分析 ViT 逐层读了什么。
 
+> **v5（2026-11-05 起，分支 `study/v5`，决策 B33）：** 研究改为以快慢权重视角为主角的“读 → 诊断 → 修正”闭环：先读出注意力在看什么（RQ1），再检验读注意力图的三个前提——这张图的（M1）、位置准确的（M2）、按贡献排序的（M3）——在哪里不成立（RQ2），最后用视角推出的三种读法修正（C1 扣平均图、C2 重新定位、C3 按贡献计分）与改模型比较（RQ3）。盘点见 [docs/v5/inventory.md](docs/v5/inventory.md)，执行规格见 [docs/experiment_plan_v5.md](docs/experiment_plan_v5.md)。下面“主要结果”仍是 v5 之前的结果；v5 的结果出来后写在 `docs/analysis/v5_report.md`。
+
 ## 交付物
 
 | 内容 | 文件 |
@@ -36,6 +38,7 @@ src/mita_probe/
   probe/        探针：读取名单（landmark、top-k、路由）、按名单执行注意力
   data/         ImageNet、ImageNet-S、Hard ImageNet、Pet、ClickMe、PartImageNet
   experiments/  每个实验一个模块（由 scripts/run.py 调用）
+  readings.py   v5 读法：R0、C1–C3、合用读法、对照（模糊、去掉高范数、扣中心高斯）和平均图
   explain.py    所有重要性图：探针、完整注意力、CLS 注意力、Rollout、GAE、Grad-CAM、IG 和参照图
   faithfulness.py  删图块的忠实性检验（在所有层删除 token）
   plausibility.py  物体占比、AUROC、同距离环内富集等
