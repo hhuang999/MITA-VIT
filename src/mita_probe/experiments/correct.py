@@ -18,7 +18,10 @@ the same model (`lens_runs`, with {model}); ClickMe uses the ClickMe-geometry me
 - `register`: DeiT-S with the test-time register of the attention-budget study (R2: the units of the T2
   gate shifted to an added register token; `gate`), prefix = CLS + register;
 - `mita`: MiTA-DeiT-S, budget with summary-slot weight passed back to tokens (mita_probe.budget).
-Variant runs have no faithfulness part (token removal does not apply to these forwards).
+The register variant has the faithfulness part too: the register token is inserted at norm_pre, before
+tokens are dropped, so it is kept like CLS (prefix 2). MiTA has none: its summary slots pool fixed regions of
+the full 14 x 14 grid (5 x 5 landmarks), which are undefined once patch tokens are removed.
+Maps listed in `no_srg` skip the faithfulness part (P4b is judged on enrichment and ClickMe only, B41).
 
 A seeded gallery of `gallery_images` images (B16 rule) keeps every map, and for ClickMe the image and the
 human map, in gallery.npz (figure 2b, appendix A10).
@@ -27,6 +30,7 @@ human map, in gallery.npz (figure 2b, appendix A10).
 import json
 import logging
 import time
+from contextlib import nullcontext
 
 import numpy as np
 import torch
@@ -78,7 +82,6 @@ def variant_maps(model, images, entries, variant, gate, device):
     if variant == 'register':
         context, prefix = edit_neurons(model, as_layers(gate['neurons'], device), mode='shift', register=True), 2
     else:
-        from contextlib import nullcontext
         context, prefix = nullcontext(), model.num_prefix_tokens
     with torch.no_grad(), context, instrument(model, layers, values=False) as store:
         logits = model(images)
@@ -112,7 +115,7 @@ def run(args, config, output, commit):
         dataset, indices = datasets.build(settings['dataset'], model, args.model, config)
     indices = indices[:args.smoke] if args.smoke else indices
     rng = np.random.default_rng(settings['subset_seed'])
-    n_faith = 0 if clickme or variant else min(settings['faithfulness_images'], len(indices))
+    n_faith = 0 if clickme or variant == 'mita' else min(settings['faithfulness_images'], len(indices))
     faithful = set(np.asarray(indices)[rng.choice(len(indices), n_faith, replace=False)].tolist()) if n_faith else set()
     shown = gallery_rows(indices, settings['gallery_images'], settings['subset_seed'])
     progress_path, done = common.progress(output, args.resume)
@@ -160,12 +163,17 @@ def run(args, config, output, commit):
                 sub = torch.tensor(chosen, device=device)
                 tie = torch.Generator(device=device).manual_seed(settings['tie_seed'] * 1_000_003 + start)
                 out = []
-                with torch.no_grad():
+                context = edit_neurons(model, as_layers(gate['neurons'], device), mode='shift', register=True) \
+                    if variant == 'register' else nullcontext()
+                prefix = 2 if variant == 'register' else None
+                with torch.no_grad(), context:
                     for name, scores in maps.items():
+                        if name in settings.get('no_srg', []):
+                            continue
                         order = rank(scores[sub], tie)
                         for condition in settings['conditions']:
                             for budget, values in curve(model, images[sub], original[sub], order, settings['budgets'],
-                                                        condition).items():
+                                                        condition, prefix).items():
                                 out += _rows(args.model, [ids[n] for n in chosen], name, condition, budget, values)
                 faith.write(out)
         scores_sink.write(rows)

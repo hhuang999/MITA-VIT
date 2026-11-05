@@ -9,6 +9,8 @@ Runs are found by name: <prefix>_read_ksweep_<model>, <prefix>_diagnose_{probe,m
 Earlier results: S1/S2/S3 (2026-10-31_s_*), E3 (2026-10-29_v3_e3_identity.csv), T7 (2026-11-03_ab_t7_*).
 
 Statistics (B10): one value per image, paired bootstrap (1,000 resamples, seed 0), 95% percentile intervals.
+Primary comparisons (B41, judged): R_all - R0 and each correction - its matched control (C1 - centre_sub,
+C2 - blur, C3 - no_high), every model and metric; everything else is descriptive (no multiplicity correction).
 Verdicts (B22 rule, bound per metric): 'comparable' if the interval contains 0 or |mean| < bound; otherwise
 'higher' / 'lower'. Bounds: SRG 0.05, enrichment 0.02, ClickMe image-specific Spearman 0.02.
 """
@@ -178,6 +180,16 @@ def per_image(run_imagenet, run_clickme):
     return out
 
 
+def p4_rows(model, metric, table):
+    """P4a: DINO, C3 - R0 on all three metrics; P4b: C2 - R0 at layers 1-4 on enrichment and ClickMe (B41)."""
+    rows = []
+    if model == 'dino' and {'C3', 'R0'} <= set(table):
+        rows.append(paired(table, 'C3', 'R0', metric, model=model, test='P4a'))
+    if metric != 'srg' and {'C2_early', 'R0_early'} <= set(table):
+        rows.append(paired(table, 'C2_early', 'R0_early', metric, model=model, test='P4b'))
+    return rows
+
+
 def correct(prefix, out):
     table1, tests, recovered, order_rows, repro = [], [], [], [], []
     values = {}
@@ -190,16 +202,14 @@ def correct(prefix, out):
                 table1.append(summary(table[method], model=model, metric=metric, method=method))
             for reading in READINGS[1:]:
                 if reading in table:
-                    tests.append(paired(table, reading, 'R0', metric, model=model, test='correction - R0'))
+                    tests.append(paired(table, reading, 'R0', metric, model=model, test='correction - R0',
+                                        primary=reading == 'R_all'))
             for reading, control in CONTROLS.items():
                 if {reading, control} <= set(table):
-                    tests.append(paired(table, reading, control, metric, model=model, test='correction - control'))
+                    tests.append(paired(table, reading, control, metric, model=model, test='correction - control',
+                                        primary=True))
                     tests.append(paired(table, control, 'R0', metric, model=model, test='control - R0'))
-            for name in ('C3',):
-                if model == 'dino' and name in table:
-                    tests.append(paired(table, name, 'R0', metric, model=model, test='P4a'))
-            if {'C2_early', 'R0_early'} <= set(table):
-                tests.append(paired(table, 'C2_early', 'R0_early', metric, model=model, test='P4b'))
+            tests += p4_rows(model, metric, table)
             # A6: share of the last-layer drop each correction recovers (descriptive)
             layers = [f'R0_l{layer}' for layer in (8, 9, 10, 11)]
             if set(layers + ['R0_l12']) <= set(table) and model in SUPERVISED:
@@ -267,16 +277,34 @@ def variant_rows(prefix, values):
         data = per_image(find(prefix, f'correct_{variant}_imagenet_s_{model}'),
                          find(prefix, f'correct_{variant}_clickme_{model}'))
         for metric, table in data.items():
-            if metric == 'srg':
-                continue
             out.append(summary(table['R0'], variant=variant, metric=metric, test='value'))
             base = values.get('deit', {}).get(metric)
             if base is not None:
                 joined = pd.concat([table['R0'].rename('variant'), base['R0'].rename('R0')], axis=1)
                 row = paired(joined, 'variant', 'R0', metric, variant=variant, test='variant - DeiT-S R0')
-                row['holds_p6'] = row['verdict'] != 'higher'
+                row['holds_p6'] = row['verdict'] != 'higher' if metric != 'srg' else None
                 out.append(row)
     return out
+
+
+def extension_b(out):
+    """Appendix A2: per layer, restricting one layer to the reading sets (V2/v3 rq1, L3) and switching one layer's
+    attention off (T7), on the same fixed 5,000 ImageNet images."""
+    rows = []
+    sources = {'deit': 'experiments/2026-10-28_v2_analysis', 'dino': 'experiments/2026-10-28_v2_dino_analysis',
+               'deit_b': 'experiments/2026-10-29_v3_deit_b_analysis'}
+    for model, folder in sources.items():
+        anatomy = pd.read_csv(ROOT / folder / 'rq1_anatomy.csv')
+        anatomy = anatomy[(anatomy.quantity == 'L3') & (anatomy.layer != 'all')]
+        rows += [dict(model=model, layer=int(r.layer), test='restricted to reading sets', mean=r['mean'], low=r.low,
+                      high=r.high) for _, r in anatomy.iterrows()]
+        off = pd.read_csv(ROOT / f'experiments/2026-11-03_ab_t7_{model}/attention_off.csv')
+        for layers, part in off.groupby('layers'):
+            rows.append(summary(part.agree, model=model, layer=0 if layers == 'all' else int(layers),
+                                test='attention off'))
+    frame = pd.DataFrame(rows).sort_values(['model', 'test', 'layer'])
+    frame.to_csv(out / 'a2_single_layer.csv', index=False)
+    return frame
 
 
 def sanity(prefix, out):
@@ -309,6 +337,10 @@ def judge(tests, variants, p1, p2_table, out):
         case = 'holds' if higher == 4 else ('partial' if higher else 'fails')
         ledger.append(dict(prediction='P3', model='deit, deit_b', holds=case == 'holds',
                            detail=f'{higher}/{len(p3)} cells higher; case: {case}'))
+        primary = tests[(tests.test == 'correction - control')]
+        for (model, a), part in primary.groupby(['model', 'a']):
+            ledger.append(dict(prediction='P7 (primary, no direction)', model=model, holds=None,
+                               detail=f'{a} vs control: ' + ', '.join(f'{r.metric} {r.verdict}' for r in part.itertuples())))
         for test in ('P4a', 'P4b'):
             part = tests[tests.test == test]
             if len(part):
@@ -317,6 +349,7 @@ def judge(tests, variants, p1, p2_table, out):
                                    detail=f'{int((part.verdict == "comparable").sum())}/{len(part)} comparable'))
     if len(variants) and 'holds_p6' in variants:
         part = variants.dropna(subset=['holds_p6'])
+        part = part.assign(holds_p6=part.holds_p6.astype(bool))
         ledger.append(dict(prediction='P6', model='deit+register, mita', holds=bool(part.holds_p6.all()),
                            detail=f'{int(part.holds_p6.sum())}/{len(part)} not higher'))
     frame = pd.DataFrame(ledger)
@@ -354,6 +387,7 @@ def main():
     p2_table = p2(frame)
     table1, tests, variants = correct(prefix, out)
     sanity(prefix, out)
+    extension_b(out)
     markdown_table(table1, out)
     ledger = judge(tests, variants, p1, p2_table, out)
     print(ledger.to_string(index=False))
