@@ -138,7 +138,7 @@ def p2(frame):
     for model in MODELS:
         m2 = frame[(frame.panel == 'M2') & (frame.model == model) & (frame.variant == 'new probe')]
         if len(m2) == 12:
-            rho = pd.Series(m2['mean'].to_numpy()).corr(pd.Series(m2.layer.to_numpy()), method='spearman')
+            rho = pd.Series(m2['mean'].to_numpy()).rank().corr(pd.Series(m2.layer.to_numpy()).rank())
             last, first = m2[m2.layer == 12].iloc[0], m2[m2.layer == 1].iloc[0]
             out.append(dict(model=model, test='M2 deepens: accuracy L12 < L1 and Spearman(layer, accuracy) <= -0.8',
                             value=rho, holds=bool(last['high'] < first['low'] and rho <= -0.8)))
