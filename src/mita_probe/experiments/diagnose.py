@@ -114,7 +114,7 @@ def stage_probe(args, config, output, model, device):
     loader = DataLoader(HeldoutImages(files, rows, preprocessing_of(model, args.model)),
                         batch_size=config['batch_size'], num_workers=config['num_workers'], shuffle=False)
     tokens = collect_tokens(model, loader, layers, device)
-    probes, sigmas, displacements, table = {}, {}, {}, []
+    probes, sigmas, displacements, table, per_image = {}, {}, {}, [], []
     for layer in layers:
         train, test = tokens[layer][:n_probe].to(device), tokens[layer][n_probe:].to(device)
         probe = readings.fit_position_probe(train, epochs=settings['epochs'], seed=settings['seed'])
@@ -124,6 +124,9 @@ def stage_probe(args, config, output, model, device):
         predicted = probs.argmax(-1)
         positions = readings.grid_positions(device=device)
         error = (positions[predicted] - positions[target]).norm(dim=-1)
+        correct_share = (predicted == target).float().mean(1).tolist()
+        per_image += [dict(model=args.model, row=rows[n_probe + n], layer=layer, position_accuracy=value)
+                      for n, value in enumerate(correct_share)]
         displacements[layer] = readings.displacement(probs)
         sigmas[layer] = readings.match_sigma(displacements[layer])
         probes[layer] = probe.to('cpu')
@@ -134,6 +137,7 @@ def stage_probe(args, config, output, model, device):
                      displacements[layer], sigmas[layer])
     readings.save_probes(output / 'probes.npz', probes, sigmas, displacements)
     write_csv(output / 'identity.csv', table)
+    write_csv(output / 'identity_images.csv', per_image)
 
 
 def lens_folder(config, model):
