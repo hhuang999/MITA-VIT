@@ -1,0 +1,16 @@
+2026-11-05 15:55:49,372 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
+2026-11-05 15:55:49,374 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-05 15:56:32,097 held-out: 4000 rows; 2 ClickMe duplicates skipped; geometry crop
+2026-11-05 15:56:54,544 layer 1: accuracy 0.999, displacement 0.038, sigma 0.332
+2026-11-05 15:56:58,182 layer 2: accuracy 1.000, displacement 0.053, sigma 0.344
+2026-11-05 15:57:01,841 layer 3: accuracy 0.999, displacement 0.049, sigma 0.341
+2026-11-05 15:57:05,619 layer 4: accuracy 0.998, displacement 0.053, sigma 0.344
+2026-11-05 15:57:09,351 layer 5: accuracy 0.996, displacement 0.072, sigma 0.358
+2026-11-05 15:57:13,096 layer 6: accuracy 0.989, displacement 0.153, sigma 0.401
+2026-11-05 15:57:17,016 layer 7: accuracy 0.959, displacement 0.390, sigma 0.495
+2026-11-05 15:57:20,937 layer 8: accuracy 0.856, displacement 0.746, sigma 0.634
+2026-11-05 15:57:24,799 layer 9: accuracy 0.674, displacement 1.159, sigma 0.787
+2026-11-05 15:57:28,724 layer 10: accuracy 0.505, displacement 1.586, sigma 0.925
+2026-11-05 15:57:32,483 layer 11: accuracy 0.392, displacement 2.189, sigma 1.092
+2026-11-05 15:57:36,209 layer 12: accuracy 0.357, displacement 2.487, sigma 1.167
+2026-11-05 15:57:36,758 Complete: diagnose probe for dino
