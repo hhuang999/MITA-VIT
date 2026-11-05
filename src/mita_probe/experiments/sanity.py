@@ -7,7 +7,9 @@ that does not (the centre reference) reflects a prior, not the model. Per image,
 Spearman between the map of the randomised model and the map of the trained model. Gradient methods keep
 the trained model's top-1 class as their target at every level. Class-agnostic maps (probe, CLS
 attention, rollout) cannot depend on the head, so they are unchanged at the 'head' level by construction.
-Re-initialisation follows timm's ViT init: linear and conv weights truncated normal (std 0.02), biases 0,
+v5 readings (`sanity.methods` entries with a `reading`, decision B39) keep the trained model's lens: the
+position probes and mean maps are not re-estimated at each level, so a reading dominated by its fixed mean
+map would fail the check. Re-initialisation follows timm's ViT init: linear and conv weights truncated normal (std 0.02), biases 0,
 norms (1, 0), embeddings truncated normal (std 0.02).
 """
 
@@ -66,8 +68,12 @@ def run(args, config, output, commit):
     rng = np.random.default_rng(settings['subset_seed'])
     indices = sorted(rng.choice(indices, min(settings['images'], len(indices)), replace=False).tolist())
     indices = indices[:args.smoke] if args.smoke else indices
-    methods = [entry for entry in explain_settings['methods'] if entry['method'] != 'mask']
+    methods = settings.get('methods') or [entry for entry in explain_settings['methods'] if entry['method'] != 'mask']
     spec = resolve(explain_settings['probe_spec'], config['main'])
+    lens = None
+    if any('reading' in entry for entry in methods):  # v5 readings: the trained model's lens stays fixed
+        from .correct import load_lens
+        lens = load_lens(config['correct'], args.model, 'crop', device)
     write_json(output / 'metadata.json', common.provenance(
         commit, model=args.model, dataset=settings['dataset'], images=len(indices),
         methods=[entry['name'] for entry in methods], levels=[name for name, _, _ in stages(trained)],
@@ -84,8 +90,13 @@ def run(args, config, output, commit):
                 top1.append(model(images).argmax(-1))
             target = None if targets is None else targets[start:start + len(images)]
             noise = torch.Generator(device=device).manual_seed(settings['random_seed'] * 1_000_003 + start)
+            if lens is not None:
+                from .correct import all_maps
+                lens_maps = all_maps(model, images, [entry for entry in methods if 'reading' in entry], lens)
             for entry in methods:
-                out[entry['name']].append(method_scores(entry, model, images, None, spec, noise, target).float().cpu())
+                value = lens_maps[entry['name']] if 'reading' in entry else \
+                    method_scores(entry, model, images, None, spec, noise, target)
+                out[entry['name']].append(value.float().cpu())
         return {name: torch.cat(value) for name, value in out.items()}, torch.cat(top1)
 
     started = time.perf_counter()

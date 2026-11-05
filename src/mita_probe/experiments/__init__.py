@@ -18,6 +18,8 @@
 | sink_use | sink_use.py | attention budget T4: is the budget on high-norm patches used? sink type |
 | register | register.py | attention budget T2/T6: neurons that make high-norm tokens, test-time registers |
 | attention_off | attention_off.py | attention budget T7: predictions with no attention at all |
+| diagnose | diagnose.py | v5 RQ2: held-out images, position probes (C2), mean maps and the M1 share |
+| correct | correct.py | v5 RQ3: lens readings C1-C3, R_all, their controls and references; model variants |
 
 To add an experiment, write a module with `run(...)` and list it in EXPERIMENTS.
 """
@@ -41,6 +43,8 @@ EXPERIMENTS = {
     'sink_use': 'Attention budget T4: removing high-norm patches from reading vs same-count controls',
     'register': 'Attention budget T2/T6: register-neuron search and test-time registers (--stage search|formal)',
     'attention_off': 'Attention budget T7: every attention branch set to zero',
+    'diagnose': 'v5 diagnose: held-out set, position probes, mean maps, M1 share (--stage probe|m1)',
+    'correct': 'v5 correct: lens readings, controls and references on ImageNet-S or ClickMe',
 }
 
 

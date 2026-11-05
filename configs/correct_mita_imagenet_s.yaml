@@ -1,0 +1,3 @@
+base: correct_variant_imagenet_s.yaml
+correct:
+  variant: mita
