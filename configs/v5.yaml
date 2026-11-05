@@ -44,6 +44,10 @@ correct:
     - {name: gae, method: gae}
     - {name: centre, method: centre}
     - {name: random, method: random}
+    - {name: R0_l8, reading: R0, layers: [8]}       # layers 8-11: the best layer before the last-layer drop (A6)
+    - {name: R0_l9, reading: R0, layers: [9]}
+    - {name: R0_l10, reading: R0, layers: [10]}
+    - {name: R0_l11, reading: R0, layers: [11]}
     - {name: R0_l12, reading: R0, layers: [12]}
     - {name: C1_l12, reading: C1, layers: [12]}
     - {name: C2_l12, reading: C2, layers: [12]}

@@ -265,6 +265,7 @@ def test_diagnose_and_correct_run_end_to_end(patched):
     assert len(held['rows']) == 10 and not set(held['rows']) & {0, 1, 2}
     identity = pd.read_csv(tmp / 'probe' / 'identity.csv')
     assert list(identity.layer) == list(range(1, 13)) and (identity.sigma >= 0).all()
+    assert len(pd.read_csv(tmp / 'probe' / 'identity_images.csv')) == 4 * 12
     diagnose.run(run(stage='m1'), config, tmp / 'm1', 'test')
     m1 = pd.read_csv(tmp / 'm1' / 'm1.csv')
     assert len(m1) == 6 * 12 * 4 and (m1.residual >= 0).all()
