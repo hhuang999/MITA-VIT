@@ -2,7 +2,7 @@
 
 ## 研究与范围
 
-当前研究主线以 `docs/decisions.md` 为准：定位 C（B21）——用经过执行验证的 top-k 读取名单，在中心偏差对照下分析预训练 ViT 逐层读了什么；实验设计见 `docs/experiment_plan_v3.md` 和 B22–B25，结果见 B20、B26。补充的注意力预算研究（7 个模型，稀疏化和测试时额外 token 两个杠杆）见 `docs/budget/`，决策 B27–B32。最终交付物在 `paper/`（论文）、`slides/`（幻灯片）、`notebooks/`（研究笔记本）。早期设计稿、交接文档和中间报告在 `docs/archive/`，只作历史参考；早期运行和带日期的旧图保存在 Git 分支 `archive/pre-cleanup-2026-11-03`。研究问题、核心对比或主指标的变更先写入 `docs/decisions.md` 的"提议"，确认后实施。新实验的判定标准和预测在正式运行前写入决策日志。
+当前研究主线以 `docs/decisions.md` 为准：v5（B33，替代 B21）——以快慢权重视角为主角，对预训练 ViT 的注意力走一轮“读 → 诊断 → 修正”闭环，依据和盘点在 `docs/v5/`，执行规格见 `docs/experiment_plan_v5.md`。此前的定位 C（B21）——用经过执行验证的 top-k 读取名单，在中心偏差对照下分析预训练 ViT 逐层读了什么；实验设计见 `docs/experiment_plan_v3.md` 和 B22–B25，结果见 B20、B26。补充的注意力预算研究（7 个模型，稀疏化和测试时额外 token 两个杠杆）见 `docs/budget/`，决策 B27–B32。最终交付物在 `paper/`（论文）、`slides/`（幻灯片）、`notebooks/`（研究笔记本）。早期设计稿、交接文档和中间报告在 `docs/archive/`，只作历史参考；早期运行和带日期的旧图保存在 Git 分支 `archive/pre-cleanup-2026-11-03`。研究问题、核心对比或主指标的变更先写入 `docs/decisions.md` 的"提议"，确认后实施。新实验的判定标准和预测在正式运行前写入决策日志。
 
 ## 环境与实现
 
