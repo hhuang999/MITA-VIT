@@ -430,3 +430,5 @@
 - **Q9 去掉高范数**：同意设为 0。删除检验中的并列分数按种子 0 的随机顺序打散（`faithfulness.rank`，沿用以前的处理）；合并第 9–12 层时，高范数图块按每一层分别判定。
 - **Q10 ClickMe 来源**：同意更正，但写入文档前先查 Harmonization 的官方说明（数据发布页或论文）确认图片来源。
 - **执行**：一次完成骨架第 4 节的全部正式实验，中途不等作者。顺序按依赖：diagnose_probe → diagnose_m1 → read_ksweep → correct_ablation（含改模型两行）→ correct_order → correct_sanity。P4 的停止规则保留：每个模型的 correct_ablation 完成后自动运行 `scripts/check_p4.py`，不成立则队列停止并汇报。
+
+- **B42 实现检查的容差（2026-11-05 16:35，正式运行中；不涉及任何研究定义或判定）。** `read_ksweep_deit_b` 在第一批之后的某一批停止：执行检验前的自检要求“显式注意力复现模型输出”的 logits 最大误差 < 1e-4，DeiT-B 在 L4 上为 1.4e-4（float32 下融合 softmax 与显式 softmax 的舍入差；v3 在 A100 上最大为 7.7e-5）。预测类别完全相同的要求不变，容差改为 5e-4，每个运行记录最大误差（`max_identity_error`）。失败的文件夹改名为 `2026-11-05_read_ksweep_deit_b_failed_tolerance` 保留、不使用，DeiT-B 的 k 扫描用新提交从头重跑。队列从这一项继续。

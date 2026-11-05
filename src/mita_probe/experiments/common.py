@@ -108,7 +108,11 @@ def finish(output, started):
 
 
 def dense_identity(model, images, original):
-    """Captured Q/K leave logits unchanged; dense attention over all keys reproduces them."""
+    """Captured Q/K leave logits unchanged; dense attention over all keys reproduces them.
+
+    Tolerance 5e-4 on the logits (was 1e-4; B42): DeiT-B on an L4 differed by 1.4e-4 in float32 between the fused
+    and the explicit softmax. The predicted classes must still be identical; the largest error is recorded.
+    """
     with capture_qk(model) as qk:
         observed = model(images)
     assert torch.equal(observed, original)
@@ -117,5 +121,5 @@ def dense_identity(model, images, original):
     with execute(model, full_plans(len(model.blocks), lambda layer: Plan(token_mask=full))):
         dense = model(images)
     error = (dense - original).abs().max().item()
-    assert error < 1e-4 and torch.equal(dense.argmax(-1), original.argmax(-1)), error
+    assert error < 5e-4 and torch.equal(dense.argmax(-1), original.argmax(-1)), error
     return qk, error
