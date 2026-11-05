@@ -105,7 +105,15 @@ class ImageNetFiles:
             cache.write_text(json.dumps(names), encoding='utf-8')
         if len(names) != expected or len(set(names)) != expected:
             raise ValueError(f'Expected {expected} distinct ImageNet validation file names')
+        self.names = names
         self.rows = {name: row for row, name in enumerate(names)}
+
+    def labels(self) -> list[int]:
+        """Class of every row, read from the label column without decoding images."""
+        return [int(label) for label in self.dataset.data.column('label').to_pylist()]
+
+    def image_at(self, row: int):
+        return self.image(self.names[row])
 
     def image(self, name: str):
         import io

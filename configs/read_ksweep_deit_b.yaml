@@ -1,0 +1,10 @@
+# v5 read_ksweep (figure 2a, B35): main setting (m = 16 regions, spatial routing, CLS reads its own top-k
+# set), all 12 layers restricted at once, k in {4, ..., 128}, reading sets vs random sets of the same size
+# (seeds 0-4). Same 5,000-image ImageNet subset and preprocessing as the earlier execution checks.
+base: anatomy_deit_b.yaml
+rq2:
+  k_sweep: [4, 8, 16, 32, 64, 128]
+  m_sweep: [4]
+  settings:
+    - {name: L3_spatial, mode: L3, sweep: k}
+    - {name: rand, mode: rand, sweep: k, seeds: true}

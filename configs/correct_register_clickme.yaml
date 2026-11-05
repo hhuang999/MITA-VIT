@@ -1,0 +1,3 @@
+base: correct_variant_clickme.yaml
+correct:
+  variant: register

@@ -1,0 +1,15 @@
+# v5 correct_sanity (B39): cascading weight randomisation (v3 sanity protocol, B14) for the lens readings.
+base: v5.yaml
+sanity:
+  dataset: imagenet_s
+  images: 1000
+  subset_seed: 0
+  random_seed: 0
+  init_seed: 0
+  methods:
+    - {name: R0, reading: R0, layers: [9, 10, 11, 12]}
+    - {name: C1, reading: C1, layers: [9, 10, 11, 12]}
+    - {name: C2, reading: C2, layers: [9, 10, 11, 12]}
+    - {name: C3, reading: C3, layers: [9, 10, 11, 12]}
+    - {name: R_all, reading: R_all, layers: [9, 10, 11, 12]}
+    - {name: centre, method: centre}
