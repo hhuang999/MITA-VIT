@@ -357,7 +357,7 @@ def judge(tests, variants, p1, p2_table, out):
     return frame
 
 
-def markdown_table(table1, out):
+def markdown_table(table1, out, variants=None):
     if not len(table1):
         return
     rows = []
@@ -369,6 +369,18 @@ def markdown_table(table1, out):
                 hit = table1[(table1.model == model) & (table1.metric == metric) & (table1.method == method)]
                 line.append('' if hit.empty else f"{hit['mean'].iloc[0]:.3f} [{hit.low.iloc[0]:.3f}, {hit.high.iloc[0]:.3f}]")
         rows.append(line)
+    if variants is not None and len(variants):
+        for variant, label in (('register', '+register (DeiT-S)'), ('mita', 'top-k training (MiTA-DeiT-S)')):
+            line = [label]
+            for model in MODELS:
+                for metric in ('srg', 'enrichment', 'clickme'):
+                    hit = variants[(variants.variant == variant) & (variants.metric == metric) & (variants.test == 'value')]
+                    if model != 'deit' or hit.empty:
+                        line.append('n/a (no token removal for MiTA)' if model == 'deit' and variant == 'mita'
+                                    and metric == 'srg' else '')
+                    else:
+                        line.append(f"{hit['mean'].iloc[0]:.3f} [{hit.low.iloc[0]:.3f}, {hit.high.iloc[0]:.3f}]")
+            rows.append(line)
     header = ['map'] + [f'{model} {metric}' for model in MODELS for metric in ('SRG', 'enrichment', 'ClickMe')]
     text = '| ' + ' | '.join(header) + ' |\n|' + ' --- |' * len(header) + '\n'
     text += '\n'.join('| ' + ' | '.join(line) + ' |' for line in rows) + '\n'
@@ -388,7 +400,7 @@ def main():
     table1, tests, variants = correct(prefix, out)
     sanity(prefix, out)
     extension_b(out)
-    markdown_table(table1, out)
+    markdown_table(table1, out, variants)
     ledger = judge(tests, variants, p1, p2_table, out)
     print(ledger.to_string(index=False))
     print('written to', out)

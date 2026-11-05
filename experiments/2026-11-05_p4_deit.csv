@@ -1,0 +1,3 @@
+a,b,metric,model,test,n,mean,low,high,verdict
+C2_early,R0_early,enrichment,deit,P4b,12150,-0.000990313392024962,-0.0014633384680626934,-0.0005332064839489294,comparable
+C2_early,R0_early,clickme,deit,P4b,17408,-0.00021355686012478718,-0.0004396903614610309,2.868493224785564e-05,comparable
