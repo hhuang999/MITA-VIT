@@ -432,3 +432,14 @@
 - **执行**：一次完成骨架第 4 节的全部正式实验，中途不等作者。顺序按依赖：diagnose_probe → diagnose_m1 → read_ksweep → correct_ablation（含改模型两行）→ correct_order → correct_sanity。P4 的停止规则保留：每个模型的 correct_ablation 完成后自动运行 `scripts/check_p4.py`，不成立则队列停止并汇报。
 
 - **B42 实现检查的容差（2026-11-05 16:35，正式运行中；不涉及任何研究定义或判定）。** `read_ksweep_deit_b` 在第一批之后的某一批停止：执行检验前的自检要求“显式注意力复现模型输出”的 logits 最大误差 < 1e-4，DeiT-B 在 L4 上为 1.4e-4（float32 下融合 softmax 与显式 softmax 的舍入差；v3 在 A100 上最大为 7.7e-5）。预测类别完全相同的要求不变，容差改为 5e-4，每个运行记录最大误差（`max_identity_error`）。失败的文件夹改名为 `2026-11-05_read_ksweep_deit_b_failed_tolerance` 保留、不使用，DeiT-B 的 k 扫描用新提交从头重跑。队列从这一项继续。
+
+- **B43 ClickMe 图片来源的更正（2026-11-05；Q10，作者同意更正，先核对官方说明）。** 更正 B12 中“图片来自 ImageNet 验证集，模型训练时没见过”。
+  - **官方说法**：
+    - Fel 等 2022（NeurIPS，Harmonization）第 3 节：ClickMe 有 196,499 张图，“from ImageNet training and validation sets”；“Our experiments measure the alignment … using ClickMe … feature importance maps captured on the ImageNet validation set”。第 4.1 节：“taking the average importance map … for every image that also appeared in ImageNet validation”。
+    - 但官方发布的评估数据（`load_clickme_val`，17 个 `val-*.tfrecords` 分片；代码 `harmonization/common/clickme_dataset.py`）只称为“the click-me validation set”，没有说明图片来自哪里。
+    - ClickMe 原论文（Linsley 等 2019，ICLR）把 ClickMe 数据集随机分成训练、验证、测试三折，其中验证折约 5%（17,841 张）。
+  - **我们的测量**：
+    - 发布的验证分片共 17,408 条，数量接近原论文的“验证折”，与“ImageNet 验证集中的 ClickMe 图片”不是一回事。
+    - 抽查 40 张（9 种裁剪下的缩略图）和 30 张（DeiT-S 特征）ClickMe 图片，在同类的 50 张 ImageNet 验证集图片中都找不到对应。
+    - 正式运行的留出集检查了 4,002 张 ImageNet 验证集图片，只有 2 张与 ClickMe 图片重复。若 ClickMe 验证分片来自 ImageNet 验证集，预计约 530–1,850 张（取决于它与 ImageNet-S 的重叠）。
+  - **结论（写入报告）**：发布的 ClickMe 验证分片很可能是 ClickMe 数据集自己的随机验证折，图片绝大多数来自 ImageNet **训练集**，模型训练时见过。ClickMe 上的结果应像 PartImageNet 一样打折扣。官方没有逐张说明来源，所以写成“很可能”。ClickMe 实验本身和判定不变。
