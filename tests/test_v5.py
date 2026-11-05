@@ -277,6 +277,7 @@ def test_diagnose_and_correct_run_end_to_end(patched):
     assert set(plaus.method) == set(names) and len(plaus) == 6 * len(names)
     faith = pd.read_csv(tmp / 'imagenet_s' / 'faithfulness.csv')
     assert faith['index'].nunique() == 3 and set(faith.condition) == {'drop_top', 'drop_bottom'}
+    assert not {'R0_early', 'C2_early'} & set(faith.method)
     gallery = np.load(next((tmp / 'imagenet_s').glob('gallery_*.npz')))
     assert 'map_R_all' in gallery.files
 
@@ -313,4 +314,9 @@ def test_variant_runs_take_r0_only(patched):
     correct.run(SimpleNamespace(model='deit_t', smoke=0, resume=False), config, out, 'test')
     plaus = pd.read_csv(out / 'plausibility.csv')
     assert set(plaus.method) == {'R0', 'R0_l12'} and len(plaus) == 12
-    assert pd.read_csv(out / 'faithfulness.csv').empty
+    config['correct']['faithfulness_images'] = 3
+    again = tmp / 'register_srg'
+    again.mkdir()
+    correct.run(SimpleNamespace(model='deit_t', smoke=0, resume=False), config, again, 'test')
+    faith = pd.read_csv(again / 'faithfulness.csv')
+    assert faith['index'].nunique() == 3 and set(faith.method) == {'R0', 'R0_l12'}

@@ -1,5 +1,6 @@
 # v5 (decisions B33-B40): the fast-weight lens, read -> diagnose -> correct. Shared settings; the experiment
-# configs below inherit this file. Values marked "author" are confirmed by the author before the formal runs.
+# configs below inherit this file. Values marked "author" were confirmed by the author on 2026-11-05 (B41) and
+# are frozen for the formal runs.
 base: explanations.yaml
 design: docs/experiment_plan_v5.md
 batch_size: 64
@@ -13,12 +14,12 @@ diagnose:
   seed: 0
   norm_ratio: 3                 # high-norm definition (B24)
   dataset: imagenet_s           # evaluation images of the M1 share
-  probe_run: experiments/2026-11-06_diagnose_probe_{model}
+  probe_run: experiments/2026-11-05_diagnose_probe_{model}
 
 correct:
   lens_runs:
-    probe: experiments/2026-11-06_diagnose_probe_{model}
-    m1: experiments/2026-11-06_diagnose_m1_{model}
+    probe: experiments/2026-11-05_diagnose_probe_{model}
+    m1: experiments/2026-11-05_diagnose_m1_{model}
   norm_ratio: 3
   dataset: imagenet_s
   shards: 17
@@ -29,6 +30,7 @@ correct:
   budgets: [1, 2, 4, 8, 16, 32, 64, 98, 147]
   conditions: [drop_top, drop_bottom]   # SRG = AUC(drop_bottom) - AUC(drop_top) (B11)
   gallery_images: 24            # B16: seeded random draw, no picking
+  no_srg: [R0_early, C2_early]  # B41: P4b is judged on enrichment and ClickMe only
   gate: experiments/2026-11-03_ab_t2_deit/gate.json   # test-time register units (variant: register)
   # Table 1 rows. Deep = layers 9-12 summed; last = layer 12; early = layers 1-4 (negative control P4).
   methods:

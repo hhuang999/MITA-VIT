@@ -69,9 +69,14 @@ def measures(original, reduced):
                 kl=kl_divergence(original.double(), reduced.double()).float())
 
 
-def curve(model, images, original, order, budgets, condition):
-    """{budget: measures} for one condition; budgets count patches kept (keep_top) or removed (drop_*)."""
-    prefix, patches = model.num_prefix_tokens, order.shape[1]
+def curve(model, images, original, order, budgets, condition, prefix=None):
+    """{budget: measures} for one condition; budgets count patches kept (keep_top) or removed (drop_*).
+
+    prefix: tokens always kept before the patches (default model.num_prefix_tokens; 2 with a test-time register,
+    which is inserted at norm_pre, i.e. before the tokens are dropped).
+    """
+    prefix = model.num_prefix_tokens if prefix is None else prefix
+    patches = order.shape[1]
     out = {}
     for budget in budgets:
         if condition == 'keep_top':
