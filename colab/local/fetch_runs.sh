@@ -22,7 +22,7 @@ if os.path.exists(done):
     print('SHA', open(done).read().strip())
     print('PARTS', ' '.join(sorted(os.listdir(f'/content/out/{run}'))))
 PY
-  "$COLAB" exec -s "$SESSION" -f "$WORK/launch.py" --timeout 120 > /dev/null
+  for wait in 0 10 30; do sleep $wait; timeout 200 "$COLAB" exec -s "$SESSION" -f "$WORK/launch.py" --timeout 120 > /dev/null && break; done
   out=""
   for attempt in $(seq 1 60); do
     sleep 10
