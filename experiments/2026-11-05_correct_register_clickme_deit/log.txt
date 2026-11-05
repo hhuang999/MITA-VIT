@@ -1,0 +1,31 @@
+2026-11-05 20:50:36,992 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-11-05 20:50:36,994 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-05 20:50:41,371 correct_deit 640/17408 images; 4.1s
+2026-11-05 20:50:44,584 correct_deit 1280/17408 images; 7.3s
+2026-11-05 20:50:47,795 correct_deit 1920/17408 images; 10.5s
+2026-11-05 20:50:51,019 correct_deit 2560/17408 images; 13.8s
+2026-11-05 20:50:54,247 correct_deit 3200/17408 images; 17.0s
+2026-11-05 20:50:57,481 correct_deit 3840/17408 images; 20.2s
+2026-11-05 20:51:00,710 correct_deit 4480/17408 images; 23.5s
+2026-11-05 20:51:03,959 correct_deit 5120/17408 images; 26.7s
+2026-11-05 20:51:07,210 correct_deit 5760/17408 images; 30.0s
+2026-11-05 20:51:10,453 correct_deit 6400/17408 images; 33.2s
+2026-11-05 20:51:13,702 correct_deit 7040/17408 images; 36.4s
+2026-11-05 20:51:16,951 correct_deit 7680/17408 images; 39.7s
+2026-11-05 20:51:20,198 correct_deit 8320/17408 images; 42.9s
+2026-11-05 20:51:23,450 correct_deit 8960/17408 images; 46.2s
+2026-11-05 20:51:26,697 correct_deit 9600/17408 images; 49.4s
+2026-11-05 20:51:29,952 correct_deit 10240/17408 images; 52.7s
+2026-11-05 20:51:33,202 correct_deit 10880/17408 images; 55.9s
+2026-11-05 20:51:36,462 correct_deit 11520/17408 images; 59.2s
+2026-11-05 20:51:39,715 correct_deit 12160/17408 images; 62.5s
+2026-11-05 20:51:42,971 correct_deit 12800/17408 images; 65.7s
+2026-11-05 20:51:46,235 correct_deit 13440/17408 images; 69.0s
+2026-11-05 20:51:49,497 correct_deit 14080/17408 images; 72.2s
+2026-11-05 20:51:52,759 correct_deit 14720/17408 images; 75.5s
+2026-11-05 20:51:56,027 correct_deit 15360/17408 images; 78.8s
+2026-11-05 20:51:59,283 correct_deit 16000/17408 images; 82.0s
+2026-11-05 20:52:02,547 correct_deit 16640/17408 images; 85.3s
+2026-11-05 20:52:05,818 correct_deit 17280/17408 images; 88.6s
+2026-11-05 20:52:06,474 correct_deit 17408/17408 images; 89.2s
+2026-11-05 20:52:06,499 Complete: correct on clickme for deit (variant register)
