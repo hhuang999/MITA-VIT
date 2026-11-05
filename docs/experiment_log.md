@@ -7,6 +7,9 @@
 - 16:35 `read_ksweep_deit_b` 失败：执行检验前的自检（显式注意力复现 logits）误差 1.4e-4，超过 1e-4。预测类别相同，是 float32 舍入差。按 B42 把容差改为 5e-4（提交 5faa503，本地 113 项测试通过），失败文件夹改名为 `2026-11-05_read_ksweep_deit_b_failed_tolerance` 保留。
 - 续跑时的两个操作问题（都没有产生结果）：① 上传含实验结果的代码包超过 20 分钟被我中断，残留的分块使下一次合并校验失败（BUNDLE_BAD），队列却在旧代码上启动；在 GPU 测试阶段就被停止，没有任何实验在旧代码上运行。② 改为只发送代码提交：本地把“容差修正”和“diagnose 结果”两个提交调换顺序（修正在前），VM 上以分支 `v5-run`（= 5faa503）快进。17:06 从 `read_ksweep_deit_b` 起续跑。
 - 本地取回脚本：`colab exec` 偶尔无响应超过 9 分钟；`fetch_runs.sh` 的打包启动步骤加了超时和重试。
+- 17:06–21:52（代码 5faa503）：`read_ksweep_deit_b`、`correct_ablation` ×6（每个模型后自动运行 P4 检查，三次都通过）、改模型两行 ×4、`correct_order` ×6、`correct_sanity` ×3 全部成功，并由本地脚本逐个取回。DINO 的 ImageNet-S 消融约 33 分钟，DeiT-B 约 80 分钟。
+- 22:25 取回实例日志（`experiments/2026-11-05_v5_colab_env/`，已检查不含令牌），停止实例。服务器确认 0 个活动实例，余额 165.74 单元（正式运行约 13 单元）。
+- 分析、图 2/图 3、表 1 和报告：`experiments/2026-11-05_v5_analysis/`、`figures/figure_v5_*`、`docs/analysis/v5_report.md`；对账记为 B44。
 
 ## 2026-11-05 v5：实现与冒烟运行（分支 `study/v5`，B33；B34–B40 为提议）
 

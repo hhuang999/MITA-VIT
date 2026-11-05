@@ -1,0 +1,4 @@
+test model     metric      mean       low      high    verdict
+ P4b  deit enrichment -0.000990 -0.001463 -0.000533 comparable
+ P4b  deit    clickme -0.000214 -0.000440  0.000029 comparable
+P4 CHECK PASSED

@@ -1,0 +1,7 @@
+test model     metric      mean       low      high    verdict
+ P4a  dino enrichment -0.003507 -0.003997 -0.002996 comparable
+ P4b  dino enrichment -0.003686 -0.004288 -0.003042 comparable
+ P4a  dino        srg  0.000278 -0.003215  0.003947 comparable
+ P4a  dino    clickme -0.000727 -0.000951 -0.000516 comparable
+ P4b  dino    clickme -0.001653 -0.001825 -0.001479 comparable
+P4 CHECK PASSED

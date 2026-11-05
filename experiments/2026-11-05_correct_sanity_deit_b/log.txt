@@ -1,0 +1,16 @@
+2026-11-05 21:44:07,454 Loading pretrained weights from Hugging Face hub (timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6)
+2026-11-05 21:44:07,456 [timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-05 21:45:12,734 level head done; 64.0s
+2026-11-05 21:45:44,888 level block12 done; 96.2s
+2026-11-05 21:46:16,775 level block11 done; 128.1s
+2026-11-05 21:46:48,714 level block10 done; 160.0s
+2026-11-05 21:47:20,355 level block9 done; 191.6s
+2026-11-05 21:47:52,088 level block8 done; 223.4s
+2026-11-05 21:48:23,769 level block7 done; 255.0s
+2026-11-05 21:48:55,358 level block6 done; 286.6s
+2026-11-05 21:49:27,064 level block5 done; 318.3s
+2026-11-05 21:49:58,756 level block4 done; 350.0s
+2026-11-05 21:50:30,303 level block3 done; 381.6s
+2026-11-05 21:51:02,333 level block2 done; 413.6s
+2026-11-05 21:51:33,977 level block1 done; 445.3s
+2026-11-05 21:52:05,983 level embed done; 477.3s
