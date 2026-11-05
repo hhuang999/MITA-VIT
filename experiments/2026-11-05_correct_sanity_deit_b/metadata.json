@@ -1,0 +1,36 @@
+{
+  "git_commit": "5faa503decd9d5a76671171de07554bf34b054a1",
+  "timestamp": "2026-11-05T21:44:08.723222+00:00",
+  "torch": "2.7.0+cu128",
+  "timm": "1.0.30",
+  "device": "NVIDIA L4",
+  "dtype": "float32, no autocast",
+  "model": "deit_b",
+  "dataset": "imagenet_s",
+  "images": 1000,
+  "methods": [
+    "R0",
+    "C1",
+    "C2",
+    "C3",
+    "R_all",
+    "centre"
+  ],
+  "levels": [
+    "head",
+    "block12",
+    "block11",
+    "block10",
+    "block9",
+    "block8",
+    "block7",
+    "block6",
+    "block5",
+    "block4",
+    "block3",
+    "block2",
+    "block1",
+    "embed"
+  ],
+  "smoke_images": 0
+}
