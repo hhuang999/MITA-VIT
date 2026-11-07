@@ -1,0 +1,4 @@
+2026-11-07T10:56:02Z gpu_tests exit=0
+2026-11-07T10:57:07Z data_clickme exit=0
+2026-11-07T10:57:15Z smoke_held exit=1
+2026-11-07T10:57:15Z ABORT smoke_held failed

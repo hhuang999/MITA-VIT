@@ -33,7 +33,7 @@ def load(prefix):
         if 'clickme' in tables or 'enrichment' in tables:
             for metric, table in tables.items():
                 if set(SEEDS) <= set(table):
-                    table['C3shuffle'] = table[SEEDS].mean(1)
+                    table['C3shuffle'] = table[SEEDS].mean(axis=1)
             data[model] = tables
     return data
 
