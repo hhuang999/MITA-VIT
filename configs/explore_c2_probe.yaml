@@ -1,0 +1,4 @@
+# E-C2 probe part only (decision B47): rerun after fixing the float32 error-mass bug in the far share of errors.
+base: explore_c2.yaml
+explore_c2:
+  parts: [probe]

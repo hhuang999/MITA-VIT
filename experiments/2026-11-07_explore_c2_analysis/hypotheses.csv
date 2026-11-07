@@ -1,0 +1,3 @@
+hypothesis,verdict,detail
+H-a: probe errors are mostly far (> 3 patches),partly supported,"far share of errors, layers 9-12: 0.02-62.75"
+H-b: the probe carries an image-independent position preference,not supported,"0/12 model-layer cells meet both conditions; side evidence corr(C2 - R0, mean map): deit -0.04 [-0.04, -0.04], deit_b -0.04 [-0.04, -0.03], dino -0.00 [-0.01, -0.00]"

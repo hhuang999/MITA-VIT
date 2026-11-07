@@ -65,14 +65,19 @@ def error_stats(probs, grid=14):
     top5 = probs.topk(5, dim=-1).indices
     near = (dist <= 1.5).float()                        # 3 x 3 neighbourhood (diagonal distance sqrt 2)
     far_mass = (probs * (dist > 3).float()).sum(-1)
-    errors = (1 - correct).clamp_min(1e-12)
+    # Error mass as the sum of the off-position probabilities in float64 (B47): 1 - P(j) in float32 rounds to
+    # ~0 for well-located tokens and made the ratio blow up (> 1). Tokens with no error mass are left out.
+    off = probs.double() * (1 - torch.eye(patches, device=probs.device, dtype=torch.float64))
+    errors = off.sum(-1)
+    far_double = (off * (dist > 3).double()).sum(-1)
+    share = torch.where(errors > 0, far_double / errors.clamp_min(1e-300), torch.full_like(errors, float('nan')))
     return dict(
         exact=(probs.argmax(-1) == own).float().mean(-1),
         top5=(top5 == own[:, None]).any(-1).float().mean(-1),
         distance=(probs * dist).sum(-1).mean(-1),
         near3x3=(probs * near).sum(-1).mean(-1),
         far3=far_mass.mean(-1),
-        far_share=(far_mass / errors).mean(-1),
+        far_share=share.nanmean(-1).float(),
     )
 
 
@@ -166,7 +171,8 @@ def shift_part(args, config, output, model, device, lens):
 
 
 def run(args, config, output, commit):
-    """args: model, smoke, resume. Lens paths come from config['correct']['lens_runs'] (the v5 formal runs)."""
+    """args: model, smoke, resume. Lens paths come from config['correct']['lens_runs'] (the v5 formal runs).
+    config['explore_c2']['parts'] (default both) selects 'probe' and / or 'shift' (B47: probe part rerun only)."""
     from .correct import load_lens
     common.deterministic()
     device = common.DEVICE
@@ -177,8 +183,11 @@ def run(args, config, output, commit):
                                                            lens_runs=config['correct']['lens_runs'],
                                                            smoke_images=args.smoke))
     started = time.perf_counter()
-    probe_part(args, config, output, model, device, lens.probes, lens.sigmas)
-    logging.info('probe part done; %.1fs', time.perf_counter() - started)
-    shift_part(args, config, output, model, device, lens)
+    parts = config.get('explore_c2', {}).get('parts', ['probe', 'shift'])
+    if 'probe' in parts:
+        probe_part(args, config, output, model, device, lens.probes, lens.sigmas)
+        logging.info('probe part done; %.1fs', time.perf_counter() - started)
+    if 'shift' in parts:
+        shift_part(args, config, output, model, device, lens)
     common.finish(output, started)
     logging.info('Complete: E-C2 for %s', args.model)

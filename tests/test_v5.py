@@ -328,13 +328,16 @@ def test_probe_error_statistics_limits():
     from mita_probe.experiments.explore_c2 import error_stats
     eye = torch.eye(196).expand(2, -1, -1)
     stats = error_stats(eye)
-    for key, value in dict(exact=1, top5=1, distance=0, near3x3=1, far3=0, far_share=0).items():
+    for key, value in dict(exact=1, top5=1, distance=0, near3x3=1, far3=0).items():
         torch.testing.assert_close(stats[key], torch.full((2,), float(value)))
+    assert torch.isnan(stats['far_share']).all()             # no error mass at all: undefined (B47)
     uniform = torch.full((1, 196, 196), 1 / 196)
     stats = error_stats(uniform)
     assert stats['far3'] > .8 and abs(float(stats['near3x3']) - (9 * 144 + 6 * 48 + 4 * 4) / 196 / 196) < 1e-6
     blur = readings.gaussian_relocation(1.0)[None]
     assert float(error_stats(blur)['exact']) == 1.0
+    sharp = (torch.eye(196) * 30).softmax(-1)[None]          # P(j) close to 1: the share must stay in [0, 1]
+    assert 0 <= float(error_stats(sharp)['far_share']) <= 1
 
 
 def test_shift_statistics():
