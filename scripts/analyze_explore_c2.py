@@ -27,6 +27,12 @@ DEEP = [9, 10, 11, 12]
 GRID = 14
 
 
+def table(path):
+    """Read a CSV that may have been gzip-compressed before committing (scripts/compress_tables.sh)."""
+    path = Path(path)
+    return pd.read_csv(path if path.exists() else path.with_name(path.name + '.gz'))
+
+
 def closeness():
     rows, cols = np.divmod(np.arange(GRID * GRID), GRID)
     return -np.hypot(rows - (GRID - 1) / 2, cols - (GRID - 1) / 2)
@@ -52,7 +58,7 @@ def errors(prefix):
     rows = []
     for model in MODELS:
         fixed = Path(f'{prefix}_probefix_{model}/probe_errors.csv')   # B47: rerun after the float32 fix
-        table = pd.read_csv(fixed if fixed.exists() else f'{prefix}_{model}/probe_errors.csv')
+        table = pd.read_csv(fixed) if fixed.exists() else globals()['table'](f'{prefix}_{model}/probe_errors.csv')
         for (layer, source), part in table.groupby(['layer', 'source']):
             for metric in METRICS:
                 rows.append(summary(part[metric], model=model, layer=layer, source=source, metric=metric))
@@ -97,7 +103,7 @@ def mean_prediction(prefix):
 def shift(prefix):
     rows, bins = [], []
     for model in MODELS:
-        table = pd.read_csv(f'{prefix}_{model}/shift.csv')
+        table = globals()['table'](f'{prefix}_{model}/shift.csv')
         for source, part in table.groupby('source'):
             rows.append(summary(part.object_r0 - part.object_moved, model=model, source=source,
                                 quantity='object share moved to background'))

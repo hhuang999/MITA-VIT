@@ -1,0 +1,15 @@
+{
+  "git_commit": "534e333dc3f78f7abd0c2e0bb46570f71c7c33bd",
+  "timestamp": "2026-11-07T13:49:08.346501+00:00",
+  "torch": "2.7.0+cu128",
+  "timm": "1.0.30",
+  "device": "NVIDIA L4",
+  "dtype": "float32, no autocast",
+  "model": "dino",
+  "decision": "B45 (exploratory)",
+  "lens_runs": {
+    "probe": "experiments/2026-11-05_diagnose_probe_{model}",
+    "m1": "experiments/2026-11-05_diagnose_m1_{model}"
+  },
+  "smoke_images": 0
+}

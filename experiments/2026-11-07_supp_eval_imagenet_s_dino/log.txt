@@ -1,0 +1,23 @@
+2026-11-07 11:48:34,450 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
+2026-11-07 11:48:34,452 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-07 11:50:02,683 supp_dino 640/12419 images; 87.0s
+2026-11-07 11:51:24,512 supp_dino 1280/12419 images; 168.8s
+2026-11-07 11:52:47,743 supp_dino 1920/12419 images; 252.1s
+2026-11-07 11:54:17,673 supp_dino 2560/12419 images; 342.0s
+2026-11-07 11:55:48,997 supp_dino 3200/12419 images; 433.3s
+2026-11-07 11:57:22,498 supp_dino 3840/12419 images; 526.8s
+2026-11-07 11:58:44,112 supp_dino 4480/12419 images; 608.4s
+2026-11-07 12:00:13,033 supp_dino 5120/12419 images; 697.3s
+2026-11-07 12:01:36,138 supp_dino 5760/12419 images; 780.5s
+2026-11-07 12:03:00,688 supp_dino 6400/12419 images; 865.0s
+2026-11-07 12:04:24,286 supp_dino 7040/12419 images; 948.6s
+2026-11-07 12:05:49,398 supp_dino 7680/12419 images; 1033.7s
+2026-11-07 12:07:11,883 supp_dino 8320/12419 images; 1116.2s
+2026-11-07 12:08:30,263 supp_dino 8960/12419 images; 1194.6s
+2026-11-07 12:09:51,685 supp_dino 9600/12419 images; 1276.0s
+2026-11-07 12:11:12,067 supp_dino 10240/12419 images; 1356.4s
+2026-11-07 12:12:34,009 supp_dino 10880/12419 images; 1438.3s
+2026-11-07 12:13:55,626 supp_dino 11520/12419 images; 1519.9s
+2026-11-07 12:15:24,671 supp_dino 12160/12419 images; 1609.0s
+2026-11-07 12:15:58,899 supp_dino 12419/12419 images; 1643.2s
+2026-11-07 12:15:58,988 Complete: supp eval for dino

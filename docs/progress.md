@@ -1,5 +1,10 @@
 # 进度（最后更新：2026-11-05）
 
+## 第一阶段补充实验（2026-11-07，交接包 `docs/handoff/2026-11-07/`）
+
+- E-C2 和 X1–X9 全部完成，结果在 `docs/analysis/v5_report.md` 第 9 节（B45–B48，全部为探索性）。第 4.5 节版本建议：B。
+- **停在第一阶段，等作者决定是否开始第二阶段。** 没有推送。
+
 ## v5（分支 `study/v5`，2026-11-05）
 
 - 作者确认新方向（B33，替代 B21）和 Q1–Q10（B41 冻结）。全部正式实验完成，结果见 **[docs/analysis/v5_report.md](analysis/v5_report.md)**；图 2、图 3 在 `figures/figure_v5_*`，表 1 在 `experiments/2026-11-05_v5_analysis/table1.{csv,md}`。
