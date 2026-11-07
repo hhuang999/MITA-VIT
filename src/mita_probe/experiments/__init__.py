@@ -21,6 +21,7 @@
 | diagnose | diagnose.py | v5 RQ2: held-out images, position probes (C2), mean maps and the M1 share |
 | correct | correct.py | v5 RQ3: lens readings C1-C3, R_all, their controls and references; model variants |
 | explore_c2 | explore_c2.py | E-C2 (B45, exploratory): probe error geometry, mean prediction, where C2 moves scores |
+| supp | supp.py | Phase-1 X1-X5 (B46, exploratory): combinations, C3 mechanism, dose, globalisation, MLP probe |
 
 To add an experiment, write a module with `run(...)` and list it in EXPERIMENTS.
 """
@@ -47,6 +48,7 @@ EXPERIMENTS = {
     'diagnose': 'v5 diagnose: held-out set, position probes, mean maps, M1 share (--stage probe|m1)',
     'correct': 'v5 correct: lens readings, controls and references on ImageNet-S or ClickMe',
     'explore_c2': 'E-C2 (exploratory): why relocation (C2) fails: probe errors, mean prediction, score shift',
+    'supp': 'Phase-1 X1-X5 (exploratory, B46): --stage heldout (MLP probes, globalisation) | eval (all maps)',
 }
 
 
