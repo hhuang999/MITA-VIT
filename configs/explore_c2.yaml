@@ -1,0 +1,3 @@
+# E-C2 (decision B45; exploratory, post hoc): why relocation (C2) fails. Only saved material is used: the v5
+# probes, blur widths, held-out test images and mean maps of the formal runs (lens paths in v5.yaml).
+base: v5.yaml

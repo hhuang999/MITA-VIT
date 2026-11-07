@@ -320,3 +320,62 @@ def test_variant_runs_take_r0_only(patched):
     correct.run(SimpleNamespace(model='deit_t', smoke=0, resume=False), config, again, 'test')
     faith = pd.read_csv(again / 'faithfulness.csv')
     assert faith['index'].nunique() == 3 and set(faith.method) == {'R0', 'R0_l12'}
+
+
+# --- E-C2 (B45, exploratory) ------------------------------------------------------------------------------
+
+def test_probe_error_statistics_limits():
+    from mita_probe.experiments.explore_c2 import error_stats
+    eye = torch.eye(196).expand(2, -1, -1)
+    stats = error_stats(eye)
+    for key, value in dict(exact=1, top5=1, distance=0, near3x3=1, far3=0, far_share=0).items():
+        torch.testing.assert_close(stats[key], torch.full((2,), float(value)))
+    uniform = torch.full((1, 196, 196), 1 / 196)
+    stats = error_stats(uniform)
+    assert stats['far3'] > .8 and abs(float(stats['near3x3']) - (9 * 144 + 6 * 48 + 4 * 4) / 196 / 196) < 1e-6
+    blur = readings.gaussian_relocation(1.0)[None]
+    assert float(error_stats(blur)['exact']) == 1.0
+
+
+def test_shift_statistics():
+    from mita_probe.experiments.explore_c2 import N_BINS, closeness, distance_bins, shift_stats
+    assert int(distance_bins().max()) == N_BINS - 1 and int(distance_bins().min()) == 0
+    r0 = torch.rand(3, 196, dtype=torch.float64)
+    foreground = torch.zeros(3, 196, dtype=torch.bool)
+    foreground[:, :98] = True
+    valid = torch.ones(3, 196, dtype=torch.bool)
+    toward_centre = r0 + 0.1 * (closeness().double() - closeness().double().mean())
+    stats = shift_stats(r0, toward_centre, closeness().double(), foreground, valid)
+    torch.testing.assert_close(stats['pearson_centre'], torch.ones(3, dtype=torch.float64))
+    torch.testing.assert_close(stats['bins_r0'].sum(-1), torch.ones(3, dtype=torch.float64))
+    background = r0 * (~foreground)
+    stats = shift_stats(r0, background, closeness().double(), foreground, valid)
+    assert (stats['object_moved'] == 0).all() and (stats['object_r0'] > 0).all()
+
+
+def test_explore_c2_runs_end_to_end(patched):
+    from mita_probe.experiments import explore_c2
+    tmp = patched
+    monkey = pytest.MonkeyPatch()
+    monkey.setattr(explore_c2, 'load_model', lambda name, device: tiny())
+    config = load_config(ROOT / 'configs/explore_c2.yaml')
+    config.update(batch_size=4, num_workers=0)
+    config['diagnose'].update(probe_images=6, mean_images=4, epochs=2, probe_run=str(tmp / 'probe'))
+    config['correct'].update(lens_runs=dict(probe=str(tmp / 'probe'), m1=str(tmp / 'm1')))
+    for name in ('probe', 'm1', 'explore'):
+        (tmp / name).mkdir()
+    run = lambda **fields: SimpleNamespace(**({'model': 'deit_t', 'smoke': 0, 'resume': False} | fields))
+    diagnose.run(run(stage='probe'), config, tmp / 'probe', 'test')
+    diagnose.run(run(stage='m1'), config, tmp / 'm1', 'test')
+    explore_c2.run(run(), config, tmp / 'explore', 'test')
+    monkey.undo()
+    errors = pd.read_csv(tmp / 'explore' / 'probe_errors.csv')
+    assert len(errors) == 4 * 7 * 2 and set(errors.source) == {'probe', 'blur'}
+    assert (errors[errors.source == 'blur'].exact == 1).all()
+    prediction = np.load(tmp / 'explore' / 'mean_prediction.npz')
+    assert prediction['layer12'].shape == (4, 196)
+    assert np.allclose(prediction['layer12'].sum(1), 1, atol=1e-5)
+    shift = pd.read_csv(tmp / 'explore' / 'shift.csv')
+    assert len(shift) == 6 * 2
+    bins = shift[[f'bin{b}_moved' for b in range(10)]].sum(1)
+    assert np.allclose(bins, 1, atol=1e-6)
