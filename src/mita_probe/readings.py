@@ -192,12 +192,14 @@ def received_and_length(p, v, gram):
 
 
 @contextmanager
-def capture(model, layers, prefix=None):
+def capture(model, layers, prefix=None, per_head=False):
     """Run layers with an explicit softmax; yield {layer: dict(r0, c3, tokens, norms)} filled by the forward.
 
     r0 [B, patches]: attention received from all queries and heads; c3 [B, patches]: the same weighted by
     ||W_O^h v_hj||; tokens [B, patches, dim]: the block's normalised input (what produces keys and values);
     norms [B, patches]: the block input norm before norm1 (high-norm definition, B24).
+    per_head=True also keeps, per head, 'received' [B, H, patches], 'length' ||W_O^h v_hj|| and 'value_norm'
+    ||v_hj|| [B, H, patches] (the X2 mechanism checks, B46).
     """
     prefix = model.num_prefix_tokens if prefix is None else prefix
     store, saved, handles = {layer: {} for layer in layers}, {}, []
@@ -217,6 +219,10 @@ def capture(model, layers, prefix=None):
             store[layer]['r0'] = received.sum(1)[:, prefix:]
             store[layer]['c3'] = (received * length).sum(1)[:, prefix:]
             store[layer]['tokens'] = x[:, prefix:]
+            if per_head:
+                store[layer]['received'] = received[:, :, prefix:]
+                store[layer]['length'] = length[:, :, prefix:]
+                store[layer]['value_norm'] = v.norm(dim=-1)[:, :, prefix:]
             out = (p @ v).transpose(1, 2).reshape(batch, tokens, -1)
             return attention.proj_drop(attention.proj(attention.norm(out)))
         return forward

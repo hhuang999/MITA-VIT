@@ -1,0 +1,9 @@
+# Phase-1 supplementary analyses X1-X5 (decision B46; exploratory, post hoc). The v5 lens (probes, blur widths,
+# mean maps) comes from the formal runs named in v5.yaml; the MLP probes from the heldout stage of this config.
+base: v5.yaml
+supp:
+  dataset: imagenet_s
+  layer_groups: 3               # held-out tokens are collected for 4 layers at a time (memory)
+  mlp_hidden: 1024              # B46: two-layer MLP probe width
+  heldout_run: experiments/2026-11-07_supp_heldout_{model}
+  srg_maps: [R0, C3, C1C3, C3_centre, C2MLP]   # SRG on the fixed 2,000 ImageNet-S images

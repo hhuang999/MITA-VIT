@@ -379,3 +379,127 @@ def test_explore_c2_runs_end_to_end(patched):
     assert len(shift) == 6 * 2
     bins = shift[[f'bin{b}_moved' for b in range(10)]].sum(1)
     assert np.allclose(bins, 1, atol=1e-6)
+
+
+# --- Phase-1 X1-X5 (B46, exploratory) ---------------------------------------------------------------------
+
+class _FixedProbe:
+    def __init__(self, probs):
+        self.matrix = probs
+
+    def probs(self, tokens):
+        return self.matrix.expand(*tokens.shape[:-1], self.matrix.shape[-1])
+
+
+def test_per_head_capture_sums_to_r0_and_c3():
+    model = tiny()
+    with torch.no_grad(), readings.capture(model, [11, 12], per_head=True) as store:
+        model(torch.randn(2, 3, 224, 224))
+    for layer in (11, 12):
+        piece = store[layer]
+        torch.testing.assert_close(piece['received'].sum(1), piece['r0'])
+        torch.testing.assert_close((piece['received'] * piece['length']).sum(1), piece['c3'], rtol=1e-5, atol=1e-5)
+        assert piece['value_norm'].shape == piece['length'].shape
+
+
+def test_supp_maps_identities():
+    from mita_probe.experiments import supp
+    model = tiny()
+    lens = random_lens(model)
+    eye = torch.eye(196)
+    with torch.no_grad(), readings.capture(model, supp.LAYERWISE, per_head=True) as store:
+        model(torch.randn(2, 3, 224, 224))
+        mlp = {layer: _FixedProbe(eye) for layer in supp.DEEP}
+        maps, dose = supp.supp_maps(store, lens, mlp, {layer: 0. for layer in supp.DEEP}, start=0)
+        r0 = sum(store[layer]['r0'] for layer in supp.DEEP)
+        c3 = sum(store[layer]['c3'] for layer in supp.DEEP)
+        received = {layer: store[layer]['received'] for layer in supp.DEEP}
+        length = {layer: store[layer]['length'] for layer in supp.DEEP}
+    torch.testing.assert_close(maps['C2MLP'], r0, rtol=1e-5, atol=1e-5)
+    torch.testing.assert_close(maps['blurMLP'], r0, rtol=1e-5, atol=1e-5)
+    torch.testing.assert_close(maps['C3C2MLP'], c3, rtol=1e-5, atol=1e-5)
+    torch.testing.assert_close(maps['C1C3'], c3 - lens.mean('C3', supp.DEEP), rtol=1e-5, atol=1e-5)
+    headmean = sum((received[l] * length[l].mean(-1, keepdim=True)).sum(1) for l in supp.DEEP)
+    torch.testing.assert_close(maps['C3headmean'], headmean, rtol=1e-5, atol=1e-5)
+    torch.testing.assert_close(maps['C3shuffle_s0'].sum(-1) * 0 + maps['C3shuffle_s0'].shape[-1],
+                               torch.full((2,), 196.))
+    shuffled = supp.shuffled(length[12], 0, 0, 12)
+    torch.testing.assert_close(shuffled.sort(-1).values, length[12].sort(-1).values)
+    assert not torch.equal(shuffled, length[12])
+    assert ((dose >= 0) & (dose <= 1)).all()
+    for layer in supp.LAYERWISE:
+        assert f'C3_l{layer}' in maps and f'no_high_l{layer}' in maps
+
+
+def test_confident_relocation_extremes():
+    scores = torch.rand(2, 196)
+    probs = torch.rand(2, 196, 196).softmax(-1)
+    eye = torch.eye(196)
+    for confident, expected in ((torch.ones(2, 196, 1), readings.relocate(scores, probs)),
+                                (torch.zeros(2, 196, 1), scores)):
+        torch.testing.assert_close(readings.relocate(scores, confident * probs + (1 - confident) * eye), expected)
+
+
+def test_mlp_probe_learns_and_stops_early():
+    from mita_probe.experiments.supp import fit_mlp_probe
+    torch.manual_seed(0)
+    codes = torch.randn(196, 16)
+    train = codes.expand(8, -1, -1) + .01 * torch.randn(8, 196, 16)
+    probe, history = fit_mlp_probe(train[:6], train[6:], hidden=64, epochs=10)
+    assert len(history) == 10 and max(history) > .9
+    assert (probe.probs(codes[None]).argmax(-1) == torch.arange(196)).float().mean() > .9
+
+
+def test_globalisation_statistics():
+    from mita_probe.experiments.supp import global_scores, globalisation_rows, rank_groups, ring_groups
+    rings = ring_groups()
+    assert np.bincount(rings).tolist() == [49, 49, 49, 49]
+    assert np.bincount(rank_groups(np.arange(10.))).tolist() == [2, 2, 2, 2, 2]
+    tokens = torch.randn(196, 8)
+    keep = torch.ones(196, dtype=torch.bool)
+    keep[:3] = False
+    g = global_scores(tokens, keep)
+    assert torch.isnan(g[:3]).all() and torch.isfinite(g[3:]).all()
+    row = globalisation_rows(torch.eye(196), tokens, ~keep, rings)
+    assert row['n_kept'] == 193 and np.isnan(row['rho_exact'])          # all exact: constant
+    assert abs(row['move_q1']) < 1e-9
+
+
+def test_supp_runs_end_to_end(patched):
+    from mita_probe.experiments import supp
+    tmp = patched
+    monkey = pytest.MonkeyPatch()
+    monkey.setattr(supp, 'load_model', lambda name, device: tiny())
+    monkey.setattr(supp, 'ClickMe', FakeClickMe)
+    config = load_config(ROOT / 'configs/supp.yaml')
+    config.update(batch_size=4, num_workers=0)
+    config['diagnose'].update(probe_images=6, mean_images=4, epochs=2, probe_run=str(tmp / 'probe'))
+    config['correct'].update(lens_runs=dict(probe=str(tmp / 'probe'), m1=str(tmp / 'm1')), faithfulness_images=3,
+                             budgets=[1, 98])
+    config['supp'].update(heldout_run=str(tmp / 'held'), mlp_hidden=32)
+    for name in ('probe', 'm1', 'held', 'eval_s', 'eval_c'):
+        (tmp / name).mkdir()
+    run = lambda **fields: SimpleNamespace(**({'model': 'deit_t', 'smoke': 0, 'resume': False} | fields))
+    diagnose.run(run(stage='probe'), config, tmp / 'probe', 'test')
+    diagnose.run(run(stage='m1'), config, tmp / 'm1', 'test')
+    supp.run(run(stage='heldout'), config, tmp / 'held', 'test')
+    mlp = pd.read_csv(tmp / 'held' / 'mlp_probe.csv')
+    assert set(mlp.probe) == {'linear', 'mlp'} and set(mlp.layer) == set(range(1, 13))
+    glob = pd.read_csv(tmp / 'held' / 'global.csv')
+    assert set(glob.layer) == set(range(6, 13)) and len(glob) == 4 * 7
+    supp.run(run(stage='eval'), config, tmp / 'eval_s', 'test')
+    plaus = pd.read_csv(tmp / 'eval_s' / 'plausibility.csv')
+    assert {'C1C3', 'C2C3', 'C1C2', 'C3v', 'C3headmean', 'C3shuffle_s4', 'C2conf', 'C2MLP', 'C3_l6',
+            'no_high_l12', 'C3_centre'} <= set(plaus.method)
+    faith = pd.read_csv(tmp / 'eval_s' / 'faithfulness.csv')
+    assert set(faith.method) == set(config['supp']['srg_maps']) and faith['index'].nunique() == 3
+    assert len(pd.read_csv(tmp / 'eval_s' / 'dose.csv')) == 6
+    assert len(pd.read_csv(tmp / 'eval_s' / 'head_weights.csv')) == 4 * model_heads(tiny())
+    config['supp']['dataset'] = 'clickme'
+    supp.run(run(stage='eval'), config, tmp / 'eval_c', 'test')
+    monkey.undo()
+    assert 'C2MLP' in set(pd.read_csv(tmp / 'eval_c' / 'alignment.csv').method)
+
+
+def model_heads(model):
+    return model.blocks[0].attn.num_heads
