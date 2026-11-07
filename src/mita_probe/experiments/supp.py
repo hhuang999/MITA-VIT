@@ -223,7 +223,8 @@ def stage_heldout(args, config, output, model, device):
             probe, history = fit_mlp_probe(tokens[:-n_validation].to(device), tokens[-n_validation:].to(device),
                                            hidden=settings['mlp_hidden'], epochs=config['diagnose']['epochs'],
                                            seed=config['diagnose']['seed'])
-            probes[layer], histories[layer] = probe.cpu().state_dict(), history
+            probes[layer] = {key: value.cpu() for key, value in probe.state_dict().items()}  # probe stays on device
+            histories[layer] = history
             test_tokens, test_norms = test[layer][0].to(device), test[layer][1].to(device)
             mlp_probs, linear_probs = probe.probs(test_tokens), lens.probes[layer].probs(test_tokens)
             sigmas[layer] = readings.match_sigma(readings.displacement(mlp_probs))
