@@ -1257,13 +1257,13 @@ Source: `experiments/2026-11-08_explore_d2_analysis/tests.csv`.
 
 ## 7. Reproduction status
 
-A release package (branch `release/v1`, package `fastweight_vit`) is being verified in three layers. Status on 2026-11-08:
+A release package (branch `release/v1`, package `fastweight_vit`) was verified in three layers on 2026-11-08.
 
-| Layer | What | Status |
+| Layer | What | Result |
 | --- | --- | --- |
-| 1 | Rebuild every table and figure from the saved outputs of the runs listed in this dossier with the release code, then compare with the tables used here | Done. 30 of 31 tables identical (same rows, maximum absolute difference 0). The single-layer table (Section 4.2): means identical, interval bounds differ by at most 0.0012 (the earlier analysis resampled the images in another row order). Main-text figures identical pixel by pixel. |
-| 2 | Fresh clone, fresh environment, rerun of every experiment (`reproduce/full.sh`); tolerances: means 1e-4, verdicts identical, execution agreement 0.1 points, retrained probe accuracy 0.5 points, readings that use the probe 0.002 | In progress (started 2026-11-08 on one NVIDIA L4) |
-| 3 | Fresh environment from the pinned requirements: unit tests; 16-image smoke run on a GPU | Unit tests: 78 passed (CPU). Smoke run: in progress (part of layer 2) |
+| 1 | Rebuild every table and figure from the saved outputs of the runs listed in this dossier with the release code; compare with the tables used here | 30 of 31 tables identical (same rows, maximum absolute difference 0). The single-layer table (Section 4.2): means identical, interval bounds differ by at most 0.0012 (the earlier analysis resampled the images in another row order). Main-text figures identical pixel by pixel. |
+| 2 | Fresh clone, fresh environment, rerun of every experiment (`reproduce/full.sh`) on one NVIDIA L4, 11.5 GPU hours; tolerances: means 1e-4, every verdict identical, execution agreement 0.1 points, retrained probe accuracy 0.5 points, readings that use the probe 2e-3 | All 31 tables within tolerance; every verdict and prediction outcome identical. 26 tables identical to the last digit. Largest differences: per-layer high-norm share 1.2e-6; per-layer ClickMe quality 1.5e-7; head vs body 7.1e-6; top-k map similarity medians 2.5e-5; value-norm ratio 1.5e-8. In the first rerun the per-layer ClickMe quality differed by up to 3.0e-4 for DeiT-S and DINO because the release configuration used batch size 64 instead of the original 128 (the image-specific control pairs images within a batch); with the original batch sizes the difference is 1.5e-7. |
+| 3 | Fresh environment from the pinned requirements: unit tests; 16-image smoke run on a GPU | 78 tests passed (CPU and L4); smoke run completed in 233 s. |
 
 ## 8. Internal id → paper name
 
