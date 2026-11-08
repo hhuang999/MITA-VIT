@@ -1,6 +1,0 @@
-{
-  "model": "deit",
-  "dataset": "hard_imagenet",
-  "faithfulness_duplicates": 0,
-  "plausibility_duplicates": 0
-}

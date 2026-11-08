@@ -1,9 +1,0 @@
-# v5 Table 1 "change the model" rows (extension E, B40): R0 of a changed model on the Table 1 protocol.
-# Run with --model deit and correct.variant register (test-time register, T2 units), or --model mita.
-base: v5.yaml
-correct:
-  dataset: imagenet_s
-  gallery_images: 0
-  methods:
-    - {name: R0, reading: R0, layers: [9, 10, 11, 12]}
-    - {name: R0_l12, reading: R0, layers: [12]}

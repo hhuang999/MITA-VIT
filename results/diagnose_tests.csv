@@ -1,0 +1,7 @@
+model,test,value,holds
+deit,"M2 deepens: accuracy L12 < L1 and Spearman(layer, accuracy) <= -0.8",-1.0,True
+deit,M3: largest high-norm share in layers 6-12,8.0,True
+deit_b,"M2 deepens: accuracy L12 < L1 and Spearman(layer, accuracy) <= -0.8",-1.0,True
+deit_b,M3: largest high-norm share in layers 6-12,11.0,True
+dino,"M2 deepens: accuracy L12 < L1 and Spearman(layer, accuracy) <= -0.8",-0.993006993006993,True
+dino,M3: DINO high-norm share upper bound < 0.01 at every layer,0.00030635857098459225,True

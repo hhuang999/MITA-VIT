@@ -1,4 +1,4 @@
-"""Held-out ImageNet validation images for the v5 lens (decision B36): disjoint from both evaluation sets.
+"""Held-out ImageNet validation images for the lens: disjoint from both evaluation sets.
 
 The mean maps (C1) and position probes (C2) are estimated on images that are evaluated nowhere. Both
 evaluation sets come from the ImageNet validation split: ImageNet-S919 validation (12,419 images, matched by

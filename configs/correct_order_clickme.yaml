@@ -1,9 +1,0 @@
-# v5 correct_order (appendix A7, B39): the other order C3 -> C1 -> C2 next to R0 and R_all, layers 9-12.
-base: v5.yaml
-correct:
-  dataset: clickme
-  gallery_images: 0
-  methods:
-    - {name: R0, reading: R0, layers: [9, 10, 11, 12]}
-    - {name: R_all, reading: R_all, layers: [9, 10, 11, 12]}
-    - {name: R_all_alt, reading: R_all_alt, layers: [9, 10, 11, 12]}

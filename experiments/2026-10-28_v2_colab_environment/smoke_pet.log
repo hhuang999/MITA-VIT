@@ -1,5 +1,0 @@
-2026-10-28 03:22:42,324 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
-2026-10-28 03:22:42,326 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
-2026-10-28 03:22:48,757 pet_deit 64/64 images; 4.4s
-2026-10-28 03:22:52,480 pet_mita 64/64 images; 8.1s
-2026-10-28 03:22:52,511 Complete: pet

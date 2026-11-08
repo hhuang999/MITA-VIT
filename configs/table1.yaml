@@ -1,0 +1,91 @@
+# Table 1, sections 4.2 and 4.4, appendices C and D, figure 2(b): every reading, stand-in and reference, layers 9-12
+# summed (plus single-layer and early-layer rows), on ImageNet-S (enrichment on all 12,419 images, SRG on a fixed
+# 2,000) and ClickMe (17,408 images). Fixed before the main runs (docs/preregistration.md). Needs the diagnose
+# outputs. The method order fixes how the seeded tie-break stream is consumed; keep it.
+experiment: correct
+models: [deit, deit_b, dino]
+datasets: [imagenet_s, clickme]
+batch_size: 64
+num_workers: 2
+correct:
+  lens_runs:
+    probe: outputs/diagnose_probe/{model}
+    mean_maps: outputs/diagnose_mean_maps/{model}
+  budgets: [1, 2, 4, 8, 16, 32, 64, 98, 147]
+  conditions: [drop_top, drop_bottom]
+  dataset: imagenet_s
+  faithfulness_images: 2000
+  gallery_images: 24
+  no_srg: [R0_early, C2_early]
+  norm_ratio: 3
+  random_seed: 0
+  shards: 17
+  subset_seed: 0
+  tie_seed: 0
+  methods:
+  - layers: [9, 10, 11, 12]
+    name: R0
+    reading: R0
+  - layers: [9, 10, 11, 12]
+    name: C1
+    reading: C1
+  - layers: [9, 10, 11, 12]
+    name: C2
+    reading: C2
+  - layers: [9, 10, 11, 12]
+    name: C3
+    reading: C3
+  - layers: [9, 10, 11, 12]
+    name: R_all
+    reading: R_all
+  - layers: [9, 10, 11, 12]
+    name: stand_in_blur
+    reading: stand_in_blur
+  - layers: [9, 10, 11, 12]
+    name: stand_in_no_high
+    reading: stand_in_no_high
+  - layers: [9, 10, 11, 12]
+    name: stand_in_centre
+    reading: stand_in_centre
+  - layers: [9, 10, 11, 12]
+    name: mean_map
+    reading: mean_map
+  - method: gae
+    name: gae
+  - method: centre
+    name: centre
+  - method: random
+    name: random
+  - layers: [8]
+    name: R0_l8
+    reading: R0
+  - layers: [9]
+    name: R0_l9
+    reading: R0
+  - layers: [10]
+    name: R0_l10
+    reading: R0
+  - layers: [11]
+    name: R0_l11
+    reading: R0
+  - layers: [12]
+    name: R0_l12
+    reading: R0
+  - layers: [12]
+    name: C1_l12
+    reading: C1
+  - layers: [12]
+    name: C2_l12
+    reading: C2
+  - layers: [12]
+    name: C3_l12
+    reading: C3
+  - layers: [12]
+    name: R_all_l12
+    reading: R_all
+  - layers: [1, 2, 3, 4]
+    name: R0_early
+    reading: R0
+  - layers: [1, 2, 3, 4]
+    name: C2_early
+    reading: C2

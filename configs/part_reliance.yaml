@@ -1,0 +1,16 @@
+# Appendix B: removing 4 or 8 random head patches vs body patches (and object / background controls), seeds 0-4,
+# in every layer. PartImageNet_Seg: all 24,080 images for DeiT-S and DINO; the val and test splits (3,614 images)
+# for DeiT-B, as in the original runs (compute).
+experiment: part_reliance
+models:
+  deit:
+    batch_size: 128
+  deit_b:
+    batch_size: 64
+    partimagenet_splits: [val, test]
+  dino:
+    batch_size: 128
+num_workers: 2
+parts:
+  removed: [4, 8]
+  seeds: [0, 1, 2, 3, 4]

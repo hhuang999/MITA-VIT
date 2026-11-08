@@ -1,9 +1,0 @@
-{
-  "complete": true,
-  "elapsed_seconds": 386.966345627,
-  "max_pet_frozen_native_error": 0.0,
-  "models": [
-    "deit",
-    "mita"
-  ]
-}

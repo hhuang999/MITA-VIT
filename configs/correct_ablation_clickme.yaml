@@ -1,4 +1,0 @@
-# v5 correct_ablation on ClickMe (B37-B40): the same maps as the ImageNet-S run, image-specific Spearman.
-base: v5.yaml
-correct:
-  dataset: clickme

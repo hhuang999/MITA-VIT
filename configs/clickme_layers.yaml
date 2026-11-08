@@ -1,0 +1,58 @@
+# Figure 3(d): R0 of each single layer against the ClickMe human maps (image-specific Spearman).
+experiment: correct
+models: [deit, deit_b, dino]
+datasets: [clickme]
+batch_size: 64
+num_workers: 2
+correct:
+  lens_runs:
+    probe: outputs/diagnose_probe/{model}
+    mean_maps: outputs/diagnose_mean_maps/{model}
+  budgets: [1, 2, 4, 8, 16, 32, 64, 98, 147]
+  conditions: [drop_top, drop_bottom]
+  dataset: imagenet_s
+  faithfulness_images: 2000
+  gallery_images: 0
+  no_srg: [R0_early, C2_early]
+  norm_ratio: 3
+  random_seed: 0
+  shards: 17
+  subset_seed: 0
+  tie_seed: 0
+  methods:
+  - name: R0_l1
+    reading: R0
+    layers: [1]
+  - name: R0_l2
+    reading: R0
+    layers: [2]
+  - name: R0_l3
+    reading: R0
+    layers: [3]
+  - name: R0_l4
+    reading: R0
+    layers: [4]
+  - name: R0_l5
+    reading: R0
+    layers: [5]
+  - name: R0_l6
+    reading: R0
+    layers: [6]
+  - name: R0_l7
+    reading: R0
+    layers: [7]
+  - name: R0_l8
+    reading: R0
+    layers: [8]
+  - name: R0_l9
+    reading: R0
+    layers: [9]
+  - name: R0_l10
+    reading: R0
+    layers: [10]
+  - name: R0_l11
+    reading: R0
+    layers: [11]
+  - name: R0_l12
+    reading: R0
+    layers: [12]

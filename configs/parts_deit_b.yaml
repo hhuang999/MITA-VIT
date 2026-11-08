@@ -1,4 +1,0 @@
-# E8 for DeiT-B/16 on the PartImageNet_Seg val and test splits only (3,614 images; decision B19, compute).
-# DeiT-S and DINO used all 24,080 images with configs/parts.yaml.
-base: parts.yaml
-partimagenet_splits: [val, test]

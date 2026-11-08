@@ -1,2 +1,0 @@
-# Necessity test (decision A15): same Pet data, batch size and random seeds as the anatomy runs.
-base: anatomy_deit.yaml

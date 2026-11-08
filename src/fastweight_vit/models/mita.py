@@ -1,4 +1,4 @@
-"""MiTA-DeiT-S and MiTA-DeiT-T with a dense re-implementation of the official MiTA_Attention.
+"""MiTA-DeiT-S (top-k training) with a dense re-implementation of the official MiTA_Attention.
 
 Matches github.com/QishuaiWen/MiTA mita/mita_attention.py (commit 95460f7):
 router = 2D average pool of the first 196 query tokens (CLS included, last patch
@@ -19,9 +19,7 @@ from ..execution.execute import Plan, install
 MITA_SIDE, MITA_K = 5, 25
 CHECKPOINT = Path('checkpoints/mita/best_checkpoint.pth')
 CHECKPOINT_SHA256 = 'd45434671d1096c6d7bfcba38407eb6a632049adf1b1137d8ea85fa638778ac2'
-TINY_CHECKPOINT = Path('checkpoints/mita_tiny/best_checkpoint.pth')
-TINY_DRIVE_FOLDER = 'https://drive.google.com/drive/folders/1KnFqHpJLc_NddIjKnRJEb9McQjN4DXgk'
-SKELETONS = ('deit_small_patch16_224', 'deit_tiny_patch16_224')
+SKELETONS = ('deit_small_patch16_224',)
 
 
 def native_plan(side=MITA_SIDE, k=MITA_K):

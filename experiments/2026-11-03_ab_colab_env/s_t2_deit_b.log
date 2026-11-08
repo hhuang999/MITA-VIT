@@ -1,3 +1,0 @@
-2026-11-03 10:58:03,062 Loading pretrained weights from Hugging Face hub (timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6)
-2026-11-03 10:58:03,064 [timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
-2026-11-03 10:58:23,877 Search complete for deit_b: L* = 7, found = False, n = None

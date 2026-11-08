@@ -1,0 +1,40 @@
+# Table 1 "+register" row: DeiT-S with a test-time register. register_units: the 8 FFN units (layer, unit) shifted to
+# the register token, as found by the register search (configs/register.yaml; the original search run of 2026-11-03,
+# its gate.json, is kept on the study/v5 branch).
+experiment: correct
+models: [deit]
+datasets: [imagenet_s, clickme]
+batch_size: 64
+num_workers: 2
+correct:
+  lens_runs:
+    probe: outputs/diagnose_probe/{model}
+    mean_maps: outputs/diagnose_mean_maps/{model}
+  budgets: [1, 2, 4, 8, 16, 32, 64, 98, 147]
+  conditions: [drop_top, drop_bottom]
+  dataset: imagenet_s
+  faithfulness_images: 2000
+  gallery_images: 0
+  no_srg: [R0_early, C2_early]
+  norm_ratio: 3
+  random_seed: 0
+  shards: 17
+  subset_seed: 0
+  tie_seed: 0
+  methods:
+  - name: R0
+    reading: R0
+    layers: [9, 10, 11, 12]
+  - name: R0_l12
+    reading: R0
+    layers: [12]
+  variant: register
+  register_units:
+  - [5, 684]
+  - [4, 1361]
+  - [4, 375]
+  - [5, 1274]
+  - [5, 36]
+  - [5, 333]
+  - [5, 83]
+  - [5, 1500]

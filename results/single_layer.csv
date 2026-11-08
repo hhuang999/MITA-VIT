@@ -1,0 +1,76 @@
+model,layer,test,n,mean,low,high
+deit,0,attention off,5000,0.0012,0.0004,0.0022
+deit,1,attention off,5000,0.6876,0.6747949999999999,0.701
+deit,2,attention off,5000,0.9278,0.9208,0.9352
+deit,3,attention off,5000,0.937,0.9302,0.944
+deit,4,attention off,5000,0.9424,0.936,0.949
+deit,5,attention off,5000,0.9452,0.938595,0.9516
+deit,6,attention off,5000,0.9432,0.9368,0.949405
+deit,7,attention off,5000,0.9334,0.926595,0.9408
+deit,8,attention off,5000,0.9382,0.931395,0.9448
+deit,9,attention off,5000,0.9392,0.9328,0.9456
+deit,10,attention off,5000,0.9396,0.9332,0.9468
+deit,11,attention off,5000,0.9574,0.9514,0.9632
+deit,12,attention off,5000,0.9718,0.9674,0.9762
+deit,1,restricted to reading sets,5000,0.9452,0.9388,0.9518
+deit,2,restricted to reading sets,5000,0.9194,0.912395,0.9266
+deit,3,restricted to reading sets,5000,0.9168,0.9098,0.9248
+deit,4,restricted to reading sets,5000,0.9448,0.9386,0.951
+deit,5,restricted to reading sets,5000,0.9544,0.9484,0.9604
+deit,6,restricted to reading sets,5000,0.9342,0.9276,0.9408
+deit,7,restricted to reading sets,5000,0.943,0.9364,0.9496
+deit,8,restricted to reading sets,5000,0.95,0.9446,0.9564
+deit,9,restricted to reading sets,5000,0.9518,0.9458,0.9578
+deit,10,restricted to reading sets,5000,0.9602,0.955,0.9656
+deit,11,restricted to reading sets,5000,0.9546,0.9487949999999999,0.9604
+deit,12,restricted to reading sets,5000,0.946,0.9398,0.9524050000000001
+deit_b,0,attention off,5000,0.0016,0.0006,0.0028
+deit_b,1,attention off,5000,0.8778,0.8688,0.887005
+deit_b,2,attention off,5000,0.9732,0.9688,0.977205
+deit_b,3,attention off,5000,0.9776,0.9732,0.981805
+deit_b,4,attention off,5000,0.9658,0.9606,0.9706
+deit_b,5,attention off,5000,0.9622,0.9568,0.9674050000000001
+deit_b,6,attention off,5000,0.9654,0.9606,0.9704050000000001
+deit_b,7,attention off,5000,0.9612,0.9558,0.9666
+deit_b,8,attention off,5000,0.9544,0.9488,0.9604
+deit_b,9,attention off,5000,0.9444,0.938,0.9506
+deit_b,10,attention off,5000,0.9368,0.9298,0.944
+deit_b,11,attention off,5000,0.9418,0.9352,0.9482
+deit_b,12,attention off,5000,0.94,0.9336,0.9466
+deit_b,1,restricted to reading sets,5000,0.971,0.966795,0.9756
+deit_b,2,restricted to reading sets,5000,0.9642,0.9588,0.9692
+deit_b,3,restricted to reading sets,5000,0.9658,0.9608,0.971
+deit_b,4,restricted to reading sets,5000,0.963,0.9574,0.9682
+deit_b,5,restricted to reading sets,5000,0.957,0.951,0.9626
+deit_b,6,restricted to reading sets,5000,0.9634,0.9578,0.9686
+deit_b,7,restricted to reading sets,5000,0.9572,0.9512,0.9626
+deit_b,8,restricted to reading sets,5000,0.9554,0.9498,0.9608
+deit_b,9,restricted to reading sets,5000,0.9514,0.9458,0.9574
+deit_b,10,restricted to reading sets,5000,0.962,0.9566,0.967005
+deit_b,11,restricted to reading sets,5000,0.964,0.9589949999999999,0.9692
+deit_b,12,restricted to reading sets,5000,0.9648,0.9596,0.9696
+dino,0,attention off,5000,0.0008,0.0002,0.0016
+dino,1,attention off,5000,0.0016,0.0006,0.0028
+dino,2,attention off,5000,0.9502,0.944395,0.9564050000000001
+dino,3,attention off,5000,0.9384,0.9317949999999999,0.9452050000000001
+dino,4,attention off,5000,0.947,0.9408,0.9532
+dino,5,attention off,5000,0.9306,0.923995,0.9378
+dino,6,attention off,5000,0.938,0.931195,0.9442050000000001
+dino,7,attention off,5000,0.9272,0.9202,0.9340050000000001
+dino,8,attention off,5000,0.9196,0.911395,0.927
+dino,9,attention off,5000,0.8922,0.8834,0.9008050000000001
+dino,10,attention off,5000,0.8574,0.8478,0.8668
+dino,11,attention off,5000,0.8714,0.862995,0.8804
+dino,12,attention off,5000,0.9166,0.9088,0.9242
+dino,1,restricted to reading sets,5000,0.767,0.7552,0.7794
+dino,2,restricted to reading sets,5000,0.9492,0.9434,0.9556
+dino,3,restricted to reading sets,5000,0.9486,0.942595,0.955
+dino,4,restricted to reading sets,5000,0.9162,0.9088,0.9242
+dino,5,restricted to reading sets,5000,0.9404,0.933595,0.947
+dino,6,restricted to reading sets,5000,0.8914,0.882795,0.9
+dino,7,restricted to reading sets,5000,0.905,0.8968,0.913
+dino,8,restricted to reading sets,5000,0.9054,0.897,0.913405
+dino,9,restricted to reading sets,5000,0.8886,0.8796,0.897
+dino,10,restricted to reading sets,5000,0.8676,0.857795,0.8776
+dino,11,restricted to reading sets,5000,0.833,0.8226,0.843805
+dino,12,restricted to reading sets,5000,0.809,0.7985949999999999,0.8198

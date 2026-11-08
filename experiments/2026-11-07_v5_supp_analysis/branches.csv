@@ -1,6 +1,0 @@
-item,branch,detail
-X1,X1-B,
-X2,expected,C3 - C3v verdicts (supervised cells): {'comparable': 4}
-X3,X3-A,
-X5,M-weak,"MLP - linear at layer 12: {'deit': 0.017783162849023926, 'deit_b': 0.03815050940960646, 'dino': 0.06706887578964232}; C2-confident not lower in >= 4 cells: False"
-X4,H-global does not hold,"models meeting the rule at layers 10-12: {'deit': False, 'deit_b': False, 'dino': False}"

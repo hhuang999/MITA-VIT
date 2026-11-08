@@ -1,0 +1,12 @@
+# Figure 2(a) "no attention" line and appendix B: the attention branch of all layers, or of one layer at a time,
+# outputs zero. Fixed 5,000 ImageNet images. `preprocessing: uniform` (Resize 256, crop 0.875 for every model) is
+# what the original runs used; for DeiT-S/B it differs from the 0.9 crop of the k sweep (docs/release/report.md).
+experiment: execution
+stage: attention_off
+models: [deit, deit_b, dino]
+batch_size: 64
+num_workers: 2
+preprocessing: uniform
+n_images: 5000
+subset_seed: 0
+indices: data/splits/imagenet_val_5000.json

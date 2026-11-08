@@ -1,1 +1,0 @@
-Completed B2; source=experiments\2026-10-26_rq3_diagnosis; image bootstrap=1000, seed=0.

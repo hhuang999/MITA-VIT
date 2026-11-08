@@ -1,4 +1,4 @@
-"""Lens-derived readings of attention (v5; decisions B33-B40).
+"""Lens-derived readings of attention: R0, the corrections C1-C3, their combinations and stand-ins.
 
 The fast-weight lens reads an attention map as the hidden-neuron activations of a network the slow weights
 write for each image: keys are first-layer weights, values second-layer weights, every token one neuron.
@@ -8,18 +8,18 @@ key j (the 196 patches), a = softmax attention.
 
 | reading | per layer l | repairs |
 | --- | --- | --- |
-| R0 | s_j = sum_h sum_i a_hij (attention received; `attention_layer{l}` of S2) | - |
+| R0 | s_j = sum_h sum_i a_hij (attention received) | - |
 | C3 | c_j = sum_h sum_i a_hij * ||W_O^h v_hj|| (output-projected value length; bias excluded) | M3 activation is not contribution |
 | C2 | r_p = sum_j s_j P_l(p | x_j) (position probe on the block-l attention input, after norm1) | M2 token j is not patch j |
 | C1 | s_j - mean_j (the model's mean map of this reading on held-out images) | M1 image-independent part |
 | R_all | C3 -> C2 -> C1: relocate c, then subtract the held-out mean of relocated c | all three |
-| R_all_alt | C3 -> C1 -> C2: subtract the held-out mean of c, then relocate | order check (appendix A7) |
+| R_all_alt | C3 -> C1 -> C2: subtract the held-out mean of c, then relocate | order check |
 
-Controls (each matched to one correction) and references:
-- blur (for C2): s relocated by a Gaussian kernel whose mean squared displacement equals C2's on held-out
+Stand-ins (each matched to one correction, which must beat it) and a reference:
+- stand_in_blur (for C2): s relocated by a Gaussian kernel whose mean squared displacement equals C2's on held-out
   tokens at that layer (rows normalised over the grid, so the total is kept, as in C2);
-- no_high (for C3): s with the layer's high-norm patches set to 0 (block input norm > 3x the image median);
-- centre_sub (for C1): s minus a centre Gaussian with the same spatial standard deviation as the mean map
+- stand_in_no_high (for C3): s with the layer's high-norm patches set to 0 (block input norm > 3x the image median);
+- stand_in_centre (for C1): s minus a centre Gaussian with the same spatial standard deviation as the mean map
   C1 subtracts (computed for the evaluated layer set as a whole);
 - mean_map: the model's mean map itself (image-independent).
 
@@ -33,70 +33,21 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import torch
-from torch.nn import functional as F
 
-from .explain import centre
-from .interventions import sink_tokens
 from .execution.execute import split_qkv
+from .probes import PositionProbe
+from .references import centre
+from .tokens import high_norm_tokens
 
-READINGS = ('R0', 'C1', 'C2', 'C3', 'R_all', 'R_all_alt', 'blur', 'no_high', 'centre_sub', 'mean_map')
+READINGS = ('R0', 'C1', 'C2', 'C3', 'R_all', 'R_all_alt', 'stand_in_blur', 'stand_in_no_high', 'stand_in_centre',
+            'mean_map')
 MEAN_VARIANTS = ('R0', 'C3', 'C2', 'C2C3')  # held-out mean maps (C2 = relocated R0, C2C3 = relocated C3)
 NEEDS_PROBE = {'C2', 'R_all', 'R_all_alt'}
-NEEDS_MEANS = {'C1': 'R0', 'R_all': 'C2C3', 'R_all_alt': 'C3', 'centre_sub': 'R0', 'mean_map': 'R0'}
+NEEDS_MEANS = {'C1': 'R0', 'R_all': 'C2C3', 'R_all_alt': 'C3', 'stand_in_centre': 'R0', 'mean_map': 'R0'}
 
 
 # ---------------------------------------------------------------------------------------------------------
-# Position probe (C2) and the matched blur (its control)
-
-@dataclass
-class PositionProbe:
-    """Linear 196-way position classifier on standardised tokens (the E3 probe, kept for reuse)."""
-    mean: torch.Tensor
-    std: torch.Tensor
-    weight: torch.Tensor  # [positions, dim]
-    bias: torch.Tensor    # [positions]
-
-    def logits(self, tokens):
-        x = (tokens.float() - self.mean) / self.std
-        return x @ self.weight.T + self.bias
-
-    def probs(self, tokens):
-        """[..., patches, dim] -> P(position | token) [..., patches, positions]."""
-        return self.logits(tokens).softmax(-1)
-
-    def to(self, device):
-        return PositionProbe(*(t.to(device) for t in (self.mean, self.std, self.weight, self.bias)))
-
-    def arrays(self, prefix):
-        return {f'{prefix}_{name}': getattr(self, name).cpu().numpy()
-                for name in ('mean', 'std', 'weight', 'bias')}
-
-    @classmethod
-    def from_arrays(cls, arrays, prefix):
-        return cls(*(torch.from_numpy(np.asarray(arrays[f'{prefix}_{name}']))
-                     for name in ('mean', 'std', 'weight', 'bias')))
-
-
-def fit_position_probe(train, epochs=30, batch=4096, lr=1e-2, seed=0):
-    """train: [images, patches, dim] -> PositionProbe; the training of identity.train_position_probe (E3)."""
-    generator = torch.Generator(device='cpu').manual_seed(seed)
-    device = train.device
-    patches, dim = train.shape[1], train.shape[2]
-    x = train.reshape(-1, dim).float()
-    mean, std = x.mean(0), x.std(0).clamp_min(1e-6)
-    x = (x - mean) / std
-    y = torch.arange(patches, device=device).repeat(train.shape[0])
-    linear = torch.nn.Linear(dim, patches).to(device)
-    torch.manual_seed(seed)
-    linear.reset_parameters()
-    optimizer = torch.optim.Adam(linear.parameters(), lr=lr)
-    for _ in range(epochs):
-        for chunk in torch.randperm(len(x), generator=generator).to(device).split(batch):
-            optimizer.zero_grad()
-            F.cross_entropy(linear(x[chunk]), y[chunk]).backward()
-            optimizer.step()
-    return PositionProbe(mean.detach(), std.detach(), linear.weight.detach().clone(), linear.bias.detach().clone())
-
+# C2 geometry and the matched blur (its stand-in)
 
 def grid_positions(grid=14, device=None):
     rows, cols = torch.div(torch.arange(grid * grid, device=device), grid, rounding_mode='floor'), \
@@ -147,7 +98,7 @@ def relocate(scores, probs):
 
 
 def centre_matched(mean_map, grid=14):
-    """C1's control: a centre Gaussian scaled to the spatial standard deviation of `mean_map` [positions]."""
+    """C1's stand-in: a centre Gaussian scaled to the spatial standard deviation of `mean_map` [positions]."""
     gauss = centre(1, grid, device=mean_map.device)[0]
     return gauss * (mean_map.std() / gauss.std())
 
@@ -166,7 +117,7 @@ def m1_sums(scores, mean_map):
 
 def radial_share(mean_map, grid=14):
     """Share of a mean map's spatial variance explained by its ring (distance-to-centre) means."""
-    from .interventions import centre_rings
+    from .tokens import centre_rings
     rings = centre_rings(grid)[1:].to(mean_map.device)
     fitted = torch.zeros_like(mean_map)
     for ring in rings.unique():
@@ -197,9 +148,9 @@ def capture(model, layers, prefix=None, per_head=False):
 
     r0 [B, patches]: attention received from all queries and heads; c3 [B, patches]: the same weighted by
     ||W_O^h v_hj||; tokens [B, patches, dim]: the block's normalised input (what produces keys and values);
-    norms [B, patches]: the block input norm before norm1 (high-norm definition, B24).
+    norms [B, patches]: the block input norm before norm1 (the high-norm definition).
     per_head=True also keeps, per head, 'received' [B, H, patches], 'length' ||W_O^h v_hj|| and 'value_norm'
-    ||v_hj|| [B, H, patches] (the X2 mechanism checks, B46).
+    ||v_hj|| [B, H, patches] (the C3 mechanism checks of the exploratory analysis).
     """
     prefix = model.num_prefix_tokens if prefix is None else prefix
     store, saved, handles = {layer: {} for layer in layers}, {}, []
@@ -339,7 +290,7 @@ def compute(store, entries, lens, grid=14):
         for layer in layers:
             piece = layer_variants(store, layer, lens, {reading})
             r0, c3 = piece['R0'], piece['C3']
-            if reading in ('R0', 'centre_sub', 'mean_map'):
+            if reading in ('R0', 'stand_in_centre', 'mean_map'):
                 value = r0
             elif reading == 'C3':
                 value = c3
@@ -351,12 +302,12 @@ def compute(store, entries, lens, grid=14):
                 value = piece['C2C3'] - lens.means['C2C3'][layer]
             elif reading == 'R_all_alt':
                 value = relocate(c3 - lens.means['C3'][layer], piece['P'])
-            elif reading == 'blur':
+            elif reading == 'stand_in_blur':
                 value = relocate(r0, gaussian_relocation(lens.sigmas[layer], grid, r0.device))
-            elif reading == 'no_high':
-                value = r0 * ~sink_tokens(store[layer]['norms'], lens.norm_ratio)
+            elif reading == 'stand_in_no_high':
+                value = r0 * ~high_norm_tokens(store[layer]['norms'], lens.norm_ratio)
             total = total + value
-        if reading == 'centre_sub':
+        if reading == 'stand_in_centre':
             total = total - centre_matched(lens.mean('R0', layers), grid)
         elif reading == 'mean_map':
             total = lens.mean('R0', layers).expand_as(total).clone()

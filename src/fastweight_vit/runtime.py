@@ -18,13 +18,14 @@ def configure_runtime() -> Path:
 
 
 def data_root() -> Path:
-    """Allow a persistent data volume without moving the repository."""
+    """Datasets live under data/ unless FASTWEIGHT_DATA_ROOT points at another volume."""
     configure_runtime()
-    return Path(os.environ.get("MITA_DATA_ROOT", ROOT / "data")).resolve()
+    return Path(os.environ.get("FASTWEIGHT_DATA_ROOT", ROOT / "data")).resolve()
 
 
 def project_path(path: str) -> Path:
+    """Repository path; data/... (except the fixed lists in data/splits) resolves under data_root()."""
     relative = Path(path)
-    if not relative.is_absolute() and relative.parts[0] == "data":
+    if not relative.is_absolute() and relative.parts[0] == "data" and relative.parts[1:2] != ("splits",):
         return data_root().joinpath(*relative.parts[1:])
     return ROOT / relative

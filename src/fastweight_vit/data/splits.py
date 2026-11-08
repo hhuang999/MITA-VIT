@@ -1,8 +1,8 @@
-"""Pilot / formal split of a mask dataset (attention budget, decision B28).
+"""Pilot / formal split of a mask dataset.
 
-The dataset's images are shuffled with a seeded generator; the first `pilot` images form the pilot set P
-(precision estimates, neuron search, mean values) and the rest the formal set F, on which every judgement
-is made. Both lists are returned sorted so data loading stays sequential.
+The dataset's images are shuffled with a seeded generator; the first `pilot` images form the pilot set (the
+register-neuron search runs on it) and the rest the formal set. Both lists are returned sorted so data loading
+stays sequential.
 """
 
 import numpy as np

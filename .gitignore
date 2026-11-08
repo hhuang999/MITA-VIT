@@ -6,7 +6,9 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
-/data
+/data/*
+!/data/splits/
+/outputs/
 /checkpoints
 experiments/*/raw/
 references/papers/

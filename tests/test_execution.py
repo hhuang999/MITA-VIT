@@ -1,21 +1,21 @@
-"""The probe: pattern reading (landmarks, top-k sets, routes, masks) and execution against timm."""
+"""Top-k reading sets (landmarks, shared sets, routes, masks) and execution against timm."""
 
 from pathlib import Path
 
 import numpy as np
 import pytest
+import timm
 import torch
-from PIL import Image
 
-from fastweight_vit.data import shifted_transform
-from fastweight_vit.models.deit import load_deit
+from fastweight_vit.execution import (Pattern, Plan, build_pattern, capture_qk, execute, expand_settings,
+                                      grid_landmarks, landmarks, make_plan, mixed_attention, random_pattern, resolve,
+                                      spatial_routes, token_mask)
 from fastweight_vit.models.mita import install, native_plan
-from fastweight_vit.execution import (M_SIDES, Pattern, Plan, build_pattern, capture_qk, coverage, execute, grid_landmarks,
-                              kmeans_landmarks, landmarks, mixed_attention, per_query_pattern, random_pattern,
-                              spatial_routes, token_mask, union_fraction)
-from fastweight_vit.execution.pattern import region_scores
 
-FIXTURE = Path(__file__).parent / 'fixtures' / 'v1_reading_pattern.npz'
+from fakes import config_for
+
+FIXTURE = Path(__file__).parent / 'fixtures' / 'reading_pattern_reference.npz'
+M_SIDES = {1: 1, 4: 2, 16: 4, 25: 5, 49: 7, 196: 14}
 
 
 def grid_region_membership(grid=14, regions=4):
@@ -33,7 +33,8 @@ GRID = (14, 14)
 
 @pytest.fixture
 def model():
-    return load_deit(pretrained=False)
+    torch.manual_seed(0)
+    return timm.create_model('deit_small_patch16_224', pretrained=False).eval()
 
 
 def full_plans(model, plan_for):
@@ -68,40 +69,16 @@ def test_spatial_routes_stay_inside_a_pooling_window(m):
     assert set(routes[1:].tolist()) == set(range(m))
 
 
-@pytest.mark.parametrize('mode', ['clean', 'kmeans'])
-def test_shared_pattern_reproduces_v1_reading_with_dot_routes_and_routed_cls(mode):
-    """v1 (archive/v1) read these sets with timm masks; the fixture freezes its output on fixed Q/K."""
+def test_shared_pattern_reproduces_the_reference_reading_with_dot_routes_and_routed_cls():
+    """The fixture freezes an earlier implementation's reading sets (timm masks) on fixed Q/K."""
     saved = np.load(FIXTURE)
     q, k = torch.from_numpy(saved['q']), torch.from_numpy(saved['k'])
-    prefix = '' if mode == 'clean' else 'kmeans_'
+    prefix = ''
     new, scores = build_pattern(q, k, m_side=4, k_top=16, scale=8 ** -0.5, grid=GRID, routing='dot',
-                                cls='routed', landmark_mode=mode)
+                                cls='routed', landmark_mode='clean')
     assert np.array_equal(new.readsets.numpy(), saved[prefix + 'readsets'])
     assert np.array_equal(new.routes.numpy(), saved[prefix + 'routes'])
     assert np.array_equal(token_mask(new).numpy(), saved[prefix + 'mask']) and scores.shape == (2, 3, 16, 197)
-
-
-def test_kmeans_matches_independent_lloyd_loop_and_handles_empty_clusters():
-    patches = torch.randn(2, 3, 12, 2)
-    initial = patches[:, :, :4].clone()
-    initial[:, :, 3] = initial[:, :, 2]  # Duplicate centers create an empty cluster.
-    actual = kmeans_landmarks(patches, initial)
-    expected = initial.clone()
-    for batch in range(2):
-        for head in range(3):
-            points = patches[batch, head]
-            centers = initial[batch, head].clone()
-            for _ in range(10):
-                assignments = (points[:, None] - centers).square().sum(-1).argmin(-1)
-                for region in range(4):
-                    members = points[assignments == region]
-                    if len(members):
-                        centers[region] = members.mean(0)
-            expected[batch, head] = centers
-    torch.testing.assert_close(actual, expected)
-    identical = torch.ones(1, 1, 196, 8)
-    centers = kmeans_landmarks(identical, grid_landmarks(identical, (14, 14)))
-    assert torch.isfinite(centers).all() and centers.eq(1).all()
 
 
 def test_own_cls_set_and_spatial_routes_in_mask():
@@ -116,21 +93,6 @@ def test_own_cls_set_and_spatial_routes_in_mask():
         assert torch.equal(mask[:, :, token], mask[:, :, 1 + (routes[1:] == routes[token]).nonzero()[0, 0]])
 
 
-def test_m196_spatial_shared_sets_equal_per_query_top_k():
-    q, k = torch.randn(2, 3, 197, 8), torch.randn(2, 3, 197, 8)
-    shared, _ = build_pattern(q, k, m_side=14, k_top=7, scale=8 ** -0.5, grid=GRID)
-    assert torch.equal(token_mask(shared), token_mask(per_query_pattern(q, k, 7, 8 ** -0.5)))
-
-
-def test_attention_scoring_is_mean_region_attention():
-    q, k = torch.randn(1, 2, 197, 8), torch.randn(1, 2, 197, 8)
-    lm = landmarks(q, GRID, 4)
-    scores = region_scores(q, k, lm, 1., scoring='attention', grid=GRID, m_side=4)
-    probs = (q @ k.transpose(-1, -2)).softmax(-1)[:, :, 1:]
-    region = grid_region_membership(14, 4)[5]
-    torch.testing.assert_close(scores[:, :, 5], probs[:, :, region].mean(2))
-
-
 def test_random_pattern_is_seeded_distinct_and_keeps_routes():
     q, k = torch.randn(2, 3, 197, 8), torch.randn(2, 3, 197, 8)
     pattern, _ = build_pattern(q, k, m_side=4, k_top=16, scale=1., grid=GRID)
@@ -142,18 +104,6 @@ def test_random_pattern_is_seeded_distinct_and_keeps_routes():
     assert not torch.equal(one.readsets, pattern.readsets)
 
 
-def test_coverage_and_union():
-    q, k = torch.randn(2, 3, 197, 8), torch.randn(2, 3, 197, 8)
-    probs = (q @ k.transpose(-1, -2)).softmax(-1)
-    full, _ = build_pattern(q, k, m_side=4, k_top=197, scale=1., grid=GRID)
-    patch, cls = coverage(probs, token_mask(full))
-    torch.testing.assert_close(patch, torch.ones(2)); torch.testing.assert_close(cls, torch.ones(2))
-    assert torch.equal(union_fraction(full), torch.ones(2))
-    small, _ = build_pattern(q, k, m_side=4, k_top=8, scale=1., grid=GRID)
-    patch, cls = coverage(probs, token_mask(small))
-    assert ((patch > 0) & (patch < 1)).all() and (union_fraction(small) <= (17 * 8) / 197).all()
-
-
 @pytest.mark.parametrize('fused', [False, True])
 def test_dense_full_mask_matches_timm_and_restores_forward(model, fused):
     for block in model.blocks:
@@ -163,11 +113,6 @@ def test_dense_full_mask_matches_timm_and_restores_forward(model, fused):
         original = model(images)
         with capture_qk(model) as qk:
             assert torch.equal(model(images), original)
-        plans = full_plans(model, lambda layer: Plan(token_mask=token_mask(
-            per_query_pattern(*qk[layer], 197, model.blocks[0].attn.scale))))
-        with execute(model, plans):
-            executed = model(images)
-        torch.testing.assert_close(executed, original, atol=1e-5, rtol=0)
         shared = full_plans(model, lambda layer: Plan(token_mask=token_mask(build_pattern(
             *qk[layer], m_side=4, k_top=197, scale=1., grid=GRID)[0])))
         with execute(model, shared):
@@ -217,26 +162,17 @@ def test_mita_native_equals_frozen_execution_of_its_own_pattern(model):
     torch.testing.assert_close(landmarks(q, GRID, 5, mode='mita'), grid_landmarks(q[:, :, :196], GRID, (5, 5)))
 
 
-def test_shifted_crop_moves_window_one_pixel():
-    from timm.data import create_transform
-    transform = create_transform(input_size=(3, 224, 224), crop_pct=0.9, interpolation='bicubic')
-    image = Image.fromarray(torch.randint(0, 255, (300, 400, 3), dtype=torch.uint8).numpy())
-    base, moved = transform(image), shifted_transform(transform, 1)(image)
-    torch.testing.assert_close(moved[:, :, :-1], base[:, :, 1:], atol=0, rtol=0)
-    assert not torch.equal(moved, base)
-
-
-def test_shapley_split_sums_to_mixed_minus_random_per_image():
-    from fastweight_vit.stats import anatomy_table, resample_indices, shapley
-    import pandas as pd
-    rng = np.random.default_rng(0)
-    table = pd.DataFrame({name: rng.integers(0, 2, 50).astype(float) for name in
-                          ['rand', 'randC', 'L3', 'L4', 'L2', 'L1_k32']})
-    phi_c, phi_r = shapley(table['rand'], table['randC'], table['L3'], table['L4'])
-    np.testing.assert_allclose(phi_c + phi_r, table['L4'] - table['rand'])
-    summary = anatomy_table(table, resample_indices(50))
-    assert summary.loc['phi_C', 'mean'] + summary.loc['phi_R', 'mean'] == pytest.approx(
-        summary.loc['L4', 'mean'] - summary.loc['rand', 'mean'])
-    bounded = summary.drop(index='sharing_index')  # random toy data can make its denominator 0
-    assert (bounded['low'] <= bounded['mean'] + 1e-12).all() and (bounded['mean'] <= bounded['high'] + 1e-12).all()
-    assert (resample_indices(50)[0] == np.random.default_rng(0).integers(50, size=50)).all()
+def test_k_sweep_settings_and_plans():
+    config = config_for('fig2a_k_sweep')
+    specs = expand_settings(config)
+    assert len(specs) == 6 + 6 * 5 and {spec['mode'] for spec in specs} == {'L3', 'rand'}
+    q, k = torch.randn(2, 6, 197, 64), torch.randn(2, 6, 197, 64)
+    reading = make_plan(resolve(dict(mode='L3', k=8), config['main']), q, k, 0.125, GRID)
+    assert (reading.token_mask.sum(-1) == 8).all() and reading.summary_side is None
+    spec = resolve(dict(mode='rand', k=8, seed=0), config['main'])
+    one = make_plan(spec, q, k, 0.125, GRID, layer=3, batch_start=64)
+    assert torch.equal(one.token_mask, make_plan(spec, q, k, 0.125, GRID, layer=3, batch_start=64).token_mask)
+    assert not torch.equal(one.token_mask, make_plan(spec, q, k, 0.125, GRID, layer=4, batch_start=64).token_mask)
+    assert make_plan(resolve(dict(mode='drop'), config['main']), q, k, 0.125, GRID).drop
+    with pytest.raises(ValueError):
+        resolve(dict(mode='L4'), config['main'])
