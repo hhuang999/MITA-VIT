@@ -1,8 +1,15 @@
-# Figure 3(d): R0 of each single layer against the ClickMe human maps (image-specific Spearman).
+# Figure 3(d): R0 of each single layer against the ClickMe human maps (image-specific Spearman). The batch sizes
+# are those of the original runs: the image-specific control pairs each image with the previous one in its batch, so
+# the batch size decides the pairs.
 experiment: correct
-models: [deit, deit_b, dino]
+models:
+  deit:
+    batch_size: 128
+  deit_b:
+    batch_size: 64
+  dino:
+    batch_size: 128
 datasets: [clickme]
-batch_size: 64
 num_workers: 2
 correct:
   lens_runs:
