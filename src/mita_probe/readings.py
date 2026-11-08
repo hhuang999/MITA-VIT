@@ -39,9 +39,10 @@ from .explain import centre
 from .interventions import sink_tokens
 from .probe.execute import split_qkv
 
-READINGS = ('R0', 'C1', 'C2', 'C3', 'R_all', 'R_all_alt', 'blur', 'no_high', 'centre_sub', 'mean_map')
+READINGS = ('R0', 'C1', 'C2', 'C3', 'R_all', 'R_all_alt', 'blur', 'no_high', 'centre_sub', 'mean_map',
+            'D2', 'D2_shuffle', 'C3D2')
 MEAN_VARIANTS = ('R0', 'C3', 'C2', 'C2C3')  # held-out mean maps (C2 = relocated R0, C2C3 = relocated C3)
-NEEDS_PROBE = {'C2', 'R_all', 'R_all_alt'}
+NEEDS_PROBE = {'C2', 'R_all', 'R_all_alt', 'D2', 'D2_shuffle', 'C3D2'}
 NEEDS_MEANS = {'C1': 'R0', 'R_all': 'C2C3', 'R_all_alt': 'C3', 'centre_sub': 'R0', 'mean_map': 'R0'}
 
 
@@ -328,8 +329,20 @@ def accumulate_means(model, batches, lens, layers, device):
     return {variant: {layer: (value / count).float() for layer, value in maps.items()} for variant, maps in sums.items()}
 
 
-def compute(store, entries, lens, grid=14):
-    """{name: [B, positions]} for reading entries dict(name, reading, layers) from one captured forward."""
+def shuffled_rows(values, seed, start, layer):
+    """Permute each image's row of per-patch values [B, patches] with a seeded generator (D2's stand-in, B50)."""
+    generator = torch.Generator(device=values.device).manual_seed(((seed * 1_000_003 + start) * 101 + layer))
+    order = torch.rand(values.shape, generator=generator, device=values.device).argsort(-1)
+    return values.gather(-1, order)
+
+
+def compute(store, entries, lens, grid=14, start=0):
+    """{name: [B, positions]} for reading entries dict(name, reading, layers) from one captured forward.
+
+    D2 (B50, exploratory): R0 times P_l(j | x_j), the probe's probability that token j is still at patch j (no
+    relocation); D2_shuffle: the same with those probabilities permuted over the patches of the image and layer
+    (entry['seed']; `start` = the batch's first row, for the seeded stream); C3D2: C3 times P_l(j | x_j).
+    """
     out = {}
     for entry in entries:
         reading, layers = entry['reading'], entry['layers']
@@ -355,6 +368,11 @@ def compute(store, entries, lens, grid=14):
                 value = relocate(r0, gaussian_relocation(lens.sigmas[layer], grid, r0.device))
             elif reading == 'no_high':
                 value = r0 * ~sink_tokens(store[layer]['norms'], lens.norm_ratio)
+            elif reading in ('D2', 'D2_shuffle', 'C3D2'):
+                stay = piece['P'].diagonal(dim1=-2, dim2=-1)  # P_l(j | x_j), [B, patches]
+                if reading == 'D2_shuffle':
+                    stay = shuffled_rows(stay, entry['seed'], start, layer)
+                value = (c3 if reading == 'C3D2' else r0) * stay
             total = total + value
         if reading == 'centre_sub':
             total = total - centre_matched(lens.mean('R0', layers), grid)

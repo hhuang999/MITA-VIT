@@ -60,14 +60,14 @@ def load_lens(settings, model_name, geometry, device):
     return readings.Lens(probes, sigmas, means, settings['norm_ratio']).to(device)
 
 
-def all_maps(model, images, entries, lens, generator=None, target=None, foreground=None, prefix=None):
+def all_maps(model, images, entries, lens, generator=None, target=None, foreground=None, prefix=None, start=0):
     """{name: [B, 196] float} for lens readings (one forward) and explain baselines."""
     lens_entries = [entry for entry in entries if 'reading' in entry]
     out = {}
     if lens_entries:
         with torch.no_grad(), readings.capture(model, readings.needed_layers(lens_entries), prefix) as store:
             model(images)
-            out.update(readings.compute(store, lens_entries, lens))
+            out.update(readings.compute(store, lens_entries, lens, start=start))
     for entry in entries:
         if 'reading' not in entry:
             out[entry['name']] = explain.compute(entry['method'], model, images, layers=entry.get('layers'),
@@ -140,7 +140,7 @@ def run(args, config, output, commit):
         else:
             with torch.no_grad():
                 original = model(images)
-            maps = all_maps(model, images, entries, lens, generator=noise,
+            maps = all_maps(model, images, entries, lens, generator=noise, start=start,
                             foreground=None if clickme else batch[1].to(device))
         rows = []
         if clickme:

@@ -506,3 +506,31 @@ def test_supp_runs_end_to_end(patched):
 
 def model_heads(model):
     return model.blocks[0].attn.num_heads
+
+
+# --- D2 (B50, exploratory) --------------------------------------------------------------------------------
+
+def test_d2_discounts_without_moving():
+    model = tiny()
+    lens = random_lens(model)
+    entries = [dict(name=n, reading=n, layers=[11, 12]) for n in ('R0', 'C3', 'D2', 'C3D2')] + \
+        [dict(name=f'D2_shuffle_s{k}', reading='D2_shuffle', seed=k, layers=[11, 12]) for k in (0, 1)]
+    with torch.no_grad(), readings.capture(model, [11, 12]) as store:
+        model(torch.randn(2, 3, 224, 224))
+        maps = readings.compute(store, entries, lens, start=64)
+        again = readings.compute(store, entries, lens, start=64)
+        stay = {l: lens.probes[l].probs(store[l]['tokens']).diagonal(dim1=-2, dim2=-1) for l in (11, 12)}
+        r0 = {l: store[l]['r0'] for l in (11, 12)}
+        c3 = {l: store[l]['c3'] for l in (11, 12)}
+    torch.testing.assert_close(maps['D2'], sum(r0[l] * stay[l] for l in (11, 12)))
+    torch.testing.assert_close(maps['C3D2'], sum(c3[l] * stay[l] for l in (11, 12)))
+    torch.testing.assert_close(maps['D2_shuffle_s0'], again['D2_shuffle_s0'])        # seeded
+    assert not torch.allclose(maps['D2_shuffle_s0'], maps['D2_shuffle_s1'])
+    permuted = readings.shuffled_rows(stay[12], 0, 64, 12)
+    torch.testing.assert_close(permuted.sort(-1).values, stay[12].sort(-1).values)
+    own = OwnPosition(*(getattr(lens.probes[12], f) for f in ('mean', 'std', 'weight', 'bias')))
+    lens.probes = {11: own, 12: own}
+    with torch.no_grad(), readings.capture(model, [11, 12]) as store:
+        model(torch.randn(2, 3, 224, 224))
+        maps = readings.compute(store, entries[:3], lens)
+    torch.testing.assert_close(maps['D2'], maps['R0'])                              # P(j | x_j) = 1: no change

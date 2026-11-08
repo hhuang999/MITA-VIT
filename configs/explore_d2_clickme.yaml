@@ -1,0 +1,18 @@
+# D2 (decision B50; exploratory, post hoc): discount without relocation, its shuffled stand-in, and C3 + D2 (reported
+# only under branch D-A). R0, C2 and C3 are recomputed in the same run as a check against the formal runs.
+base: v5.yaml
+correct:
+  dataset: clickme
+  gallery_images: 0
+  faithfulness_images: 0        # B50: no SRG
+  methods:
+    - {name: R0, reading: R0, layers: [9, 10, 11, 12]}
+    - {name: C2, reading: C2, layers: [9, 10, 11, 12]}
+    - {name: C3, reading: C3, layers: [9, 10, 11, 12]}
+    - {name: D2, reading: D2, layers: [9, 10, 11, 12]}
+    - {name: D2_shuffle_s0, reading: D2_shuffle, seed: 0, layers: [9, 10, 11, 12]}
+    - {name: D2_shuffle_s1, reading: D2_shuffle, seed: 1, layers: [9, 10, 11, 12]}
+    - {name: D2_shuffle_s2, reading: D2_shuffle, seed: 2, layers: [9, 10, 11, 12]}
+    - {name: D2_shuffle_s3, reading: D2_shuffle, seed: 3, layers: [9, 10, 11, 12]}
+    - {name: D2_shuffle_s4, reading: D2_shuffle, seed: 4, layers: [9, 10, 11, 12]}
+    - {name: C3D2, reading: C3D2, layers: [9, 10, 11, 12]}
