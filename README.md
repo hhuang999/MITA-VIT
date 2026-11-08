@@ -1,111 +1,105 @@
-# What Do Vision Transformers Read?
+# Attention as Fast Weights: Reading, Diagnosing, and Correcting Attention Maps in Vision Transformers
 
-**Executable attention reading sets under centre-bias control** — DSAA 2012 Deep Learning 课程项目（HKUST(GZ)，2026 秋）。
+Code, fixed image lists and result tables for the paper of the same name (course project, see the note at the end).
 
-**一句话：** 注意力可以看成一个"快权重 MLP"，每个图块（token）是一个神经元。我们按 MiTA 的规则，从**未改动**的预训练 ViT 中读出每块区域读取的 16 个神经元，并让模型只按这些名单计算，用模型自己的输出检验读取是否真实；再用扣除中心偏差的检验，分析 ViT 逐层读了什么。
+## Abstract
 
-> **v5（2026-11-05 起，分支 `study/v5`，决策 B33）：** 研究改为以快慢权重视角为主角的“读 → 诊断 → 修正”闭环：先读出注意力在看什么（RQ1），再检验读注意力图的三个前提——这张图的（M1）、位置准确的（M2）、按贡献排序的（M3）——在哪里不成立（RQ2），最后用视角推出的三种读法修正（C1 扣平均图、C2 重新定位、C3 按贡献计分）与改模型比较（RQ3）。盘点见 [docs/v5/inventory.md](docs/v5/inventory.md)，执行规格见 [docs/experiment_plan_v5.md](docs/experiment_plan_v5.md)。下面“主要结果”仍是 v5 之前的结果；v5 的结果出来后写在 `docs/analysis/v5_report.md`。
+For each image, an attention head computes a two-layer network: the keys are its first-layer weights, the softmax
+is its activation and the values are its second-layer weights; every token is a hidden unit. An attention map
+("attention received", R0) therefore reads hidden activations and draws unit *j* at patch *j*. This reading assumes
+three premises: the activations are specific to the image (M1), unit *j* still stands for patch *j* (M2), and a large
+activation means a large contribution (M3). We run one read → diagnose → correct loop on DeiT-S, DeiT-B and DINO
+ViT-S. **Read:** the units that attention selects are the ones the model executes: when every region of every layer
+may read only 16 units, the models keep 72% / 83% / 61% of their top-1 predictions, against 9% / 30% / 4% for random
+units and 0.1–0.2% with no attention at all. **Diagnose:** two premises fail in deep layers. M2 fails in all three
+models (a linear position probe recovers the patch of only 18% / 32% / 36% of layer-12 tokens); M3 fails only in the
+supervised models, where high-norm tokens receive much attention but carry short value vectors; M1 largely holds.
+**Correct:** each correction is paired with a simpler stand-in it must beat, under metrics that give no credit to a
+centre prior. Only weighting each unit by its contribution, ‖W_O v_j‖ (C3; value-norm weighting itself follows
+Kobayashi et al. 2020), improves the map beyond its stand-in, and only in the models where M3 fails (DINO: no change).
+Removing the image-independent part (C1) does no more than removing the centre bias. Relocating scores with the
+position probe (C2) makes the reading worse in every model; its mechanism is not yet determined, and four candidate
+causes were ruled out in exploratory analyses (far-away probe errors, a fixed position preference of the probe, probe
+capacity, and a link between how global a token is and how uncertain the probe is). Changing the model (a
+test-time register, top-k attention training) does not improve the reading more than changing the reading does. All
+decision rules were fixed before the main runs; the pre-registered combination of all three corrections partly
+holds (1 of 4 cells).
 
-## 交付物
+![Figure 2: execution check and example maps](figures/figure_2a.png) ![](figures/figure_2b.png)
 
-| 内容 | 文件 |
-| --- | --- |
-| 论文初稿（NeurIPS 格式，正文 4 页 + 附录） | [`paper/main.pdf`](paper/main.pdf)，源文件 [`paper/main.tex`](paper/main.tex) |
-| 报告幻灯片初稿（13 页，含英文讲稿） | [`slides/mita_probe_talk.pptx`](slides/mita_probe_talk.pptx) |
-| 研究笔记本（方法演示、指标、全部核心结果、预测对账） | [`notebooks/mita_probe_research.ipynb`](notebooks/mita_probe_research.ipynb) |
-| 完整结果报告 | [v3 报告](docs/analysis/v3_report.md)、[补充实验 S1–S3](docs/analysis/supplement_s1_s3.md)、[注意力预算研究](docs/budget/report.md) |
+*Figure 2. (a) Top-1 agreement when every layer reads only k units per region (solid), random units (dashed), or
+no attention (dotted). (b) Two randomly drawn ClickMe images: human map, R0, C3 and C2, layers 9–12.*
 
-## 主要结果
+## Installation
 
-在 DeiT-S、DINO ViT-S、DeiT-B 三个模型和 ImageNet-S、Hard ImageNet、Pet、ClickMe、PartImageNet 五个数据集上：
-
-- **读取名单可以执行**：12 层同时替换（k = 16）时 DeiT-S 保留 72% 的预测，随机名单只有 9%，完全没有注意力只剩 0.1%。只替换一层不能作为证据：直接删掉一层注意力也保留 93%–97%。
-- **不只是看中间**：所有注意力读取在扣除中心偏差后仍偏向物体；物体移到角落时跟着走；与人类重要性图的一致超出中心偏差；模型确实依赖物体本身，也更依赖动物的头（删头部的伤害是删身体的 2–3.4 倍）。
-- **逐层**：最像人的读取在中后层；有监督模型的最后一层离开物体，DINO 不明显。这一规律在 top-k 探针、完整注意力和 CLS 注意力上都出现。有监督模型中后层的读取大量落在极少数高范数 token 上（DINO 没有），但它们不能解释最后一层的下降。
-- **注意力预算**（补充研究，7 个模型）：DeiT-B 和两个 MiTA 模型深层 30%–50% 的注意力落在约 3% 的高范数 token 上。它们带回的内容像一个常数。训练时稀疏化（top-k）和测试时额外 token 都没有把注意力引向物体：腾出的注意力转到新的停靠点。最后一层离开物体也不是它们造成的。
-- **如实的负面结果**：作为热图，所有注意力读取的忠实性都明显低于用梯度的 GAE；top-k 截断也没有让解释图比完整注意力更好。
-
-所有预测和判定标准都在运行前登记（[决策日志](docs/decisions.md)）：32 条有方向的预测中，20 条成立，7 条部分成立，5 条不成立。
-
-## 仓库结构
-
-```
-paper/        论文：main.tex、references.bib；tables/ 和 figures/ 由 scripts/paper_assets.py 生成
-slides/       幻灯片：mita_probe_talk.pptx；slide_data.py 取数，build_deck.js 生成
-notebooks/    研究笔记本
-src/mita_probe/
-  models/       模型注册表（deit, deit_b, dino, mita, deit_t, mita_t, deit3_s），权重版本和校验值固定
-  probe/        探针：读取名单（landmark、top-k、路由）、按名单执行注意力
-  data/         ImageNet、ImageNet-S、Hard ImageNet、Pet、ClickMe、PartImageNet
-  experiments/  每个实验一个模块（由 scripts/run.py 调用）
-  readings.py   v5 读法：R0、C1–C3、合用读法、对照（模糊、去掉高范数、扣中心高斯）和平均图
-  explain.py    所有重要性图：探针、完整注意力、CLS 注意力、Rollout、GAE、Grad-CAM、IG 和参照图
-  faithfulness.py  删图块的忠实性检验（在所有层删除 token）
-  plausibility.py  物体占比、AUROC、同距离环内富集等
-configs/      每个实验的配置（预设参数改动须先登记）
-scripts/      run.py（运行实验）、download_*.py、analyze_*.py（CPU 分析）、plot_*.py（作图）
-colab/        Colab GPU 运行：local/ 上传代码和取回结果，remote/ 在实例上建环境、下数据、排队运行
-  budget.py     注意力预算：逐层记录每个 token 收到的预算（MiTA 的压缩槽分回 token）、"不读/置零/平均值"三种处理
-  registers.py  制造高范数 token 的神经元搜索、测试时额外 token
-tests/        单元测试和端到端测试（假数据、随机权重；101 项）
-experiments/  正式运行结果：每次运行一个文件夹，含配置、日志、结果表、git commit（大表在被忽略的 raw/）
-figures/      报告中的图（PNG 和 PDF）
-docs/         决策日志、实验日志、进度、相关工作、分析报告；docs/archive/ 是早期设计和中间报告
-```
-
-### 结果文件夹
-
-| 前缀 | 内容 |
-| --- | --- |
-| `2026-10-27_rq1_colab*` | RQ1：k 扫描（第一代设置） |
-| `2026-10-28_v2_*`、`2026-10-26_rq2_imagenet` | RQ1/RQ2 解剖（DeiT-S、DINO、MiTA-DeiT-S）、Pet 合理性 |
-| `2026-10-26_rq3_diagnosis`、`2026-10-28_center_control`、`2026-10-29_center_matched_deletion*` | Pet 上的高范数诊断、中心对照、中心配对删除 |
-| `2026-10-29_v3_*` | v3：E3–E8、健全性检验、成本、定性图、DeiT-B 解剖 |
-| `2026-10-31_s_*` | 补充实验 S1–S3 及其分析（`2026-10-31_s_analysis`） |
-| `2026-11-03_ab_*` | 注意力预算研究：T0 模型核对、T1 预试验、T2 神经元搜索、T3 预算账、T4 用没用上、T6 额外 token、T7 全部删掉注意力，及分析（`analysis_pilot`、`analysis_formal`）；大的逐图表为 `.csv.gz` |
-
-## 运行
-
-环境（Python 3.11–3.12）：
+Python 3.12, one CUDA GPU for the experiments (CPU is enough for the tests and for rebuilding the tables).
 
 ```bash
-python -m venv .venv
-.venv/bin/pip install torch==2.7.0 torchvision==0.22.0 --index-url https://download.pytorch.org/whl/cu128
-.venv/bin/pip install -r requirements.txt
-.venv/bin/pip install --no-deps -e .
-.venv/bin/python scripts/download_models.py
-.venv/bin/python -m pytest
+pip install -r requirements-torch.txt --index-url https://download.pytorch.org/whl/cu128
+pip install -r requirements.txt
+pip install -e . --no-deps
 ```
 
-数据：`python scripts/download_data.py <imagenet|imagenet_s|hard_imagenet|pet|clickme|partimagenet>`。ImageNet 需要 `HF_TOKEN`（只从 `.env` 或环境变量读取）；其余数据下载后核对固定的 SHA-256 或 MD5。
+`requirements.txt` pins every package (timm 1.0.30). Put a Hugging Face token with access to ImageNet in `.env`
+(`HF_TOKEN=...`) or in the environment; it is never printed.
 
-所有实验用同一个入口；源代码有未提交改动时程序拒绝运行，结果中记录 git commit：
+## Data and models
+
+The datasets are not distributed here; `scripts/prepare_data.py` downloads and checks them (sources, licences and
+counts are listed in its docstring). The fixed image lists are in `data/splits/`: the 5,000 ImageNet validation
+images of the execution checks, the 2,000 ImageNet-S images of the deletion test, and the 4,000 held-out images
+(2,000 train the position probes, 2,000 give the mean maps and probe accuracy; none is evaluated).
 
 ```bash
-python scripts/run.py explanations --config configs/explanations.yaml --model deit --output experiments/<日期>_e4_imagenet_s_deit
-python scripts/run.py layer_reading --config configs/layer_reading.yaml --model deit_b --output experiments/<日期>_layers_deit_b
+python scripts/prepare_data.py imagenet imagenet_s clickme partimagenet
+python scripts/prepare_data.py --check
+python scripts/download_models.py
 ```
 
-分析和作图只读取结果文件（CPU）：
+Models: DeiT-S and DeiT-B (timm, pinned revisions), DINO ViT-S/16 with its official linear head, and MiTA-DeiT-S,
+whose checkpoint comes from the MiTA authors (fetched with gdown; every checkpoint is checked against a SHA-256).
+The test-time register uses 8 FFN units of DeiT-S, listed in `configs/table1_register.yaml`; `configs/register.yaml`
+shows how they were found.
+
+## Reproduce
+
+| command | what it does | time |
+| --- | --- | --- |
+| `bash reproduce/from_outputs.sh` | rebuild every table (`results/`) and figure (`figures/`) from run outputs in `outputs/` | a few minutes, CPU |
+| `bash reproduce/full.sh` | rerun every experiment from scratch, then rebuild the tables and figures | about 18 hours on one L4 GPU |
+| `bash reproduce/smoke.sh` | every experiment on 16 images, then the tables | under 10 minutes on one GPU |
+
+`reproduce/colab.ipynb` runs the same steps on a Colab L4. One paper element = one config = one command, e.g.
+`python scripts/run.py --config configs/table1.yaml`; outputs go to `outputs/<config>/[<dataset>/]<model>/` with the
+effective config, the git commit, versions, GPU and log. The per-image outputs of a full run (about 0.5 GB) are not
+in this repository; `full.sh` regenerates them. `results/` holds the summary tables of the original runs.
+`docs/reproduce.md` maps every table, figure and number of the paper to its command and output file, and records
+the reproduction checks. `docs/preregistration.md` lists the predictions, decision rules and freeze commits.
 
 ```bash
-bash scripts/analyze_v3.sh experiments/2026-10-29_v3_     # v3 分析和图 8–14
-python scripts/analyze_supplement.py && python scripts/plot_supplement.py   # 补充实验和图 15–17
-python scripts/paper_assets.py                             # 论文的表和图
-python scripts/analyze_budget.py formal --prefix experiments/2026-11-03_ab_ && python scripts/plot_budget.py experiments/2026-11-03_ab_analysis_formal   # 注意力预算和图 18–20
-python slides/slide_data.py                                # 幻灯片的图表数字
+python -m pytest -q
 ```
 
-Colab（GPU）：`colab/local/send_code.sh <会话> <分支> [基准提交]` 上传代码；在实例上依次运行 `colab/remote/setup.sh`、`data.sh`、`jobs.sh`（读取 `/content/jobs.txt` 排队运行）；`colab/local/fetch_runs.sh` 分块取回结果。
+## Layout
 
-论文编译：`bash paper/get_style.sh`，然后 `cd paper && latexmk -pdf main.tex`。
+```
+src/fastweight_vit/   readings (R0, C1-C3, stand-ins), references (GAE, centre, random), probes, execution
+                      (top-k reading sets), instrument, registers, metrics, enrichment, faithfulness, models, data,
+                      experiments/
+configs/              one YAML per paper element
+scripts/              run.py, make_tables.py, make_figures.py, prepare_data.py, download_models.py
+reproduce/            from_outputs.sh, full.sh, smoke.sh, colab.ipynb
+data/splits/          fixed image lists (IDs only)
+results/, figures/    summary tables and paper figures
+docs/                 preregistration.md, reproduce.md
+tests/
+```
 
-## 文档
+## Citation, licence, acknowledgements
 
-- [决策日志](docs/decisions.md)：每项设计、预测、判定标准和结果对账（B01–B26），均在运行前登记。
-- [实验日志](docs/experiment_log.md)：每次运行，包括失败的。[进度](docs/progress.md)：当前状态和待办。
-- [相关工作](docs/related_work.md)及[调研细节](docs/research/)；[实验计划 v3](docs/experiment_plan_v3.md)。
-- 注意力预算研究：[研究设计](docs/budget/research_design.md)、[工程设计](docs/budget/engineering_design.md)、[预试验报告](docs/budget/pilot_report.md)、[正式报告](docs/budget/report.md)（决策 B27–B32）。
-- 分析报告：[v3 完整报告](docs/analysis/v3_report.md)、[补充实验 S1–S3](docs/analysis/supplement_s1_s3.md)、[RQ1/RQ2 解剖](docs/analysis/probe_report.md)、[V2 解剖细节](docs/analysis/v2_anatomy.md)、[高范数诊断](docs/analysis/rq3_diagnosis.md)。
-- [归档](docs/archive/README.md)：早期设计、交接文档和中间报告；移出主线的运行在分支 `archive/pre-cleanup-2026-11-03`。
-- [代理规范](AGENTS.md)。
+Please cite with `CITATION.cff`. Code under the MIT licence (`LICENSE`). We thank the authors of DeiT, DINO, timm,
+MiTA, ImageNet-S, ClickMe / Harmonization and PartImageNet for releasing their models and data. GAE follows
+Chefer et al. (ICCV 2021); the test-time register follows Jiang et al. (2025).
+
+This is a course project of DSAA 2012 Deep Learning, HKUST(GZ). The code was written with an AI coding assistant
+under the author's design; the author checked every conclusion.
