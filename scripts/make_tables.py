@@ -12,7 +12,7 @@ Reads outputs/<config name>/[<dataset>/]<model>/ as written by scripts/run.py an
 | last_layer.csv, order.csv, variants.csv | appendix D (last-layer recovery, the other order), "change the model" (P6) |
 | sanity.csv, negative_controls.csv, predictions.csv | appendix C (P4), every registered prediction with its verdict |
 | single_layer.csv, part_reliance.csv, map_similarity.csv | appendix B |
-| c2_analysis/*.csv, supplementary/*.csv | appendix E and D (exploratory) |
+| c2_analysis/*.csv, supplementary/*.csv, d2/*.csv | appendix E and D (exploratory) |
 | numbers.csv | single numbers quoted in the text |
 
 Statistics (docs/preregistration.md): one value per image, paired bootstrap over images (1,000 resamples, seed 0),
@@ -770,6 +770,48 @@ def supplementary(runs, values, out):
         write(branches, folder / 'branches.csv')
 
 
+# --- appendix E: discount without relocation (exploratory, registered before running) -------------------------
+
+D2_SEEDS = [f'D2_shuffle_s{seed}' for seed in range(5)]
+
+
+def d2(runs, values, out):
+    """D2 - R0, D2 - D2_shuffle (seed mean per image), D2 - C2 on enrichment and ClickMe; branch rule; C3D2 - C3
+    (reported only under branch A); R0, C2 and C3 of the same run against Table 1 (consistency)."""
+    rows, checks = [], []
+    for model in MODELS:
+        data = per_image(runs.get('d2', model, 'imagenet_s'), runs.get('d2', model, 'clickme'))
+        for metric, table in data.items():
+            if metric == 'srg' or 'D2' not in table:
+                continue
+            table['D2_shuffle'] = table[D2_SEEDS].mean(axis=1)
+            for name in ('R0', 'C2', 'C3', 'D2', 'D2_shuffle', 'C3D2'):
+                rows.append(summary(table[name], model=model, metric=metric, method=name, test='value'))
+            for other in ('R0', 'D2_shuffle', 'C2'):
+                rows.append(paired(table, 'D2', other, metric, model=model, test=f'D2 - {other}'))
+            rows.append(paired(table, 'C3D2', 'C3', metric, model=model, test='C3D2 - C3'))
+            reference = values.get(model, {}).get(metric)
+            if reference is not None:
+                for name in ('R0', 'C2', 'C3'):
+                    both = pd.concat([table[name].rename('new'), reference[name].rename('table1')], axis=1).dropna()
+                    checks.append(dict(model=model, metric=metric, method=name, n=len(both),
+                                       max_abs_difference=float((both.new - both.table1).abs().max())))
+    if not rows:
+        return
+    frame = write(rows, out / 'd2' / 'tests.csv')
+    if checks:
+        write(checks, out / 'd2' / 'consistency.csv')
+    gain = frame[frame.test == 'D2 - R0']
+    higher = gain[gain.verdict == 'higher']
+    against = frame[frame.test == 'D2 - D2_shuffle'].set_index(['model', 'metric']).verdict
+    shuffle_ok = all(against.get((r.model, r.metric)) == 'higher' for r in higher.itertuples())
+    branch = 'A' if len(higher) >= 2 and not (gain.verdict == 'lower').any() and shuffle_ok else 'B'
+    write([dict(item='D2', branch=branch, cells=len(gain), higher=len(higher),
+                lower=int((gain.verdict == 'lower').sum()), shuffle_higher_in_those_cells=shuffle_ok)],
+          out / 'd2' / 'branch.csv')
+
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--outputs', type=Path, default=ROOT / 'outputs')
@@ -789,6 +831,7 @@ def main():
     numbers(runs, out)
     c2_analysis(runs, out)
     supplementary(runs, values, out)
+    d2(runs, values, out)
     ledger = judge(tests, variants, k_tests, diagnose_tests, out)
     print(ledger.to_string(index=False))
     print('written to', out)

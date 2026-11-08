@@ -92,6 +92,9 @@ def test_run_script_expands_models_and_datasets():
     assert [(model, data) for model, data, _ in expanded] == [
         (m, d) for m in ('deit', 'deit_b', 'dino') for d in ('imagenet_s', 'clickme')]
     assert expanded[1][2]['correct']['dataset'] == 'clickme' and 'models' not in expanded[0][2]
+    smoke = script.rooted(table1, 'outputs/smoke')
+    assert smoke['correct']['lens_runs']['probe'] == 'outputs/smoke/diagnose_probe/{model}'
+    assert script.rooted(table1, 'outputs') == table1
     parts = script.runs(load_config(ROOT / 'configs/part_reliance.yaml'), model='deit_b')
     assert len(parts) == 1 and parts[0][2]['batch_size'] == 64
 
@@ -163,6 +166,12 @@ def test_diagnose_correct_and_sanity(patched):
     correct.run(run_args(), register, folder(tmp, 'register'), 'test')
     assert set(pd.read_csv(tmp / 'register' / 'plausibility.csv').method) == {'R0', 'R0_l12'}
     assert set(pd.read_csv(tmp / 'register' / 'faithfulness.csv').method) == {'R0', 'R0_l12'}
+
+    d2 = lens_config('d2', tmp)
+    d2['correct']['faithfulness_images'] = 0  # as in configs/d2.yaml: no SRG
+    correct.run(run_args(), d2, folder(tmp, 'd2'), 'test')
+    assert {'D2', 'D2_shuffle_s4', 'C3D2'} <= set(pd.read_csv(tmp / 'd2' / 'plausibility.csv').method)
+    assert pd.read_csv(tmp / 'd2' / 'faithfulness.csv').empty
 
     config = lens_config('sanity', tmp)
     config['sanity']['images'] = 4
