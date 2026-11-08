@@ -15,11 +15,13 @@ The script checks the smallest font of the main-text figures and stops if one is
 """
 
 import argparse
+import os
 from pathlib import Path
 
-import matplotlib
-import numpy as np
-import pandas as pd
+os.environ['MPLBACKEND'] = 'Agg'  # files only; notebooks (e.g. Colab) set an inline backend that a clean environment lacks
+import matplotlib  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt  # noqa: E402
