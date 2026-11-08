@@ -20,30 +20,30 @@ output file, and the result of the three reproduction checks; then the map from 
 
 | paper element | config(s) | output file(s) in `results/` | layer 1 | layer 2 (largest difference) | GPU time of the original runs |
 | --- | --- | --- | --- | --- | --- |
-| Figure 2(a), section 4.2 (P1) | fig2a_k_sweep, attention_off | k_sweep.csv, k_sweep_tests.csv; figures/figure_2a | identical | in progress | 0.60 h + 0.16 h |
-| Figure 2(b); appendix figure (layer 12) | table1 (ClickMe gallery of DeiT-S) | figures/figure_2b, figure_A_2b_layer12 | identical (pixel) | in progress | (with table1) |
-| Figure 3(a), M1; mean-map ring share | diagnose_probe, diagnose_mean_maps | diagnose.csv (panel M1), radial.csv | identical | in progress | 0.09 h + 0.33 h |
-| Figure 3(b), M2; probe accuracy, top probability | diagnose_probe | diagnose.csv (M2), probe_accuracy.csv, numbers.csv | identical | in progress | (above) |
-| Figure 3(c), M3 | high_norm | diagnose.csv (M3) | identical (from the earlier per-layer run, see note 1) | in progress | 2.08 h (earlier run) |
-| Figure 3(d), R0 vs ClickMe per layer | clickme_layers | diagnose.csv (quality) | identical (from the earlier ClickMe run, note 1) | in progress | 2.58 h (earlier run) |
-| P2 | (figure 3) | diagnose_tests.csv | identical | in progress | — |
-| Value-norm ratio (section 4.3) | value_norm | value_norm.csv | identical (0.292 / 0.230) | in progress | 0.90 h (earlier run) |
-| Table 1, sections 4.2 and 4.4, appendix D tables | table1 | table1.md, table1.csv, table1_long.csv, correct_tests.csv | identical | in progress | 3.05 h |
-| Table 1 "change the model" rows, P6 | table1_register, table1_mita | variants.csv | identical | in progress | 0.13 h + 0.13 h |
-| Last-layer recovery (P5) | table1 | last_layer.csv | identical | in progress | — |
-| The other combination order | order | order.csv | identical | in progress | 0.56 h |
-| Negative controls (P4) | table1 | negative_controls.csv, correct_tests.csv | identical | in progress | — |
-| All predictions | — | predictions.csv | identical | in progress | — |
-| Sanity check (appendix C) | sanity | sanity.csv | identical | in progress | 0.39 h |
-| Appendix B: one layer restricted / attention off | single_layer, attention_off | single_layer.csv | means identical; intervals differ by ≤ 0.0012 (note 2) | in progress | 1.60 h (earlier run) |
-| Appendix B: head vs body patches | part_reliance | part_reliance.csv | identical | in progress | 1.37 h (earlier run) |
-| Appendix B: top-k map vs full map | map_similarity | map_similarity.csv | identical (recomputed from saved scores) | in progress | 1.08 h (earlier run) |
-| Register units of "+register" | register | outputs/register/deit/gate.json | not rebuilt (units copied into configs/table1_register.yaml) | in progress | 0.02 h |
-| Appendix E: why C2 fails; appendix figure | c2_analysis | c2_analysis/*.csv; figures/figure_A_c2 | identical (figure: same data, visually identical) | in progress | 0.32 h |
-| Appendices D and E: supplementary analyses | supplementary_heldout, supplementary_eval | supplementary/*.csv | identical | in progress | 0.19 h + 2.46 h |
-| Appendix E: discount without relocation | d2 | d2/*.csv | identical | in progress | 0.67 h (2026-11-08 runs) |
-| Introduction: centre Gaussian vs ClickMe (0.41) | table1 | numbers.csv | identical to the earlier ClickMe run (0.4141) | in progress | — |
-| Section 4.1: ClickMe near-duplicates among held-out candidates | diagnose_probe | numbers.csv, data/splits/heldout_4000.json | identical | in progress | — |
+| Figure 2(a), section 4.2 (P1) | fig2a_k_sweep, attention_off | k_sweep.csv, k_sweep_tests.csv; figures/figure_2a | identical | identical | 0.60 h + 0.16 h |
+| Figure 2(b); appendix figure (layer 12) | table1 (ClickMe gallery of DeiT-S) | figures/figure_2b, figure_A_2b_layer12 | identical (pixel) | same maps; figure visually identical | (with table1) |
+| Figure 3(a), M1; mean-map ring share | diagnose_probe, diagnose_mean_maps | diagnose.csv (panel M1), radial.csv | identical | identical | 0.09 h + 0.33 h |
+| Figure 3(b), M2; probe accuracy, top probability | diagnose_probe | diagnose.csv (M2), probe_accuracy.csv, numbers.csv | identical | identical (probes retrained: accuracy difference 0) | (above) |
+| Figure 3(c), M3 | high_norm | diagnose.csv (M3) | identical (from the earlier per-layer run, see note 1) | 1.2e-6 | 2.08 h (earlier run) |
+| Figure 3(d), R0 vs ClickMe per layer | clickme_layers | diagnose.csv (quality) | identical (from the earlier ClickMe run, note 1) | 1.5e-7 (after restoring the original batch sizes, note 3) | 2.58 h (earlier run) |
+| P2 | (figure 3) | diagnose_tests.csv | identical | verdicts identical | — |
+| Value-norm ratio (section 4.3) | value_norm | value_norm.csv | identical (0.292 / 0.230) | 1.5e-8 | 0.90 h (earlier run) |
+| Table 1, sections 4.2 and 4.4, appendix D tables | table1 | table1.md, table1.csv, table1_long.csv, correct_tests.csv | identical | identical | 3.05 h |
+| Table 1 "change the model" rows, P6 | table1_register, table1_mita | variants.csv | identical | identical | 0.13 h + 0.13 h |
+| Last-layer recovery (P5) | table1 | last_layer.csv | identical | identical | — |
+| The other combination order | order | order.csv | identical | identical | 0.56 h |
+| Negative controls (P4) | table1 | negative_controls.csv, correct_tests.csv | identical | identical | — |
+| All predictions | — | predictions.csv | identical | verdicts identical | — |
+| Sanity check (appendix C) | sanity | sanity.csv | identical | identical | 0.39 h |
+| Appendix B: one layer restricted / attention off | single_layer, attention_off | single_layer.csv | means identical; intervals differ by ≤ 0.0012 (note 2) | identical | 1.60 h (earlier run) |
+| Appendix B: head vs body patches | part_reliance | part_reliance.csv | identical | 7.1e-6 | 1.37 h (earlier run) |
+| Appendix B: top-k map vs full map | map_similarity | map_similarity.csv | identical (recomputed from saved scores) | 2.5e-5 (medians) | 1.08 h (earlier run) |
+| Register units of "+register" | register | outputs/register/deit/gate.json | not rebuilt (units copied into configs/table1_register.yaml) | same 8 units (gate.json) | 0.02 h |
+| Appendix E: why C2 fails; appendix figure | c2_analysis | c2_analysis/*.csv; figures/figure_A_c2 | identical (figure: same data, visually identical) | identical | 0.32 h |
+| Appendices D and E: supplementary analyses | supplementary_heldout, supplementary_eval | supplementary/*.csv | identical | identical | 0.19 h + 2.46 h |
+| Appendix E: discount without relocation | d2 | d2/*.csv | identical | identical | 0.67 h (2026-11-08 runs) |
+| Introduction: centre Gaussian vs ClickMe (0.41) | table1 | numbers.csv | identical to the earlier ClickMe run (0.4141) | identical | — |
+| Section 4.1: ClickMe near-duplicates among held-out candidates | diagnose_probe | numbers.csv, data/splits/heldout_4000.json | identical | identical | — |
 | Historical reproduction check (appendix C) | — | history/reproduction_check.csv | kept as a record (the earlier code is not here) | — | — |
 
 Notes.
@@ -53,6 +53,14 @@ Notes.
    earlier runs' saved per-image values, layer 2 reruns them with the new code.
 2. The study took these intervals from an earlier analysis that resampled the images in another row order; the
    means are identical and the intervals differ by at most 0.0012.
+3. The image-specific ClickMe control pairs each image with the previous image of its batch, so the batch size is
+   part of the definition. The first full rerun used batch 64 for every model in `clickme_layers` and differed by
+   up to 3.0e-4 for DeiT-S and DINO; with the original batch sizes (128 / 64 / 128) the difference is 1.5e-7.
+
+Layer 2 was run on 2026-11-08 on one NVIDIA L4 (Colab), from a fresh clone of this branch (code `9bbee6f`, and
+`0d47c04` for the figure 3(d) rerun) in a fresh environment, following the README: 11.5 GPU hours for all runs.
+The full comparison is `docs/release/layer2.csv` (31 tables, every verdict identical, nothing over its tolerance).
+Layer 3: 78 tests pass on CPU (fresh environment) and on the L4; `reproduce/smoke.sh` ran in 233 s.
 
 ## Old names → new names
 

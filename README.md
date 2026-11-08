@@ -67,10 +67,12 @@ shows how they were found.
 | command | what it does | time |
 | --- | --- | --- |
 | `bash reproduce/from_outputs.sh` | rebuild every table (`results/`) and figure (`figures/`) from run outputs in `outputs/` | a few minutes, CPU |
-| `bash reproduce/full.sh` | rerun every experiment from scratch, then rebuild the tables and figures | about 18 hours on one L4 GPU |
+| `bash reproduce/full.sh` | rerun every experiment from scratch, then rebuild the tables and figures | about 12 hours on one L4 GPU |
 | `bash reproduce/smoke.sh` | every experiment on 16 images, then the tables | under 10 minutes on one GPU |
 
-`reproduce/colab.ipynb` runs the same steps on a Colab L4. One paper element = one config = one command, e.g.
+`reproduce/colab.ipynb` runs the same steps on a Colab L4. `full.sh` ends by rewriting the tracked `results/` and `figures/`; `scripts/run.py` refuses to run on
+uncommitted changes (every output records its git commit), so commit them or restore them
+(`git checkout -- results figures`) before further runs. One paper element = one config = one command, e.g.
 `python scripts/run.py --config configs/table1.yaml`; outputs go to `outputs/<config>/[<dataset>/]<model>/` with the
 effective config, the git commit, versions, GPU and log. The per-image outputs of a full run (about 0.5 GB) are not
 in this repository; `full.sh` regenerates them. `results/` holds the summary tables of the original runs.
