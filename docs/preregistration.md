@@ -24,7 +24,7 @@ The full registration log (`docs/decisions.md`, Chinese) and the execution speci
 | 2026-11-05 10:07 | `c55feed` | v5 proposals: readings, stand-ins, references, data and held-out set, diagnostics, predictions P1–P6, order of runs and stop rule | — |
 | 2026-11-05 11:19 | `e5e9b90` | Smoke-run findings (32–64 images per run), compute estimate, ten questions to the author | — |
 | 2026-11-05 15:31 | `94bf426` | Author confirmation and freeze: margins and statistics, primary comparisons (P7), blur matching, held-out set, SRG for +register and none for MiTA, layer 1–4 control without SRG, zeroing as the C3 stand-in, ClickMe source to be checked | First formal run 2026-11-05 15:53 (code `94bf426`) |
-| 2026-11-05 17:02 | `5faa503` | Implementation-check tolerance 1e-4 → 5e-4 (no research definition changed) | Remaining formal runs from 17:12 (code `5faa503`) |
+| 2026-11-05 16:42 (committed 17:02) | `5faa503` | Implementation-check tolerance 1e-4 → 5e-4 (no research definition changed) | Remaining formal runs from 17:12 (code `5faa503`) |
 | 2026-11-05 17:07 | `7584ed2` | ClickMe image-source correction (no experiment changed) | — |
 | 2026-11-05 22:24 | `b35fcf6` | Formal results and verdict ledger | — |
 | 2026-11-07 09:43 | `65aba6c` | Exploratory analysis of C2 (probe errors, mean prediction, where C2 moves mass; ClickMe smoothing compilation): definitions and descriptive criteria | Runs 2026-11-07 10:17 (code `ebfd25f`) |
