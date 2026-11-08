@@ -151,8 +151,8 @@ def figure_3(out):
 def figure_c2(out):
     """Appendix E: probe errors against the matched blur, mean prediction, where C2 moves the scores."""
     errors, bins = RESULTS / 'c2_analysis' / 'errors.csv', RESULTS / 'c2_analysis' / 'shift_bins.csv'
-    if not errors.exists():
-        print('figure_A_c2: no c2_analysis results, skipped')
+    if not errors.exists() or not all((OUTPUTS / 'c2_analysis' / m / 'mean_prediction.npz').exists() for m in ('deit', 'dino')):
+        print('figure_A_c2: no c2_analysis results or outputs, skipped')
         return
     error_table, bin_table = pd.read_csv(errors), pd.read_csv(bins)
     long = {'deit': 'DeiT-S', 'deit_b': 'DeiT-B', 'dino': 'DINO ViT-S'}
