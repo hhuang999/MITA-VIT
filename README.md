@@ -38,6 +38,7 @@ Python 3.12, one CUDA GPU for the experiments (CPU is enough for the tests and f
 pip install -r requirements-torch.txt --index-url https://download.pytorch.org/whl/cu128
 pip install -r requirements.txt
 pip install -e . --no-deps
+pip install gdown  # only to fetch the MiTA-DeiT-S checkpoint (scripts/download_models.py)
 ```
 
 `requirements.txt` pins every package (timm 1.0.30). Put a Hugging Face token with access to ImageNet in `.env`
