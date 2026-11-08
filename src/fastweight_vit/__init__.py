@@ -1,1 +1,1 @@
-"""Tools for reading ViT attention through verifiable summaries."""
+"""Reading, diagnosing and correcting attention maps of Vision Transformers through the fast-weight lens."""

@@ -1,7 +1,0 @@
-# Premise check: does token j still stand for patch j? Linear position probe per layer on the ImageNet subset.
-base: anatomy_deit.yaml
-identity:
-  train_images: 400
-  test_images: 100
-  epochs: 30
-  seed: 0

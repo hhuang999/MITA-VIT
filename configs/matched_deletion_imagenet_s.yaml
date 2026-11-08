@@ -1,4 +1,0 @@
-# Necessity test (A15 design) on imagenet_s.
-base: matched_deletion.yaml
-matched_deletion:
-  dataset: imagenet_s

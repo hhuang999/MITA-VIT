@@ -1,0 +1,22 @@
+# Figure 3(a), section 4.3, the lens of C1: mean maps on the 2,000 test held-out images (two geometries: the
+# model's crop for ImageNet-S, the ClickMe storage format for ClickMe) and the M1 share on ImageNet-S.
+# Needs outputs/diagnose_probe.
+experiment: diagnose
+stage: mean_maps
+models: [deit, deit_b, dino]
+batch_size: 64
+num_workers: 2
+n_images: 5000
+subset_seed: 0
+indices: data/splits/imagenet_val_5000.json
+diagnose:
+  dataset: imagenet_s
+  duplicate_threshold: 0.9
+  epochs: 30
+  heldout_seed: 0
+  mean_images: 2000
+  norm_ratio: 3
+  probe_images: 2000
+  probe_run: outputs/diagnose_probe/{model}
+  seed: 0
+  high_norm_dataset: imagenet_s

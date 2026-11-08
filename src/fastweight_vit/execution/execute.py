@@ -1,8 +1,9 @@
-"""Run a model with selected attention layers restricted to a probe plan, and observe layers.
+"""Run a model with selected attention layers restricted to a plan, and observe layers.
 
 `execute` swaps each selected layer's attention forward for a dense re-implementation that
 reads only the allowed token slots (and optional region summary slots); `capture_*` hooks
-observe Q/K, CLS attention or block-input norms without changing the output.
+observe Q/K or block-input norms without changing the output. MiTA-DeiT-S runs through the same
+forward with its native plan (summary slots, routing recomputed from the current Q/K).
 """
 
 from contextlib import contextmanager
@@ -26,7 +27,7 @@ class Plan:
 
 def selected_layers(model, layers):
     if model.training:
-        raise ValueError('Attention probing requires model.eval()')
+        raise ValueError('Reading attention requires model.eval()')
     selected = tuple(range(1, len(model.blocks) + 1)) if layers is None else tuple(layers)
     if not selected or len(set(selected)) != len(selected):
         raise ValueError('Select a nonempty set of distinct layers')
@@ -66,28 +67,6 @@ def capture_qk(model, layers=None):
     finally:
         for handle in handles:
             handle.remove()
-
-
-@contextmanager
-def capture_cls_attention(model):
-    """Observe final-layer CLS-to-patch attention, averaged over heads."""
-    attention = model.blocks[-1].attn
-    captured = {}
-
-    @torch.no_grad()
-    def hook(module, inputs, output):
-        batch, tokens, _ = output.shape
-        q, keys, _ = output.reshape(batch, tokens, 3, attention.num_heads,
-                                    attention.head_dim).permute(2, 0, 3, 1, 4).unbind(0)
-        q, keys = attention.q_norm(q), attention.k_norm(keys)
-        weights = ((q[:, :, :1] * attention.scale) @ keys.transpose(-2, -1)).softmax(-1)
-        captured['heatmap'] = weights[:, :, 0, model.num_prefix_tokens:].mean(1)
-
-    handle = attention.qkv.register_forward_hook(hook)
-    try:
-        yield captured
-    finally:
-        handle.remove()
 
 
 @contextmanager
@@ -146,7 +125,7 @@ def mixed_forward(attention, x, plan, grid, prefix=1):
 def install(attention, plan, grid, prefix=1):
     def forward(x, attn_mask=None, is_causal=False):
         if attn_mask is not None or is_causal:
-            raise ValueError('The anatomy probe expects unmasked, noncausal self-attention')
+            raise ValueError('Expected unmasked, noncausal self-attention')
         return mixed_forward(attention, x, plan, grid, prefix)
     attention.forward = forward
 

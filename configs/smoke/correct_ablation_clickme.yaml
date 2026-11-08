@@ -1,8 +1,0 @@
-# Smoke run (32-64 images) of correct_ablation_clickme: the lens comes from the smoke diagnose runs.
-base: ../correct_ablation_clickme.yaml
-diagnose:
-  probe_run: experiments/2026-11-05_smoke_v5_diagnose_probe_{model}
-correct:
-  lens_runs:
-    probe: experiments/2026-11-05_smoke_v5_diagnose_probe_{model}
-    m1: experiments/2026-11-05_smoke_v5_diagnose_m1_{model}

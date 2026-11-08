@@ -29,11 +29,11 @@ def source_commit(root: Path) -> str:
     )
     untracked = subprocess.check_output(
         ["git", "ls-files", "--others", "--exclude-standard", "src", "scripts",
-         "configs", "tests", "colab"], cwd=root, text=True,
+         "configs", "tests", "reproduce"], cwd=root, text=True,
     )
     ignored = subprocess.check_output(
         ["git", "ls-files", "--others", "--ignored", "--exclude-standard", "src", "scripts",
-         "configs", "tests", "colab"], cwd=root, text=True,
+         "configs", "tests", "reproduce"], cwd=root, text=True,
     )
     ignored = [path for path in ignored.splitlines()
                if path.endswith((".py", ".yaml", ".sh")) and "__pycache__" not in path]

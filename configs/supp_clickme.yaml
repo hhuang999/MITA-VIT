@@ -1,4 +1,0 @@
-# Phase-1 X1-X5 on ClickMe (decision B46).
-base: supp.yaml
-supp:
-  dataset: clickme

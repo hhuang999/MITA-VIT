@@ -2,7 +2,7 @@
 
 Matches facebookresearch/dino eval_linear.py for ViT-S/16: concatenate the CLS token of
 the last 4 blocks, each passed through the final norm, then one linear layer (76.98%).
-The backbone is timm's converted checkpoint; the anatomy probes see its blocks directly.
+The backbone is timm's converted checkpoint; every reading sees its blocks directly.
 """
 
 from pathlib import Path

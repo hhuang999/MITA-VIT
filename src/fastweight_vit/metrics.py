@@ -1,11 +1,15 @@
-"""Per-image measures: prediction agreement, KL to the original output, heatmap localisation."""
+"""Per-image measures: KL to the original output, tie-aware Spearman, and agreement with ClickMe human maps.
+
+ClickMe (Fel et al. 2022 protocol): per image and map,
+- spearman_pixel: Spearman between the map upsampled (bilinear) to 224 x 224 and the human map;
+- spearman_token: Spearman between the 196 patch scores and the human map averaged per patch;
+- *_shuffled: the same against another image's human map (the previous image in the batch: roll(1)). A fixed prior such as
+  the centre scores the same on both, so own - shuffled (spearman_pixel) is the image-specific part reported in
+  the paper.
+"""
 
 import torch
 from torch.nn import functional as F
-
-
-def agreement(original: torch.Tensor, executed: torch.Tensor) -> torch.Tensor:
-    return original.argmax(-1).eq(executed.argmax(-1))
 
 
 def kl_divergence(original: torch.Tensor, executed: torch.Tensor) -> torch.Tensor:
@@ -14,19 +18,6 @@ def kl_divergence(original: torch.Tensor, executed: torch.Tensor) -> torch.Tenso
         executed.log_softmax(-1), original.log_softmax(-1),
         reduction="none", log_target=True,
     ).sum(-1)
-
-
-def heatmap_metrics(heatmap, foreground, valid):
-    """Foreground mass fraction and pointing hit on valid spatial tokens."""
-    if (heatmap < 0).any() or not torch.isfinite(heatmap).all():
-        raise ValueError("Heatmap values must be finite and nonnegative")
-    mass = (heatmap * valid).sum(-1)
-    ratio = (heatmap * foreground * valid).sum(-1) / mass
-    # torch.argmax resolves equal maxima by the first flattened spatial index.
-    maximum = heatmap.masked_fill(~valid, -torch.inf).argmax(-1)
-    hit = foreground.gather(1, maximum[:, None]).squeeze(1).float()
-    usable = valid.any(-1) & mass.gt(0)
-    return torch.where(usable, ratio, torch.nan), torch.where(usable, hit, torch.nan)
 
 
 def average_ranks(values: torch.Tensor) -> torch.Tensor:
@@ -50,3 +41,29 @@ def spearman(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
     ra, rb = average_ranks(a.flatten(1)), average_ranks(b.flatten(1))
     ra, rb = ra - ra.mean(-1, keepdim=True), rb - rb.mean(-1, keepdim=True)
     return (ra * rb).sum(-1) / (ra.norm(dim=-1) * rb.norm(dim=-1))
+
+
+ALIGNMENT = ['spearman_token', 'spearman_token_shuffled', 'spearman_pixel', 'spearman_pixel_shuffled']
+
+
+def per_patch(maps):
+    """[B, 224, 224] -> [B, 196] patch means."""
+    return F.avg_pool2d(maps[:, None], 16).flatten(1)
+
+
+def upsample(scores):
+    """[B, 196] -> [B, 224, 224], bilinear."""
+    return F.interpolate(scores.view(-1, 1, 14, 14), size=(224, 224), mode='bilinear', align_corners=False)[:, 0]
+
+
+def alignment(scores, human):
+    """Dict of [B] tensors; the shuffled control pairs each image with the previous one's human map (roll(1))."""
+    other = human.roll(1, 0)
+    pixel = upsample(scores)
+    out = dict(spearman_token=spearman(scores, per_patch(human)), spearman_pixel=spearman(pixel, human),
+               spearman_token_shuffled=spearman(scores, per_patch(other)),
+               spearman_pixel_shuffled=spearman(pixel, other))
+    if len(scores) == 1:
+        for key in ('spearman_token_shuffled', 'spearman_pixel_shuffled'):
+            out[key] = torch.full_like(out[key], float('nan'))
+    return out

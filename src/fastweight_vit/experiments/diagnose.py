@@ -1,22 +1,30 @@
-"""v5 step 2, diagnose (decisions B36-B38): held-out images, position probes, mean maps and the M1 share.
+"""Diagnose (RQ2; figure 3): held-out images, position probes (M2), mean maps and the M1 share, high-norm tokens (M3).
 
-Stage `probe` (diagnose_probe):
+Stage `probe`:
 - selects the held-out images (data.heldout; the same for every model): the first `probe_images` train the
   position probes, the next `mean_images` are used for everything else (probe test accuracy, C2's
   displacement and the matched blur width, the mean maps of stage m1); heldout.json;
-- one linear position probe per layer on the normalised block input (the E3 probe and training, fitted on
-  the larger held-out set and kept for C2); probes.npz holds the probes and, per layer, the mean squared
-  displacement of C2 on the test images and the matching Gaussian blur width sigma;
-- identity.csv: per layer test accuracy (chance 1/196), mean grid distance of the errors, mean top
-  probability, displacement and sigma.
+- one linear position probe per layer on the normalised block input (probes.fit_position_probe), kept for C2;
+  probes.npz holds the probes and, per layer, the mean squared displacement of C2 on the test images and the
+  matching Gaussian blur width sigma (C2's stand-in);
+- probe_accuracy.csv: per layer test accuracy (chance 1/196), mean grid distance of the errors, mean top
+  probability, displacement and sigma; probe_accuracy_images.csv: the accuracy per test image.
 
-Stage `m1` (diagnose_m1), after `probe`:
+Stage `mean_maps`, after `probe`:
 - mean maps of R0, C3, C2 (relocated R0) and C2C3 (relocated C3) at every layer, averaged over the
   held-out test images, under two geometries: the model's ImageNet evaluation crop (for ImageNet-S) and the
   ClickMe storage format (for ClickMe); means_crop.npz, means_clickme.npz; radial.csv (ring-explained share
   of each mean map);
-- m1.csv.gz on the evaluation images (ImageNet-S): per image, layer and variant the residual and total sum
+- m1.csv on the evaluation images (ImageNet-S): per image, layer and variant the residual and total sum
   of squares around each map's spatial mean; M1 share = 1 - sum(residual) / sum(total) (readings.m1_sums).
+
+Stage `high_norm` (on a mask dataset; independent of the other stages): per image and layer, high_norm.csv holds
+- high_fraction: share of patches that are high-norm (block input norm before norm1 > `norm_ratio` x the image's
+  median patch norm, tokens.high_norm_tokens);
+- high_share: share of the layer's R0 on those patches (M3, figure 3(c));
+- value_ratio_sum, value_ratio_n: over heads, the sum and count of (mean ||v_j|| of the high-norm patches) /
+  (median ||v_j|| of the other patches), for images with a high-norm patch. Per layer, sum / count over all
+  images and heads; the paper reports its mean over layers 9-12.
 """
 
 import json
@@ -26,19 +34,22 @@ import time
 import numpy as np
 import torch
 from timm.data import create_transform
-from torch.utils.data import DataLoader, Dataset, Subset
+from torch.utils.data import DataLoader, Dataset
 
 from .. import readings
+from ..data.build import build, imagenet_files
 from ..data.clickme import ClickMe
 from ..data.heldout import GEOMETRIES, clickme_like, select, thumbnail
 from ..data.imagenet_s import ImageNetS
 from ..io import write_csv, write_json
 from ..models import IMAGENET_PREPROCESSING, data_reference, load_model
+from ..probes import collect, fit_position_probe
 from ..runtime import data_root, project_path
-from . import common, datasets
+from ..tokens import high_norm_tokens
+from . import common
 from .common import Sink
 
-STAGES = ('probe', 'm1')
+STAGES = ('probe', 'mean_maps', 'high_norm')
 
 
 class HeldoutImages(Dataset):
@@ -70,7 +81,7 @@ def preprocessing_of(model, name):
 
 def heldout(settings, n_total, smoke):
     """Select (or, in a smoke run, select a few) held-out rows; returns (rows, info)."""
-    files = datasets.imagenet_files()
+    files = imagenet_files()
     imagenet_s = ImageNetS(data_root() / 'imagenet_s' / 'ImageNetS919', files, None,
                            preprocessing=IMAGENET_PREPROCESSING['dino'])
     excluded = {imagenet_s.name(index) for index in range(len(imagenet_s))}
@@ -91,7 +102,6 @@ def heldout(settings, n_total, smoke):
 
 def collect_tokens(model, loader, layers, device):
     """{layer: [images, patches, dim] float16 on the CPU}: the normalised block inputs."""
-    from ..identity import collect
     out = {layer: [] for layer in layers}
     for images in loader:
         tokens = collect(model, images.to(device), layers)
@@ -117,7 +127,7 @@ def stage_probe(args, config, output, model, device):
     probes, sigmas, displacements, table, per_image = {}, {}, {}, [], []
     for layer in layers:
         train, test = tokens[layer][:n_probe].to(device), tokens[layer][n_probe:].to(device)
-        probe = readings.fit_position_probe(train, epochs=settings['epochs'], seed=settings['seed'])
+        probe = fit_position_probe(train, epochs=settings['epochs'], seed=settings['seed'])
         with torch.no_grad():
             probs = probe.probs(test)
         target = torch.arange(probs.shape[1], device=device).expand(probs.shape[0], -1)
@@ -136,15 +146,15 @@ def stage_probe(args, config, output, model, device):
         logging.info('layer %d: accuracy %.3f, displacement %.3f, sigma %.3f', layer, table[-1]['position_accuracy'],
                      displacements[layer], sigmas[layer])
     readings.save_probes(output / 'probes.npz', probes, sigmas, displacements)
-    write_csv(output / 'identity.csv', table)
-    write_csv(output / 'identity_images.csv', per_image)
+    write_csv(output / 'probe_accuracy.csv', table)
+    write_csv(output / 'probe_accuracy_images.csv', per_image)
 
 
 def lens_folder(config, model):
     return project_path(config['diagnose']['probe_run'].format(model=model))
 
 
-def stage_m1(args, config, output, model, device):
+def stage_mean_maps(args, config, output, model, device):
     settings = config['diagnose']
     folder = lens_folder(config, args.model)
     probes, sigmas = readings.load_probes(folder / 'probes.npz')
@@ -153,7 +163,7 @@ def stage_m1(args, config, output, model, device):
     rows = rows[:args.smoke] if args.smoke else rows
     lens = readings.Lens(probes, sigmas, norm_ratio=settings['norm_ratio']).to(device)
     layers = list(range(1, len(model.blocks) + 1))
-    files = datasets.imagenet_files()
+    files = imagenet_files()
     pre = preprocessing_of(model, args.model)
     radial = []
     for geometry, name in ((None, 'crop'), (held['clickme_geometry'], 'clickme')):
@@ -169,7 +179,7 @@ def stage_m1(args, config, output, model, device):
             lens.means = {variant: {layer: value.to(device) for layer, value in maps.items()}
                           for variant, maps in means.items()}
     write_csv(output / 'radial.csv', radial)
-    dataset, indices = datasets.build(settings['dataset'], model, args.model, config)
+    dataset, indices = build(settings['dataset'], model, args.model, config)
     indices = indices[:args.smoke] if args.smoke else indices
     sink = Sink(output / 'm1.csv', ['model', 'index', 'layer', 'variant', 'residual', 'total'])
     progress_path, done = common.progress(output, args.resume)
@@ -187,6 +197,42 @@ def stage_m1(args, config, output, model, device):
         sink.write(out)
 
 
+def stage_high_norm(args, config, output, model, device):
+    settings = config['diagnose']
+    dataset, indices = build(settings['high_norm_dataset'], model, args.model, config)
+    indices = indices[:args.smoke] if args.smoke else indices
+    layers = list(range(1, len(model.blocks) + 1))
+    sink = Sink(output / 'high_norm.csv', ['model', 'index', 'layer', 'high_fraction', 'high_share', 'value_ratio_sum',
+                                            'value_ratio_n'])
+    progress_path, done = common.progress(output, args.resume)
+    batches = common.make_batches(config, done, progress_path, time.perf_counter())
+    for start, ids, batch in batches(f'high_norm_{args.model}', dataset, indices):
+        out = []
+        with torch.no_grad(), readings.capture(model, layers, per_head=True) as store:
+            model(batch[0].to(device))
+            for layer in layers:
+                piece = store[layer]
+                high = high_norm_tokens(piece['norms'], settings['norm_ratio'])
+                positive = piece['r0'].float().clamp_min(0)
+                share = ((positive * high).sum(1) / positive.sum(1)).tolist()
+                fraction = high.float().mean(1).tolist()
+                norms = piece['value_norm'].float()  # [B, H, patches]
+                has = high.any(1)
+                # nanquantile: midpoint median with a deterministic CUDA kernel
+                ordinary = norms.masked_fill(high[:, None], float('nan')).nanquantile(.5, dim=-1)
+                high_mean = (norms * high[:, None]).sum(-1) / high[:, None].sum(-1).clamp_min(1)
+                ratio = torch.where(has[:, None], high_mean / ordinary, torch.full_like(high_mean, float('nan')))
+                valid = ~torch.isnan(ratio)
+                ratio_sum = torch.where(valid, ratio, torch.zeros_like(ratio)).sum(1).tolist()
+                ratio_n = valid.sum(1).tolist()
+                out += [dict(model=args.model, index=index, layer=layer, high_fraction=fraction[n], high_share=share[n],
+                             value_ratio_sum=ratio_sum[n], value_ratio_n=ratio_n[n]) for n, index in enumerate(ids)]
+        sink.write(out)
+
+
+STAGE_FUNCTIONS = dict(probe=stage_probe, mean_maps=stage_mean_maps, high_norm=stage_high_norm)
+
+
 def run(args, config, output, commit):
     common.deterministic()
     device = common.DEVICE
@@ -195,6 +241,6 @@ def run(args, config, output, commit):
     write_json(output / 'metadata.json', common.provenance(commit, stage=args.stage, model=args.model,
                                                            settings=config['diagnose'], smoke_images=args.smoke))
     started = time.perf_counter()
-    (stage_probe if args.stage == 'probe' else stage_m1)(args, config, output, model, device)
+    STAGE_FUNCTIONS[args.stage](args, config, output, model, device)
     common.finish(output, started)
     logging.info('Complete: diagnose %s for %s', args.stage, args.model)

@@ -1,4 +1,0 @@
-# Smoke run of diagnose (probe and m1 stages).
-base: ../v5.yaml
-diagnose:
-  probe_run: experiments/2026-11-05_smoke_v5_diagnose_probe_{model}

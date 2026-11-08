@@ -43,7 +43,7 @@ def test_head_loads_official_key_layout(tmp_path):
     assert torch.equal(model.linear.weight, linear.weight) and torch.equal(model.linear.bias, linear.bias)
 
 
-def test_probes_see_backbone_blocks():
+def test_readings_see_backbone_blocks():
     model = make_model()
     assert isinstance(model, DinoLinear) and timm.list_models(DINO_NAME.split('.')[0])
     x = torch.randn(1, 3, 224, 224)
@@ -58,7 +58,7 @@ def test_probes_see_backbone_blocks():
 
 
 def test_registry_names_and_data_reference(tmp_path):
-    assert NAMES == ('deit', 'deit_b', 'dino', 'mita', 'deit_t', 'mita_t', 'deit3_s')
+    assert NAMES == ('deit', 'deit_b', 'dino', 'mita')
     model = make_model()
     assert data_reference(model) is model.backbone
     with pytest.raises(ValueError):

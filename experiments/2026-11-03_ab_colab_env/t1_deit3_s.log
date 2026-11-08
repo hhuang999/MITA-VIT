@@ -1,4 +1,0 @@
-2026-11-03 11:28:21,015 Loading pretrained weights from Hugging Face hub (timm/deit3_small_patch16_224.fb_in1k@f3f500f06a4e005ba9f75277265cf96de6809031)
-2026-11-03 11:28:21,017 [timm/deit3_small_patch16_224.fb_in1k@f3f500f06a4e005ba9f75277265cf96de6809031] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
-2026-11-03 11:29:25,605 budget_deit3_s 500/500 images; 63.6s
-2026-11-03 11:29:25,635 Complete: attention budget (pilot) for deit3_s

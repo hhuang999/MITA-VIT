@@ -1,0 +1,21 @@
+# Appendix B: per-image Spearman between the top-k map (the reading sets of the execution checks) and the full
+# attention map, layers 9-12, ImageNet-S.
+experiment: map_similarity
+models:
+  deit:
+    batch_size: 128
+  deit_b:
+    batch_size: 64
+  dino:
+    batch_size: 128
+num_workers: 2
+main:
+  cls: own
+  k: 16
+  m_side: 4
+  routing: spatial
+  scoring: query
+  summary_scale: mita
+similarity:
+  dataset: imagenet_s
+  layers: [9, 10, 11, 12]

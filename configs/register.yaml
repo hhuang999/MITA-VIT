@@ -1,0 +1,20 @@
+# How the 8 register units of table1_register.yaml were found (pilot part of ImageNet-S, 500 images, uniform
+# preprocessing): rank the FFN units of layers before the first high-norm layer by how much higher they fire on the
+# patches that become high-norm, then take the smallest count that passes the gate below.
+experiment: register_search
+models: [deit]
+batch_size: 64
+num_workers: 2
+preprocessing: uniform
+pilot_images: 500
+split_seed: 0
+search:
+  dataset: imagenet_s
+  norm_ratio: 3
+register:
+  counts: [1, 2, 4, 8, 16, 32]
+  max_random_reduction: 0.2
+  min_agreement: 0.95
+  min_reduction: 0.8
+  presence_share: 0.5
+  seeds: [0, 1, 2, 3, 4]

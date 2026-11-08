@@ -1,4 +1,0 @@
-# Smoke run of the X1-X5 supplementary stages (B46): MLP probes from the smoke heldout run.
-base: ../supp.yaml
-supp:
-  heldout_run: experiments/2026-11-07_smoke_supp_heldout_{model}

@@ -1,0 +1,23 @@
+# Section 4.3, "the value vectors of high-norm tokens are 0.2-0.3 times as long": the setting of the original
+# measurement (uniform preprocessing, the 11,919-image formal part of ImageNet-S; the first 500 shuffled images
+# are the pilot part of the register search). Same code as high_norm.yaml.
+experiment: diagnose
+stage: high_norm
+models: [deit, deit_b]
+batch_size: 64
+num_workers: 2
+preprocessing: uniform
+split: formal
+pilot_images: 500
+split_seed: 0
+diagnose:
+  dataset: imagenet_s
+  duplicate_threshold: 0.9
+  epochs: 30
+  heldout_seed: 0
+  mean_images: 2000
+  norm_ratio: 3
+  probe_images: 2000
+  probe_run: outputs/diagnose_probe/{model}
+  seed: 0
+  high_norm_dataset: imagenet_s

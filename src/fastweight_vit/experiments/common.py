@@ -12,9 +12,9 @@ import torch
 import yaml
 from torch.utils.data import DataLoader, Subset
 
+from ..execution import Plan, capture_qk, execute
 from ..io import write_json
 from ..metrics import kl_divergence
-from ..execution import Plan, capture_qk, execute
 
 DEVICE = 'cuda'  # tests set 'cpu' to exercise experiments without a GPU
 OUTCOME = ['index', 'target', 'original', 'executed', 'agree', 'kl']
@@ -110,8 +110,8 @@ def finish(output, started):
 def dense_identity(model, images, original):
     """Captured Q/K leave logits unchanged; dense attention over all keys reproduces them.
 
-    Tolerance 5e-4 on the logits (was 1e-4; B42): DeiT-B on an L4 differed by 1.4e-4 in float32 between the fused
-    and the explicit softmax. The predicted classes must still be identical; the largest error is recorded.
+    Tolerance 5e-4 on the logits: DeiT-B on an L4 differs by up to 1.4e-4 in float32 between the fused and the
+    explicit softmax. The predicted classes must still be identical; the largest error is recorded.
     """
     with capture_qk(model) as qk:
         observed = model(images)

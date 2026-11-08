@@ -1,4 +1,4 @@
-"""Neurons that make high-norm tokens, and test-time registers (decision B30; after Jiang et al. 2025).
+"""Neurons that make high-norm tokens, and test-time registers (after Jiang et al. 2025).
 
 `edit_neurons` changes a forward pass in two optional ways:
 - register=True inserts one all-zero token right after CLS (no positional embedding), so the prefix grows
@@ -11,7 +11,8 @@ CLS keeps its activations in both modes.
 
 `NeuronStats` accumulates, per FFN unit of the layers before the first high-norm layer L*, the mean
 activation on patches that will be high-norm at L* and on all patches, and the spread over all patches;
-`scores` turns them into the search score (high mean - overall mean) / standard deviation.
+`table` turns them into the search score (high mean - overall mean) / standard deviation. The register
+variant of Table 1 uses the units found this way (experiments/register_search.py; configs/register.yaml).
 """
 
 from contextlib import contextmanager

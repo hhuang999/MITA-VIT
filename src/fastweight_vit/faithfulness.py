@@ -1,12 +1,13 @@
-"""Faithfulness of patch-importance maps by removing patch tokens (RQ1 sufficiency/necessity, RQ4).
+"""Deletion faithfulness of patch maps (SRG) by removing patch tokens.
 
 Removing a patch = no token may read it, in any layer. This equals dropping it from the sequence after the
 positional embedding (token dropping; Jain et al. ICLR 2022), which is how it is computed; the test suite
-checks the equality against masking the patch out of every layer's attention, the operation the probe uses.
-The probe and every baseline are tested alike. CLS and other prefix tokens are always kept.
+checks the equality against masking the patch out of every layer's attention. CLS and other prefix tokens are
+always kept.
 
 Measures per image, against the original model's prediction: top-1 agreement, probability of the original
-top-1 class, and KL(original || reduced).
+top-1 class, and KL(original || reduced). SRG = AUC(drop_bottom) - AUC(drop_top) of the agreement curve over the
+removal budgets (computed in scripts/make_tables.py).
 """
 
 import torch
@@ -14,7 +15,7 @@ import torch
 from .metrics import kl_divergence
 from .models.dino import N_LAST_BLOCKS, DinoLinear
 
-CONDITIONS = ('keep_top', 'drop_top', 'drop_bottom')  # insertion (MoRF), deletion MoRF, deletion LeRF
+CONDITIONS = ('drop_top', 'drop_bottom')  # deletion, most important first (MoRF) / least important first (LeRF)
 
 
 def rank(scores, generator):
@@ -70,7 +71,7 @@ def measures(original, reduced):
 
 
 def curve(model, images, original, order, budgets, condition, prefix=None):
-    """{budget: measures} for one condition; budgets count patches kept (keep_top) or removed (drop_*).
+    """{budget: measures} for one condition; budgets count the removed patches.
 
     prefix: tokens always kept before the patches (default model.num_prefix_tokens; 2 with a test-time register,
     which is inserted at norm_pre, i.e. before the tokens are dropped).
@@ -79,9 +80,7 @@ def curve(model, images, original, order, budgets, condition, prefix=None):
     patches = order.shape[1]
     out = {}
     for budget in budgets:
-        if condition == 'keep_top':
-            keep = keep_mask(order, budget, prefix, top=True)
-        elif condition == 'drop_top':
+        if condition == 'drop_top':
             keep = keep_mask(order, patches - budget, prefix, top=False)
         elif condition == 'drop_bottom':
             keep = keep_mask(order, patches - budget, prefix, top=True)
@@ -91,31 +90,12 @@ def curve(model, images, original, order, budgets, condition, prefix=None):
     return out
 
 
-def saco(model, images, original, scores, order, groups=10):
-    """Salience-guided faithfulness coefficient (Wu et al., CVPR 2024), one value per image in [-1, 1].
+FIELDS = ['model', 'index', 'method', 'condition', 'budget', 'agree', 'p_target', 'kl']
 
-    Patches are split into `groups` equal rank groups; removing group i alone changes p(original top-1) by
-    d_i. For every pair i < j (group i ranked higher, s_i = summed score >= s_j), the pair adds +(s_i - s_j)
-    when d_i >= d_j and -(s_i - s_j) otherwise; the total is divided by the summed weights.
-    """
-    prefix, patches = model.num_prefix_tokens, order.shape[1]
-    target = original.argmax(-1)
-    p_full = original.softmax(-1).gather(1, target[:, None])[:, 0]
-    bounds = torch.linspace(0, patches, groups + 1).round().long().tolist()
-    drops, sums = [], []
-    for start, stop in zip(bounds[:-1], bounds[1:]):
-        members = order[:, start:stop]
-        keep = torch.ones(order.shape[0], patches, dtype=torch.bool, device=order.device)
-        keep.scatter_(1, members, False)
-        keep = torch.cat([torch.ones(order.shape[0], prefix, dtype=torch.bool, device=order.device), keep], 1)
-        reduced = run_kept(model, images, keep)
-        drops.append(p_full - reduced.softmax(-1).gather(1, target[:, None])[:, 0])
-        sums.append(scores.gather(1, members).sum(1))
-    drops, sums = torch.stack(drops, 1), torch.stack(sums, 1)
-    total = weights = torch.zeros(order.shape[0], device=order.device)
-    for i in range(groups):
-        for j in range(i + 1, groups):
-            weight = sums[:, i] - sums[:, j]
-            total = total + torch.where(drops[:, i] >= drops[:, j], weight, -weight)
-            weights = weights + weight.abs()
-    return torch.where(weights > 0, total / weights.clamp_min(1e-12), torch.zeros_like(total))
+
+def rows(model, ids, method, condition, budget, values):
+    """faithfulness.csv rows of one map, condition and budget."""
+    budgets = budget if isinstance(budget, list) else [budget] * len(ids)
+    return [dict(model=model, index=index, method=method, condition=condition, budget=budgets[n],
+                 **{key: float(values[key][n]) for key in ('agree', 'p_target', 'kl')})
+            for n, index in enumerate(ids)]

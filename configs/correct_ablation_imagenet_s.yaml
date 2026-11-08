@@ -1,2 +1,0 @@
-# v5 correct_ablation on ImageNet-S (B37-B40): same-ring enrichment on every image, SRG on the fixed subset.
-base: v5.yaml

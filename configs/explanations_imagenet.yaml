@@ -1,5 +1,0 @@
-# The explanations experiment on imagenet.
-base: explanations.yaml
-explanations:
-  dataset: imagenet
-  faithfulness_images: 2000      # fixed random subset (decision B18)

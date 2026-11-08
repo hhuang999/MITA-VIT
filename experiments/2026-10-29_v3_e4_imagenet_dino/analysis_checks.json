@@ -1,5 +1,0 @@
-{
-  "model": "dino",
-  "dataset": "imagenet",
-  "faithfulness_duplicates": 0
-}

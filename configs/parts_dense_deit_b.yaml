@@ -1,3 +1,0 @@
-# parts_dense.yaml for DeiT-B/16 on the PartImageNet_Seg val and test splits, as in its v3 run (decision B19).
-base: parts_dense.yaml
-partimagenet_splits: [val, test]

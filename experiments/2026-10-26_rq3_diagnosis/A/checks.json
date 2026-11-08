@@ -1,7 +1,0 @@
-{
-  "n_images": 3669,
-  "histogram_outside_bins": 0,
-  "orientation": "row-major, same mask geometry; transpose is diagnostic only",
-  "b2_enabled": true,
-  "legacy_max_metric_difference": 1.843646497690088e-07
-}

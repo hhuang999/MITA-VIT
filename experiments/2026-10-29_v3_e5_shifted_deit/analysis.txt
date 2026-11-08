@@ -1,6 +1,0 @@
-{"model": "deit", "duplicates": 0, "images": 1515}
-     measure     n model        base          other  difference     low    high verdict
-0  mass_drop  1515  deit  probe_mass         centre     -0.0210 -0.0267 -0.0147   lower
-1  mass_drop  1515  deit  probe_mass  cls_attention     -0.0039 -0.0062 -0.0017   lower
-2  mass_drop  1515  deit  probe_mass        rollout      0.0043  0.0014  0.0073  higher
-3  mass_drop  1515  deit  probe_mass            gae      0.0206  0.0170  0.0246  higher
