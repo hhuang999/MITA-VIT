@@ -4,9 +4,9 @@ import pytest
 import timm
 import torch
 
-from mita_probe.interventions import (centre_rings, replace_category, replace_matched_patches,
+from fastweight_vit.interventions import (centre_rings, replace_category, replace_matched_patches,
                                       replace_random_patches, sink_tokens)
-from mita_probe.probe import Pattern, capture_cls_attention, capture_input_norms
+from fastweight_vit.execution import Pattern, capture_cls_attention, capture_input_norms
 
 
 def test_sink_uses_midpoint_median_strict_threshold():

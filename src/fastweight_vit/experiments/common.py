@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader, Subset
 
 from ..io import write_json
 from ..metrics import kl_divergence
-from ..probe import Plan, capture_qk, execute
+from ..execution import Plan, capture_qk, execute
 
 DEVICE = 'cuda'  # tests set 'cpu' to exercise experiments without a GPU
 OUTCOME = ['index', 'target', 'original', 'executed', 'agree', 'kl']

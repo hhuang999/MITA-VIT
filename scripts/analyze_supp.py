@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from analyze_v5 import find, paired, per_image, summary  # noqa: E402
-from mita_probe.stats import ratio_interval, resample_indices  # noqa: E402
+from fastweight_vit.stats import ratio_interval, resample_indices  # noqa: E402
 
 MODELS = ['deit', 'deit_b', 'dino']
 SUPERVISED = ['deit', 'deit_b']

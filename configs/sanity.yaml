@@ -1,4 +1,4 @@
-# Sanity check (Adebayo et al. 2018; mita_probe.experiments.sanity): cascading weight randomisation.
+# Sanity check (Adebayo et al. 2018; fastweight_vit.experiments.sanity): cascading weight randomisation.
 # The methods and probe settings are those of explanations.yaml.
 base: explanations.yaml
 sanity:

@@ -6,9 +6,9 @@ import pytest
 import timm
 import torch
 
-from mita_probe.models import NAMES, data_reference, load_model, verified
-from mita_probe.models.dino import DINO_NAME, N_LAST_BLOCKS, DinoLinear, load_dino_model
-from mita_probe.probe import Plan, capture_qk, execute
+from fastweight_vit.models import NAMES, data_reference, load_model, verified
+from fastweight_vit.models.dino import DINO_NAME, N_LAST_BLOCKS, DinoLinear, load_dino_model
+from fastweight_vit.execution import Plan, capture_qk, execute
 
 
 def make_model():

@@ -2,8 +2,8 @@
 
 import torch
 
-from mita_probe.data import subset_indices, token_foreground
-from mita_probe.metrics import agreement, heatmap_metrics, kl_divergence
+from fastweight_vit.data import subset_indices, token_foreground
+from fastweight_vit.metrics import agreement, heatmap_metrics, kl_divergence
 
 
 def test_agreement_compares_predictions_not_labels_and_kl_direction():

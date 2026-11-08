@@ -26,7 +26,7 @@ from ..io import write_json
 from ..metrics import spearman
 from ..models import load_model
 from ..models.dino import DinoLinear
-from ..probe import resolve
+from ..execution import resolve
 from . import common, datasets
 from .common import Sink
 from .explanations import method_scores

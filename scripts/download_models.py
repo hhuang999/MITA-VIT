@@ -2,19 +2,19 @@
 DINO linear head.
 
 The MiTA-DeiT-S and MiTA-DeiT-T checkpoints come from the authors' Google Drive folder; see colab/setup.sh for the gdown
-command. Every checkpoint is checked against the SHA-256 recorded in mita_probe.models.
+command. Every checkpoint is checked against the SHA-256 recorded in fastweight_vit.models.
 """
 
 import urllib.request
 
-from mita_probe.runtime import configure_runtime, project_path
+from fastweight_vit.runtime import configure_runtime, project_path
 
 configure_runtime()
 
 import timm  # noqa: E402
 
-from mita_probe.models import load_model  # noqa: E402
-from mita_probe.models.dino import HEAD, HEAD_URL  # noqa: E402
+from fastweight_vit.models import load_model  # noqa: E402
+from fastweight_vit.models.dino import HEAD, HEAD_URL  # noqa: E402
 
 
 def main():

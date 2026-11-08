@@ -1,4 +1,4 @@
-from mita_probe.runtime import configure_runtime
+from fastweight_vit.runtime import configure_runtime
 
 configure_runtime()
 

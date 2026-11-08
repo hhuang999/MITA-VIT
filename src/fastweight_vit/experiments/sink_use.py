@@ -24,7 +24,7 @@ import torch
 from ..budget import Edits, instrument
 from ..io import write_json
 from ..models import load_model
-from ..probe import batch_generator
+from ..execution import batch_generator
 from ..runtime import project_path
 from ..sinks import equal_mass, ring_random, top_ordinary
 from . import common, datasets

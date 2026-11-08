@@ -21,8 +21,8 @@ from dataclasses import dataclass, field
 import torch
 
 from .interventions import centre_rings
-from .probe.execute import selected_layers, split_qkv
-from .probe.pattern import build_pattern, landmarks, token_mask
+from .execution.execute import selected_layers, split_qkv
+from .execution.pattern import build_pattern, landmarks, token_mask
 
 CATEGORIES = ('cls', 'register', 'high', 'object', 'background', 'unknown')
 CLS, REGISTER, HIGH, OBJECT, BACKGROUND, UNKNOWN = range(len(CATEGORIES))

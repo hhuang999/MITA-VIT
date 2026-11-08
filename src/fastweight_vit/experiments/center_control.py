@@ -15,7 +15,7 @@ from ..data import PetSegmentation
 from ..interventions import sink_tokens
 from ..io import write_json
 from ..models import data_reference, load_model
-from ..probe import capture_input_norms
+from ..execution import capture_input_norms
 from ..runtime import ROOT, data_root
 from ..stats import interval, resample_indices
 

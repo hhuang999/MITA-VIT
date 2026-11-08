@@ -1,5 +1,5 @@
 """Prepare run folders for Git: score arrays and CSVs over 20 MB go gzipped into raw/ (ignored, kept on disk),
-CSVs over 5 MB are gzipped in place. Analysis scripts read either form (mita_probe.results.load).
+CSVs over 5 MB are gzipped in place. Analysis scripts read either form (fastweight_vit.results.load).
 
 Usage: python scripts/tidy_results.py RUN [RUN ...]
 """

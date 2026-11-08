@@ -37,7 +37,7 @@ from torch.nn import functional as F
 
 from .explain import centre
 from .interventions import sink_tokens
-from .probe.execute import split_qkv
+from .execution.execute import split_qkv
 
 READINGS = ('R0', 'C1', 'C2', 'C3', 'R_all', 'R_all_alt', 'blur', 'no_high', 'centre_sub', 'mean_map')
 MEAN_VARIANTS = ('R0', 'C3', 'C2', 'C2C3')  # held-out mean maps (C2 = relocated R0, C2C3 = relocated C3)

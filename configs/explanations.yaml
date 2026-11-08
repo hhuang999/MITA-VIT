@@ -1,4 +1,4 @@
-# RQ3/RQ4: the probe and baseline explanation methods under the same tests (mita_probe.experiments.explanations).
+# RQ3/RQ4: the probe and baseline explanation methods under the same tests (fastweight_vit.experiments.explanations).
 # Predictions and pass criteria are registered in docs/decisions.md before any formal run.
 base: anatomy_deit.yaml
 explanations:

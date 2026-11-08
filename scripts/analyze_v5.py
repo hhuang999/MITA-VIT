@@ -24,7 +24,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
-from mita_probe.stats import interval, ratio_interval, resample_indices, trapezoid  # noqa: E402
+from fastweight_vit.stats import interval, ratio_interval, resample_indices, trapezoid  # noqa: E402
 
 MODELS = ['deit', 'deit_b', 'dino']
 SUPERVISED = ['deit', 'deit_b']

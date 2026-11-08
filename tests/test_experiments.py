@@ -10,15 +10,15 @@ import timm
 import torch
 from torch.utils.data import Dataset, TensorDataset
 
-from mita_probe.experiments import anatomy as runner
-from mita_probe.experiments import common
-from mita_probe.experiments.center_control import centre_weights
-from mita_probe.experiments.matched_deletion import deletion
-from mita_probe.io import load_config
-from mita_probe.models.deit import load_deit
-from mita_probe.models.dino import load_dino_model
-from mita_probe.models.mita import install, native_plan
-from mita_probe.probe import capture_input_norms, capture_qk, expand_rq2
+from fastweight_vit.experiments import anatomy as runner
+from fastweight_vit.experiments import common
+from fastweight_vit.experiments.center_control import centre_weights
+from fastweight_vit.experiments.matched_deletion import deletion
+from fastweight_vit.io import load_config
+from fastweight_vit.models.deit import load_deit
+from fastweight_vit.models.dino import load_dino_model
+from fastweight_vit.models.mita import install, native_plan
+from fastweight_vit.execution import capture_input_norms, capture_qk, expand_rq2
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -181,8 +181,8 @@ def test_deit_b_rq1_rq2_and_maps(deit_b_setup):
     assert len(rq1) == 4 * (12 * 11 + 2)  # the fake ImageNet always yields its 4 images
     rq2 = pd.read_csv(run_stage(deit_b_setup, 'rq2', smoke=2, model='deit_b') / 'settings.csv')
     assert len(rq2) == len(expand_rq2(config))
-    from mita_probe import explain
-    from mita_probe.probe import resolve
+    from fastweight_vit import explain
+    from fastweight_vit.execution import resolve
     images = torch.randn(2, 3, 224, 224)
     spec = resolve({'mode': 'L3'}, config['main'])
     for scores in (explain.probe(model, images, spec, [9, 10, 11, 12]), explain.gae(model, images),

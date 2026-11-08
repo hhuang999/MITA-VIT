@@ -1,4 +1,4 @@
-# RQ3 parts (E8, mita_probe.experiments.parts): PartImageNet_Seg, all 24,080 images (ImageNet training images).
+# RQ3 parts (E8, fastweight_vit.experiments.parts): PartImageNet_Seg, all 24,080 images (ImageNet training images).
 # The methods and probe settings are those of explanations.yaml; `layerwise` adds the probe at each single layer.
 base: explanations.yaml
 parts:

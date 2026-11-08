@@ -11,12 +11,12 @@ import pytest
 import torch
 from torch.utils.data import Dataset
 
-from mita_probe import explain, readings
-from mita_probe.data.heldout import best_match, select, thumbnail
-from mita_probe.experiments import common, correct, diagnose, sanity
-from mita_probe.interventions import sink_tokens
-from mita_probe.io import load_config
-from mita_probe.models.deit import load_deit
+from fastweight_vit import explain, readings
+from fastweight_vit.data.heldout import best_match, select, thumbnail
+from fastweight_vit.experiments import common, correct, diagnose, sanity
+from fastweight_vit.interventions import sink_tokens
+from fastweight_vit.io import load_config
+from fastweight_vit.models.deit import load_deit
 
 from test_new_experiments import FakeMasks
 
@@ -325,7 +325,7 @@ def test_variant_runs_take_r0_only(patched):
 # --- E-C2 (B45, exploratory) ------------------------------------------------------------------------------
 
 def test_probe_error_statistics_limits():
-    from mita_probe.experiments.explore_c2 import error_stats
+    from fastweight_vit.experiments.explore_c2 import error_stats
     eye = torch.eye(196).expand(2, -1, -1)
     stats = error_stats(eye)
     for key, value in dict(exact=1, top5=1, distance=0, near3x3=1, far3=0).items():
@@ -341,7 +341,7 @@ def test_probe_error_statistics_limits():
 
 
 def test_shift_statistics():
-    from mita_probe.experiments.explore_c2 import N_BINS, closeness, distance_bins, shift_stats
+    from fastweight_vit.experiments.explore_c2 import N_BINS, closeness, distance_bins, shift_stats
     assert int(distance_bins().max()) == N_BINS - 1 and int(distance_bins().min()) == 0
     r0 = torch.rand(3, 196, dtype=torch.float64)
     foreground = torch.zeros(3, 196, dtype=torch.bool)
@@ -357,7 +357,7 @@ def test_shift_statistics():
 
 
 def test_explore_c2_runs_end_to_end(patched):
-    from mita_probe.experiments import explore_c2
+    from fastweight_vit.experiments import explore_c2
     tmp = patched
     monkey = pytest.MonkeyPatch()
     monkey.setattr(explore_c2, 'load_model', lambda name, device: tiny())
@@ -406,7 +406,7 @@ def test_per_head_capture_sums_to_r0_and_c3():
 
 
 def test_supp_maps_identities():
-    from mita_probe.experiments import supp
+    from fastweight_vit.experiments import supp
     model = tiny()
     lens = random_lens(model)
     eye = torch.eye(196)
@@ -444,7 +444,7 @@ def test_confident_relocation_extremes():
 
 
 def test_mlp_probe_learns_and_stops_early():
-    from mita_probe.experiments.supp import fit_mlp_probe
+    from fastweight_vit.experiments.supp import fit_mlp_probe
     torch.manual_seed(0)
     codes = torch.randn(196, 16)
     train = codes.expand(8, -1, -1) + .01 * torch.randn(8, 196, 16)
@@ -454,7 +454,7 @@ def test_mlp_probe_learns_and_stops_early():
 
 
 def test_globalisation_statistics():
-    from mita_probe.experiments.supp import global_scores, globalisation_rows, rank_groups, ring_groups
+    from fastweight_vit.experiments.supp import global_scores, globalisation_rows, rank_groups, ring_groups
     rings = ring_groups()
     assert np.bincount(rings).tolist() == [49, 49, 49, 49]
     assert np.bincount(rank_groups(np.arange(10.))).tolist() == [2, 2, 2, 2, 2]
@@ -469,7 +469,7 @@ def test_globalisation_statistics():
 
 
 def test_supp_runs_end_to_end(patched):
-    from mita_probe.experiments import supp
+    from fastweight_vit.experiments import supp
     tmp = patched
     monkey = pytest.MonkeyPatch()
     monkey.setattr(supp, 'load_model', lambda name, device: tiny())

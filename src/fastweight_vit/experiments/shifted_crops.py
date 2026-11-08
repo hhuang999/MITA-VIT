@@ -20,7 +20,7 @@ from ..data import token_foreground
 from ..io import write_json
 from ..models import IMAGENET_PREPROCESSING, data_reference, load_model
 from ..plausibility import measures
-from ..probe import resolve
+from ..execution import resolve
 from . import common, datasets
 from .common import Sink
 from .explanations import PLAUSIBILITY, method_scores

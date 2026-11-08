@@ -15,8 +15,8 @@ import numpy as np
 import pandas as pd
 import torch
 
-from mita_probe import plausibility
-from mita_probe.budget import CATEGORIES
+from fastweight_vit import plausibility
+from fastweight_vit.budget import CATEGORIES
 
 ROOT = Path(__file__).resolve().parents[1]
 MODELS = ('deit', 'mita', 'deit_t', 'mita_t', 'deit3_s', 'deit_b', 'dino')

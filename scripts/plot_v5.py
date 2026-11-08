@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from mita_probe.plotting import plt, save
+from fastweight_vit.plotting import plt, save
 
 ROOT = Path(__file__).resolve().parents[1]
 LABELS = {'deit': 'DeiT-S', 'deit_b': 'DeiT-B', 'dino': 'DINO ViT-S'}

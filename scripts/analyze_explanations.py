@@ -22,8 +22,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from mita_probe.results import load
-from mita_probe.stats import interval, paired, ratio_interval, resample_indices, summarise, trapezoid
+from fastweight_vit.results import load
+from fastweight_vit.stats import interval, paired, ratio_interval, resample_indices, summarise, trapezoid
 
 PRIMARY = 'probe_mass'
 COMPARED = ['cls_attention', 'rollout', 'gae']

@@ -11,14 +11,14 @@ import pytest
 import torch
 from PIL import Image
 
-from mita_probe.data import partimagenet
-from mita_probe.data.clickme import ClickMe, gaussian_kernel, parse_example, record_offsets
-from mita_probe.data.partimagenet import PartImageNet, part_fractions
-from mita_probe.experiments import common, gallery, human_alignment, parts, sanity
-from mita_probe.experiments.parts import assignment, part_measures
-from mita_probe.io import load_config
-from mita_probe.metrics import spearman
-from mita_probe.models.deit import load_deit
+from fastweight_vit.data import partimagenet
+from fastweight_vit.data.clickme import ClickMe, gaussian_kernel, parse_example, record_offsets
+from fastweight_vit.data.partimagenet import PartImageNet, part_fractions
+from fastweight_vit.experiments import common, gallery, human_alignment, parts, sanity
+from fastweight_vit.experiments.parts import assignment, part_measures
+from fastweight_vit.io import load_config
+from fastweight_vit.metrics import spearman
+from fastweight_vit.models.deit import load_deit
 
 from test_new_experiments import FakeMasks
 

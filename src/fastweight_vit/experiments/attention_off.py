@@ -13,7 +13,7 @@ import torch
 
 from ..io import write_json
 from ..models import load_model
-from ..probe import Plan, execute
+from ..execution import Plan, execute
 from . import common, datasets
 from .common import Sink
 

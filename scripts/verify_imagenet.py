@@ -6,7 +6,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from mita_probe.runtime import configure_runtime, data_root
+from fastweight_vit.runtime import configure_runtime, data_root
 
 ROOT = configure_runtime()
 
@@ -16,9 +16,9 @@ from datasets import load_from_disk
 from huggingface_hub import HfApi, constants
 from timm.data import ImageNetInfo
 
-from mita_probe.data import ImageNetValidation, subset_indices
-from mita_probe.io import source_commit, write_json
-from mita_probe.models import load_model
+from fastweight_vit.data import ImageNetValidation, subset_indices
+from fastweight_vit.io import source_commit, write_json
+from fastweight_vit.models import load_model
 
 
 def main():

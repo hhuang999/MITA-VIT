@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from mita_probe.plotting import AQUA, BLUE, GRAY, INK, ORANGE, QUIET, band, plt, save
+from fastweight_vit.plotting import AQUA, BLUE, GRAY, INK, ORANGE, QUIET, band, plt, save
 
 ROOT = Path(__file__).resolve().parents[1]
 

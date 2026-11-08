@@ -1,6 +1,6 @@
 """RQ3 parts (E8): which object parts do the maps favour, and which parts does the model rely on?
 
-PartImageNet_Seg (ImageNet training images; see mita_probe.data.partimagenet), each model's own ImageNet
+PartImageNet_Seg (ImageNet training images; see fastweight_vit.data.partimagenet), each model's own ImageNet
 preprocessing. The methods are the explanations list (without the object mask) plus, when `layerwise` is
 set, single-layer maps of each family in `layerwise_families` (default: the probe only). Two outputs (the
 second only when `reliance` is true, the default):
@@ -30,7 +30,7 @@ from ..data.partimagenet import BACKGROUND
 from ..faithfulness import measures, run_kept
 from ..io import write_json
 from ..models import load_model
-from ..probe import resolve
+from ..execution import resolve
 from . import common, datasets
 from .common import Sink
 from .explanations import layerwise_methods, method_scores

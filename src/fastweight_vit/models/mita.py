@@ -14,7 +14,7 @@ from pathlib import Path
 import timm
 import torch
 
-from ..probe.execute import Plan, install
+from ..execution.execute import Plan, install
 
 MITA_SIDE, MITA_K = 5, 25
 CHECKPOINT = Path('checkpoints/mita/best_checkpoint.pth')

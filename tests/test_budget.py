@@ -11,17 +11,17 @@ import pytest
 import torch
 from torch.utils.data import Dataset
 
-from mita_probe import budget as B
-from mita_probe.data.splits import split_indices
-from mita_probe.experiments import attention_off, budget, common, model_check, register, sink_use
-from mita_probe.interventions import centre_rings, sink_tokens
-from mita_probe.io import load_config
-from mita_probe.models.deit import load_deit
-from mita_probe.models.mita import build_mita, checkpoint_settings
-from mita_probe.probe import Plan, execute
-from mita_probe.registers import (NeuronStats, edit_neurons, first_high_layer, matched_neurons, random_neurons,
+from fastweight_vit import budget as B
+from fastweight_vit.data.splits import split_indices
+from fastweight_vit.experiments import attention_off, budget, common, model_check, register, sink_use
+from fastweight_vit.interventions import centre_rings, sink_tokens
+from fastweight_vit.io import load_config
+from fastweight_vit.models.deit import load_deit
+from fastweight_vit.models.mita import build_mita, checkpoint_settings
+from fastweight_vit.execution import Plan, execute
+from fastweight_vit.registers import (NeuronStats, edit_neurons, first_high_layer, matched_neurons, random_neurons,
                                   ranked_neurons)
-from mita_probe.sinks import equal_mass, ring_random, top_ordinary
+from fastweight_vit.sinks import equal_mass, ring_random, top_ordinary
 
 from test_new_experiments import FakeMasks
 

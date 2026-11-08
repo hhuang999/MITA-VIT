@@ -7,13 +7,13 @@ import pytest
 import torch
 from PIL import Image
 
-from mita_probe.data import shifted_transform
-from mita_probe.models.deit import load_deit
-from mita_probe.models.mita import install, native_plan
-from mita_probe.probe import (M_SIDES, Pattern, Plan, build_pattern, capture_qk, coverage, execute, grid_landmarks,
+from fastweight_vit.data import shifted_transform
+from fastweight_vit.models.deit import load_deit
+from fastweight_vit.models.mita import install, native_plan
+from fastweight_vit.execution import (M_SIDES, Pattern, Plan, build_pattern, capture_qk, coverage, execute, grid_landmarks,
                               kmeans_landmarks, landmarks, mixed_attention, per_query_pattern, random_pattern,
                               spatial_routes, token_mask, union_fraction)
-from mita_probe.probe.pattern import region_scores
+from fastweight_vit.execution.pattern import region_scores
 
 FIXTURE = Path(__file__).parent / 'fixtures' / 'v1_reading_pattern.npz'
 
@@ -227,7 +227,7 @@ def test_shifted_crop_moves_window_one_pixel():
 
 
 def test_shapley_split_sums_to_mixed_minus_random_per_image():
-    from mita_probe.stats import anatomy_table, resample_indices, shapley
+    from fastweight_vit.stats import anatomy_table, resample_indices, shapley
     import pandas as pd
     rng = np.random.default_rng(0)
     table = pd.DataFrame({name: rng.integers(0, 2, 50).astype(float) for name in
