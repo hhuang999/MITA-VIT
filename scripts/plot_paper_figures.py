@@ -5,8 +5,9 @@
 - figure_2a: execution agreement against k (reading sets, random sets, no attention), three models
   (experiments/2026-11-05_v5_analysis/fig2a_ksweep.csv). Width 2.2 in, so that 2a and 2b fit side by side.
 - figure_2b: the two lowest-index images of the seeded random ClickMe gallery of DeiT-S (B16 rule): image, ClickMe
-  human map, R0, C3 and C2 at layer 12 (map_*_l12 in experiments/2026-11-05_correct_ablation_clickme_deit/
-  gallery_*.npz). Each heat map is min-max normalised on its own; one shared colour scale. Width 3.3 in.
+  human map, R0, C3 and C2 summed over layers 9-12, as in Table 1 (map_* in experiments/2026-11-05_correct_
+  ablation_clickme_deit/gallery_*.npz). Each heat map is min-max normalised on its own; one shared colour scale.
+  Width 3.3 in; 2a and 2b have the same height. figure_A_2b_layer12: the same at layer 12 alone (appendix).
 - figure_3: M1, M2, M3 and R0's image-specific ClickMe alignment per layer (fig3_diagnose.csv). Width 5.5 in.
 The script checks the smallest font of every figure and stops if one is below 7 pt.
 """
@@ -27,6 +28,7 @@ GALLERY = ROOT / 'experiments/2026-11-05_correct_ablation_clickme_deit'
 LABELS = {'deit': 'DeiT-S', 'deit_b': 'DeiT-B', 'dino': 'DINO'}
 COLORS = {'deit': '#2f6db5', 'deit_b': '#d9822b', 'dino': '#3a9a5b'}
 MIN_PT = 7
+HEIGHT_2 = 1.6  # figures 2a and 2b share this height (side by side, 2.2 + 3.3 = 5.5 in)
 plt.rcParams.update({'font.size': 7, 'axes.titlesize': 7, 'axes.labelsize': 7, 'xtick.labelsize': 7,
                      'ytick.labelsize': 7, 'legend.fontsize': 7, 'font.family': 'DejaVu Sans',
                      'axes.spines.top': False, 'axes.spines.right': False, 'axes.linewidth': .6,
@@ -38,12 +40,16 @@ def smallest_font(fig):
     return min(sizes)
 
 
-def save(fig, out, name):
+def save(fig, out, name, tight=True):
+    """tight=False keeps the exact figure size (figures 2a and 2b share one height when set side by side)."""
     size = smallest_font(fig)
     if size < MIN_PT:
         raise ValueError(f'{name}: smallest font {size} pt < {MIN_PT} pt')
     for suffix in ('png', 'pdf'):
-        fig.savefig(out / f'{name}.{suffix}', dpi=300, bbox_inches='tight', pad_inches=.02)
+        if tight:
+            fig.savefig(out / f'{name}.{suffix}', dpi=300, bbox_inches='tight', pad_inches=.02)
+        else:
+            fig.savefig(out / f'{name}.{suffix}', dpi=300)
     width, height = fig.get_size_inches()
     print(f'{name}: {width:.2f} x {height:.2f} in, smallest font {size:.1f} pt')
     plt.close(fig)
@@ -51,7 +57,7 @@ def save(fig, out, name):
 
 def figure_2a(out):
     sweep = pd.read_csv(ANALYSIS / 'fig2a_ksweep.csv')
-    fig, ax = plt.subplots(figsize=(2.2, 2.05))
+    fig, ax = plt.subplots(figsize=(2.2, HEIGHT_2))
     for model, color in COLORS.items():
         for sets, style in (('reading', '-'), ('random', '--')):
             part = sweep[(sweep.model == model) & (sweep.sets == sets)].sort_values('k')
@@ -65,23 +71,27 @@ def figure_2a(out):
     ax.set_xticks([4, 8, 16, 32, 64, 128], ['4', '8', '16', '32', '64', '128'])
     ax.minorticks_off()
     ax.set_xlabel('Units read per region (k)')
-    ax.set_ylabel('Top-1 agreement (%)')
+    ax.set_ylabel('Top-1\nagreement (%)')
     ax.set_ylim(-3, 100)
-    ax.legend(frameon=False, loc='upper center', bbox_to_anchor=(.45, -.3), ncol=2, handlelength=1.5,
-              columnspacing=.8, labelspacing=.2, borderaxespad=0)
-    fig.tight_layout(pad=.2)
-    save(fig, out, 'figure_2a')
+    handles, labels = ax.get_legend_handles_labels()
+    order = [0, 3, 1, 4, 2]  # column-major fill: models on the first row, line styles on the second
+    fig.legend([handles[i] for i in order], [labels[i] for i in order], frameon=False, loc='lower center',
+               bbox_to_anchor=(.5, .01), ncol=3, handlelength=1.1, handletextpad=.3, columnspacing=.5,
+               labelspacing=.2, borderaxespad=0)
+    fig.subplots_adjust(left=.27, right=.97, top=.95, bottom=.44)
+    save(fig, out, 'figure_2a', tight=False)
 
 
-def figure_2b(out):
+def figure_2b(out, suffix='', name='figure_2b'):
+    """suffix '' = layers 9-12 summed (as Table 1; main text); '_l12' = layer 12 alone (appendix)."""
     data = [np.load(path) for path in sorted(GALLERY.glob('gallery_*.npz'))]
     index = np.concatenate([d['index'] for d in data])
     pick = np.argsort(index)[:2]
-    stack = {key: np.concatenate([d[key] for d in data])[pick]
-             for key in ('image', 'human', 'map_R0_l12', 'map_C3_l12', 'map_C2_l12')}
-    columns = [('image', 'Image'), ('human', 'Human'), ('map_R0_l12', 'R0'), ('map_C3_l12', 'C3'),
-               ('map_C2_l12', 'C2')]
-    fig, axes = plt.subplots(2, 5, figsize=(3.3, 1.55), gridspec_kw=dict(wspace=.04, hspace=.06))
+    maps = [f'map_{reading}{suffix}' for reading in ('R0', 'C3', 'C2')]
+    stack = {key: np.concatenate([d[key] for d in data])[pick] for key in ['image', 'human'] + maps}
+    columns = [('image', 'Image'), ('human', 'Human')] + list(zip(maps, ('R0', 'C3', 'C2')))
+    fig, axes = plt.subplots(2, 5, figsize=(3.3, HEIGHT_2), gridspec_kw=dict(wspace=.04, hspace=.06))
+    fig.subplots_adjust(left=.01, right=.86, top=.89, bottom=.04)
     for row in range(2):
         for col, (key, title) in enumerate(columns):
             ax = axes[row, col]
@@ -98,11 +108,11 @@ def figure_2b(out):
                 spine.set_visible(False)
             if row == 0:
                 ax.set_title(title, pad=2)
-    bar = fig.colorbar(image, ax=axes, fraction=.025, pad=.02, ticks=[0, 1])
+    bar = fig.colorbar(image, cax=fig.add_axes([.885, .12, .025, .66]), ticks=[0, 1])
     bar.ax.tick_params(labelsize=7, width=.5, length=2)
     bar.outline.set_linewidth(.4)
-    print('figure_2b images (ClickMe index):', index[pick].tolist())
-    save(fig, out, 'figure_2b')
+    print(f'{name} images (ClickMe index):', index[pick].tolist())
+    save(fig, out, name, tight=False)
 
 
 def figure_3(out):
@@ -131,6 +141,7 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     figure_2a(out)
     figure_2b(out)
+    figure_2b(out, '_l12', 'figure_A_2b_layer12')
     figure_3(out)
 
 
