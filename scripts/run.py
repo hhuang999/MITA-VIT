@@ -27,6 +27,17 @@ from fastweight_vit.io import load_config, source_commit  # noqa: E402
 DATASET_SECTION = {'correct': 'correct', 'supplementary': 'supplementary'}
 
 
+def rooted(value, root):
+    """Point the paths of earlier runs ('outputs/...') at the chosen outputs root (e.g. outputs/smoke)."""
+    if isinstance(value, dict):
+        return {key: rooted(item, root) for key, item in value.items()}
+    if isinstance(value, list):
+        return [rooted(item, root) for item in value]
+    if isinstance(value, str) and value.startswith('outputs/') and root != 'outputs':
+        return f'{root}/{value.removeprefix("outputs/")}'
+    return value
+
+
 def runs(config, model=None, dataset=None):
     """[(model, dataset or None, effective config)] for the models and datasets of a config."""
     models = config['models']
@@ -61,7 +72,7 @@ def main():
     parser.add_argument('--smoke', type=int, default=0, help='run on the first N images only')
     parser.add_argument('--resume', action='store_true', help='continue interrupted runs in place')
     args = parser.parse_args()
-    config = load_config(ROOT / args.config)
+    config = rooted(load_config(ROOT / args.config), args.output.as_posix().rstrip('/'))
     module = load(config['experiment'])
     stage = config.get('stage')
     if hasattr(module, 'STAGES') and stage not in module.STAGES:

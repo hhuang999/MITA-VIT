@@ -14,6 +14,7 @@ key j (the 196 patches), a = softmax attention.
 | C1 | s_j - mean_j (the model's mean map of this reading on held-out images) | M1 image-independent part |
 | R_all | C3 -> C2 -> C1: relocate c, then subtract the held-out mean of relocated c | all three |
 | R_all_alt | C3 -> C1 -> C2: subtract the held-out mean of c, then relocate | order check |
+| D2 | s_j * P_l(j | x_j): discount by the probe's probability that token j is still at patch j, no relocation | exploratory |
 
 Stand-ins (each matched to one correction, which must beat it) and a reference:
 - stand_in_blur (for C2): s relocated by a Gaussian kernel whose mean squared displacement equals C2's on held-out
@@ -21,7 +22,9 @@ Stand-ins (each matched to one correction, which must beat it) and a reference:
 - stand_in_no_high (for C3): s with the layer's high-norm patches set to 0 (block input norm > 3x the image median);
 - stand_in_centre (for C1): s minus a centre Gaussian with the same spatial standard deviation as the mean map
   C1 subtracts (computed for the evaluated layer set as a whole);
-- mean_map: the model's mean map itself (image-independent).
+- mean_map: the model's mean map itself (image-independent);
+- D2_shuffle (for D2, exploratory): the same discount with P_l(j | x_j) permuted over the patches of the image
+  and layer (entry['seed']); C3D2: C3 discounted the same way.
 
 A reading over several layers is the sum of its per-layer readings. All maps are [batch, 196] floats; every
 evaluation metric used with them is rank-based per image, so a constant offset or a positive factor does
@@ -40,9 +43,9 @@ from .references import centre
 from .tokens import high_norm_tokens
 
 READINGS = ('R0', 'C1', 'C2', 'C3', 'R_all', 'R_all_alt', 'stand_in_blur', 'stand_in_no_high', 'stand_in_centre',
-            'mean_map')
+            'mean_map', 'D2', 'D2_shuffle', 'C3D2')
 MEAN_VARIANTS = ('R0', 'C3', 'C2', 'C2C3')  # held-out mean maps (C2 = relocated R0, C2C3 = relocated C3)
-NEEDS_PROBE = {'C2', 'R_all', 'R_all_alt'}
+NEEDS_PROBE = {'C2', 'R_all', 'R_all_alt', 'D2', 'D2_shuffle', 'C3D2'}
 NEEDS_MEANS = {'C1': 'R0', 'R_all': 'C2C3', 'R_all_alt': 'C3', 'stand_in_centre': 'R0', 'mean_map': 'R0'}
 
 
@@ -279,8 +282,18 @@ def accumulate_means(model, batches, lens, layers, device):
     return {variant: {layer: (value / count).float() for layer, value in maps.items()} for variant, maps in sums.items()}
 
 
-def compute(store, entries, lens, grid=14):
-    """{name: [B, positions]} for reading entries dict(name, reading, layers) from one captured forward."""
+def shuffled_rows(values, seed, start, layer):
+    """Permute each image's row of per-patch values [B, patches] with a seeded generator (D2's stand-in)."""
+    generator = torch.Generator(device=values.device).manual_seed(((seed * 1_000_003 + start) * 101 + layer))
+    order = torch.rand(values.shape, generator=generator, device=values.device).argsort(-1)
+    return values.gather(-1, order)
+
+
+def compute(store, entries, lens, grid=14, start=0):
+    """{name: [B, positions]} for reading entries dict(name, reading, layers) from one captured forward.
+
+    start: the batch's first row (seeds the D2_shuffle stream).
+    """
     out = {}
     for entry in entries:
         reading, layers = entry['reading'], entry['layers']
@@ -306,6 +319,11 @@ def compute(store, entries, lens, grid=14):
                 value = relocate(r0, gaussian_relocation(lens.sigmas[layer], grid, r0.device))
             elif reading == 'stand_in_no_high':
                 value = r0 * ~high_norm_tokens(store[layer]['norms'], lens.norm_ratio)
+            elif reading in ('D2', 'D2_shuffle', 'C3D2'):
+                stay = piece['P'].diagonal(dim1=-2, dim2=-1)  # P_l(j | x_j), [B, patches]
+                if reading == 'D2_shuffle':
+                    stay = shuffled_rows(stay, entry['seed'], start, layer)
+                value = (c3 if reading == 'C3D2' else r0) * stay
             total = total + value
         if reading == 'stand_in_centre':
             total = total - centre_matched(lens.mean('R0', layers), grid)
