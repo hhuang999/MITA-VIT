@@ -8,16 +8,16 @@ One run scores a list of maps on one dataset:
   part = own - shuffled), the E7 protocol.
 
 Map entries in `correct.methods`:
-- dict(name, reading, layers): a lens reading (mita_probe.readings: R0, C1, C2, C3, R_all, R_all_alt, blur,
+- dict(name, reading, layers): a lens reading (fastweight_vit.readings: R0, C1, C2, C3, R_all, R_all_alt, blur,
   no_high, centre_sub, mean_map), computed together from one captured forward;
-- dict(name, method): a baseline of mita_probe.explain (gae, centre, random).
+- dict(name, method): a baseline of fastweight_vit.explain (gae, centre, random).
 The lens (probes, blur widths) comes from the diagnose_probe run and the mean maps from the diagnose_m1 run of
 the same model (`lens_runs`, with {model}); ClickMe uses the ClickMe-geometry mean maps.
 
 `variant` changes the model instead of the reading (Table 1, extension E), with the R0 reading only:
 - `register`: DeiT-S with the test-time register of the attention-budget study (R2: the units of the T2
   gate shifted to an added register token; `gate`), prefix = CLS + register;
-- `mita`: MiTA-DeiT-S, budget with summary-slot weight passed back to tokens (mita_probe.budget).
+- `mita`: MiTA-DeiT-S, budget with summary-slot weight passed back to tokens (fastweight_vit.budget).
 The register variant has the faithfulness part too: the register token is inserted at norm_pre, before
 tokens are dropped, so it is kept like CLS (prefix 2). MiTA has none: its summary slots pool fixed regions of
 the full 14 x 14 grid (5 x 5 landmarks), which are undefined once patch tokens are removed.

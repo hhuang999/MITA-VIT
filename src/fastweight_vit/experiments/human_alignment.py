@@ -1,7 +1,7 @@
 """RQ3 human alignment (E7): do the patch maps agree with where people find the class evidence?
 
 ClickMe validation set (ImageNet validation images with human maps; Fel et al. 2022 protocol, see
-mita_probe.data.clickme). The methods are the explanations list (without the object mask), plus the mean
+fastweight_vit.data.clickme). The methods are the explanations list (without the object mask), plus the mean
 human map of the evaluated images (Fel et al.'s centre-bias control) and, when `layerwise` is set, single-layer
 maps of each family in `layerwise_families` (default: the probe only). Per image and method:
 - spearman_token: Spearman between the 196 patch scores and the human map averaged per patch;
@@ -24,7 +24,7 @@ from ..data.clickme import ClickMe
 from ..io import write_json
 from ..metrics import spearman
 from ..models import IMAGENET_PREPROCESSING, data_reference, load_model
-from ..probe import resolve
+from ..execution import resolve
 from ..runtime import data_root
 from . import common
 from .common import Sink

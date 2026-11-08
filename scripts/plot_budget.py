@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from mita_probe.plotting import BLUE, GRAY, INK, ORANGE, QUIET, plt, save
+from fastweight_vit.plotting import BLUE, GRAY, INK, ORANGE, QUIET, plt, save
 
 ROOT = Path(__file__).resolve().parents[1]
 LABELS = {'deit': 'DeiT-S', 'mita': 'MiTA-DeiT-S', 'deit_t': 'DeiT-T', 'mita_t': 'MiTA-DeiT-T',

@@ -16,7 +16,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from mita_probe.plotting import INK, MAIN_METHODS, MODEL_LABELS, QUIET, interval_dots, save
+from fastweight_vit.plotting import INK, MAIN_METHODS, MODEL_LABELS, QUIET, interval_dots, save
 
 MODEL_STYLES = {'deit': '-', 'dino': '--', 'deit_b': ':'}
 

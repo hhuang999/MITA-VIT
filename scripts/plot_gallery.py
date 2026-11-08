@@ -16,7 +16,7 @@ import numpy as np
 import torch
 from torch.nn import functional as F
 
-from mita_probe.plotting import METHOD_LABELS, save
+from fastweight_vit.plotting import METHOD_LABELS, save
 
 METHODS = ['probe_mass', 'cls_attention', 'rollout', 'gae', 'gradcam', 'integrated_gradients']
 PART_COLORS = np.array([[42, 120, 214], [138, 137, 134], [235, 104, 52], [27, 175, 122], [237, 161, 0]]) / 255

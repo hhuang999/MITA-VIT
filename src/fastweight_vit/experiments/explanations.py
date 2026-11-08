@@ -1,6 +1,6 @@
 """RQ3 and RQ4: our probe and the baseline explanation methods, scored with the same tests.
 
-For each image of the chosen dataset and each configured method (see mita_probe.explain):
+For each image of the chosen dataset and each configured method (see fastweight_vit.explain):
 - plausibility.csv (mask datasets): object mass, pointing, AUROC (own and another image's mask), top-|object|
   precision, ring-matched enrichment, and the object's area and distance from the centre;
 - faithfulness.csv (a fixed random subset): patches kept or removed by rank, at every budget and condition
@@ -24,7 +24,7 @@ from .. import explain, plausibility
 from ..faithfulness import CONDITIONS, curve, keep_mask, measures, rank, run_kept, saco
 from ..io import write_json
 from ..models import load_model
-from ..probe import resolve
+from ..execution import resolve
 from . import common, datasets
 from .common import Sink
 

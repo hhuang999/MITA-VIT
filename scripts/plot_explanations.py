@@ -15,7 +15,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from mita_probe.plotting import (MAIN_METHODS, METHOD_COLORS, METHOD_LABELS, METHOD_STYLES, MODEL_LABELS,
+from fastweight_vit.plotting import (MAIN_METHODS, METHOD_COLORS, METHOD_LABELS, METHOD_STYLES, MODEL_LABELS,
                                  interval_dots, save)
 
 CURVE_METHODS = ['probe_mass', 'cls_attention', 'rollout', 'gae', 'gradcam', 'integrated_gradients', 'centre',

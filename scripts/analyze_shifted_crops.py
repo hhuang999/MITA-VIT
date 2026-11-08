@@ -13,8 +13,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from mita_probe.results import load
-from mita_probe.stats import paired, resample_indices, summarise
+from fastweight_vit.results import load
+from fastweight_vit.stats import paired, resample_indices, summarise
 
 MEASURES = ['mass', 'pointing', 'auroc', 'precision', 'enrichment', 'object_distance']
 

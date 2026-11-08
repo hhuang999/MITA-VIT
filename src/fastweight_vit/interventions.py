@@ -10,7 +10,7 @@ refill the same way, so the conditions differ only in which tokens leave.
 import numpy as np
 import torch
 
-from .probe import Pattern
+from .execution import Pattern
 
 
 def sink_tokens(norms, threshold=3.):

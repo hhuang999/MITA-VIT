@@ -12,8 +12,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from mita_probe.results import load
-from mita_probe.stats import interval, resample_indices
+from fastweight_vit.results import load
+from fastweight_vit.stats import interval, resample_indices
 
 THRESHOLD = 0.5
 VERDICT_LEVEL = 'block1'

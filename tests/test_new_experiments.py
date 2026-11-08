@@ -10,10 +10,10 @@ import torch
 from PIL import Image
 from torch.utils.data import TensorDataset
 
-from mita_probe.data import MaskDataset
-from mita_probe.experiments import common, explanations, identity, shifted_crops
-from mita_probe.io import load_config
-from mita_probe.models.deit import load_deit
+from fastweight_vit.data import MaskDataset
+from fastweight_vit.experiments import common, explanations, identity, shifted_crops
+from fastweight_vit.io import load_config
+from fastweight_vit.models.deit import load_deit
 
 ROOT = Path(__file__).resolve().parents[1]
 

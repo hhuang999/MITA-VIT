@@ -18,8 +18,8 @@ from ..interventions import (centre_rings, replace_category, replace_matched_pat
                              sink_tokens)
 from ..io import write_json
 from ..models import load_model
-from ..probe import Pattern, Plan, base_pattern, batch_generator, capture_input_norms, capture_qk, execute, resolve
-from ..probe import token_mask
+from ..execution import Pattern, Plan, base_pattern, batch_generator, capture_input_norms, capture_qk, execute, resolve
+from ..execution import token_mask
 from . import common, datasets
 from .anatomy import MITA_SPEC
 from .common import OUTCOME, Sink, outcomes, update_checks

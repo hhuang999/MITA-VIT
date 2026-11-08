@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from mita_probe import plotting as style
+from fastweight_vit import plotting as style
 
 ROOT = Path(__file__).resolve().parents[1]
 plt, band, save = style.plt, style.band, style.save

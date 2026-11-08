@@ -10,8 +10,8 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import numpy as np
 import pandas as pd
 
-from mita_probe.results import load, rows_of, seed_mean
-from mita_probe.stats import anatomy_table, interval, ratio_interval, resample_indices
+from fastweight_vit.results import load, rows_of, seed_mean
+from fastweight_vit.stats import anatomy_table, interval, ratio_interval, resample_indices
 
 ROOT = Path(__file__).resolve().parents[1]
 V1_SUMMARY = ROOT / 'experiments/2026-10-27_rq1_colab_combined/summary.csv'

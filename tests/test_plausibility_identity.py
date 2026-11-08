@@ -4,12 +4,12 @@ import numpy as np
 import torch
 from PIL import Image
 
-from mita_probe.data import HardImageNet, ImageNetS
-from mita_probe.data.imagenet_s import IGNORE
-from mita_probe.explain import centre
-from mita_probe.identity import self_similarity, train_position_probe
-from mita_probe.models.deit import load_deit
-from mita_probe.plausibility import auroc, geometry, measures
+from fastweight_vit.data import HardImageNet, ImageNetS
+from fastweight_vit.data.imagenet_s import IGNORE
+from fastweight_vit.explain import centre
+from fastweight_vit.identity import self_similarity, train_position_probe
+from fastweight_vit.models.deit import load_deit
+from fastweight_vit.plausibility import auroc, geometry, measures
 
 ROWS, COLS = np.divmod(np.arange(196), 14)
 

@@ -32,9 +32,9 @@ from analyze_explanations import faithfulness as e4_faithfulness  # noqa: E402
 from analyze_human_alignment import per_image as clickme_per_image  # noqa: E402
 from analyze_parts import HEADS, agreement, part_drops  # noqa: E402
 
-from mita_probe.metrics import spearman  # noqa: E402
-from mita_probe.results import load  # noqa: E402
-from mita_probe.stats import interval, paired, resample_indices  # noqa: E402
+from fastweight_vit.metrics import spearman  # noqa: E402
+from fastweight_vit.results import load  # noqa: E402
+from fastweight_vit.stats import interval, paired, resample_indices  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 V3 = ROOT / 'experiments/2026-10-29_v3_'

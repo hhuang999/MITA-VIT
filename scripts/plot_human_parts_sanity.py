@@ -17,7 +17,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from mita_probe.plotting import (BLUE, GRAY, MAIN_METHODS, METHOD_COLORS, METHOD_LABELS, METHOD_STYLES,
+from fastweight_vit.plotting import (BLUE, GRAY, MAIN_METHODS, METHOD_COLORS, METHOD_LABELS, METHOD_STYLES,
                                  MODEL_LABELS, QUIET, band, interval_dots, save)
 
 LEVEL_LABELS = {'head': 'head', 'embed': 'emb'}

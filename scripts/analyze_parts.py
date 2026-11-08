@@ -19,9 +19,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from mita_probe.data.partimagenet import ANIMALS, PART, SUPERCATEGORY
-from mita_probe.results import load
-from mita_probe.stats import interval, paired, resample_indices, summarise
+from fastweight_vit.data.partimagenet import ANIMALS, PART, SUPERCATEGORY
+from fastweight_vit.results import load
+from fastweight_vit.stats import interval, paired, resample_indices, summarise
 
 PRIMARY = 'probe_mass'
 REMOVED = 4

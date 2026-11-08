@@ -26,7 +26,7 @@ from ..models import IMAGENET_PREPROCESSING, data_reference, load_model
 from ..models.deit import REVISION as DEIT_REVISION
 from ..models.dino import DINO_REVISION, HEAD_SHA256
 from ..models.mita import CHECKPOINT_SHA256
-from ..probe import (Pattern, Plan, base_pattern, batch_generator, capture_input_norms, capture_qk, coverage,
+from ..execution import (Pattern, Plan, base_pattern, batch_generator, capture_input_norms, capture_qk, coverage,
                      execute, expand_rq2, make_plan, resolve, token_mask, union_fraction)
 from ..runtime import data_root, project_path
 from ..io import write_json

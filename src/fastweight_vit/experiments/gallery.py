@@ -15,7 +15,7 @@ from timm.data import resolve_model_data_config
 from ..data.clickme import ClickMe
 from ..io import write_json
 from ..models import IMAGENET_PREPROCESSING, data_reference, load_model
-from ..probe import resolve
+from ..execution import resolve
 from ..runtime import data_root
 from . import common, datasets
 from .explanations import layerwise_methods, method_scores

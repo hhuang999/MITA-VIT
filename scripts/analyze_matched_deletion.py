@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from mita_probe.results import load
-from mita_probe.stats import interval, ratio_interval, resample_indices
+from fastweight_vit.results import load
+from fastweight_vit.stats import interval, ratio_interval, resample_indices
 
 ROOT = Path(__file__).resolve().parents[1]
 ORIGINAL = {'deit': '2026-10-28_v2_pet', 'mita': '2026-10-28_v2_pet', 'dino': '2026-10-28_v2_dino_pet'}

@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mita-probe"
+name = "fastweight-vit"
 version = "0.1.0"
 description = "A top-k neuron probe for Vision Transformer attention, tested by sufficiency and necessity"
 requires-python = ">=3.11,<3.13"

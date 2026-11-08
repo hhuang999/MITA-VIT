@@ -3,7 +3,7 @@
 ImageNet validation (`imagenet`) feeds the faithfulness and structure experiments (RQ1, RQ2, RQ4).
 Mask datasets feed the plausibility and necessity experiments (RQ3, RQ4). Every mask dataset returns
 `(image tensor, object [196] bool, valid [196] bool, index)` (see masks.py); a new one subclasses
-MaskDataset, implements `sample`, and is added to MASK_DATASETS in mita_probe.experiments.datasets.
+MaskDataset, implements `sample`, and is added to MASK_DATASETS in fastweight_vit.experiments.datasets.
 PartImageNet also returns per-patch part fractions; ClickMe (clickme.py) holds human maps instead of masks.
 """
 

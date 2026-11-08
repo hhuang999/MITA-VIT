@@ -4,13 +4,13 @@ import json
 import platform
 from importlib.metadata import version
 
-from mita_probe.runtime import configure_runtime
+from fastweight_vit.runtime import configure_runtime
 
 configure_runtime()
 
 import torch  # noqa: E402
 
-from mita_probe.models import NAMES, load_model  # noqa: E402
+from fastweight_vit.models import NAMES, load_model  # noqa: E402
 
 
 def main():

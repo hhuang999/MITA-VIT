@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.gridspec import GridSpec
 
-from mita_probe.plotting import BLUE, GRAY, INK, MODEL_LABELS, ORANGE, QUIET
+from fastweight_vit.plotting import BLUE, GRAY, INK, MODEL_LABELS, ORANGE, QUIET
 
 ROOT = Path(__file__).resolve().parents[1]
 EXP = ROOT / 'experiments'

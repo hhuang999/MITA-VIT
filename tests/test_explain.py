@@ -3,11 +3,11 @@
 import pytest
 import torch
 
-from mita_probe import explain
-from mita_probe.faithfulness import curve, keep_mask, measures, rank, run_kept, saco
-from mita_probe.models.deit import load_deit
-from mita_probe.models.dino import load_dino_model
-from mita_probe.probe import Plan, capture_qk, execute, resolve
+from fastweight_vit import explain
+from fastweight_vit.faithfulness import curve, keep_mask, measures, rank, run_kept, saco
+from fastweight_vit.models.deit import load_deit
+from fastweight_vit.models.dino import load_dino_model
+from fastweight_vit.execution import Plan, capture_qk, execute, resolve
 
 SPEC = resolve(dict(mode='L3'), dict(m_side=4, k=16, routing='spatial', cls='own', scoring='query',
                                       summary_scale='mita'))

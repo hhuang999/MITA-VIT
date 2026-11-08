@@ -15,12 +15,12 @@ import argparse
 import logging
 from pathlib import Path
 
-from mita_probe.runtime import configure_runtime
+from fastweight_vit.runtime import configure_runtime
 
 ROOT = configure_runtime()
 
-from mita_probe.experiments import EXPERIMENTS, common, load  # noqa: E402
-from mita_probe.io import load_config, source_commit  # noqa: E402
+from fastweight_vit.experiments import EXPERIMENTS, common, load  # noqa: E402
+from fastweight_vit.io import load_config, source_commit  # noqa: E402
 
 
 def main():

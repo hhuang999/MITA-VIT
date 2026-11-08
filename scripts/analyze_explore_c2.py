@@ -17,7 +17,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
-from mita_probe.stats import interval, resample_indices  # noqa: E402
+from fastweight_vit.stats import interval, resample_indices  # noqa: E402
 
 MODELS = ['deit', 'deit_b', 'dino']
 LABELS = {'deit': 'DeiT-S', 'deit_b': 'DeiT-B', 'dino': 'DINO ViT-S'}
@@ -142,7 +142,7 @@ def hypotheses(error_table, prediction_table, shift_table):
 
 
 def figure(prefix, error_table, bin_table, out):
-    from mita_probe.plotting import plt, save
+    from fastweight_vit.plotting import plt, save
     fig = plt.figure(figsize=(15, 3.4))
     grid = fig.add_gridspec(1, 5, width_ratios=[1, 1, 0.55, 0.55, 1.1])
     ax = fig.add_subplot(grid[0])

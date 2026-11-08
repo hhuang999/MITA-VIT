@@ -16,7 +16,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from mita_probe.plotting import BLUE, INK, MODEL_LABELS, ORANGE, QUIET, band, save
+from fastweight_vit.plotting import BLUE, INK, MODEL_LABELS, ORANGE, QUIET, band, save
 
 ROOT = Path(__file__).resolve().parents[1]
 MODELS = ['deit', 'dino', 'deit_b']

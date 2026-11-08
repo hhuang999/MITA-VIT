@@ -8,13 +8,13 @@ import pandas as pd
 import pytest
 import torch
 
-from mita_probe import explain
-from mita_probe.experiments import common, explanations, human_alignment, layer_reading, parts
-from mita_probe.experiments.explanations import layerwise_methods
-from mita_probe.interventions import sink_tokens
-from mita_probe.io import load_config
-from mita_probe.models.deit import load_deit
-from mita_probe.probe import resolve
+from fastweight_vit import explain
+from fastweight_vit.experiments import common, explanations, human_alignment, layer_reading, parts
+from fastweight_vit.experiments.explanations import layerwise_methods
+from fastweight_vit.interventions import sink_tokens
+from fastweight_vit.io import load_config
+from fastweight_vit.models.deit import load_deit
+from fastweight_vit.execution import resolve
 
 from test_human_parts_sanity import FakeParts, write_shards
 from test_new_experiments import FakeMasks

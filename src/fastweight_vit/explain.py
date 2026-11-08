@@ -23,8 +23,8 @@ from contextlib import contextmanager
 import torch
 
 from .models.dino import N_LAST_BLOCKS, DinoLinear
-from .probe import base_pattern, capture_qk, selected_layers, token_mask
-from .probe.execute import split_qkv
+from .execution import base_pattern, capture_qk, selected_layers, token_mask
+from .execution.execute import split_qkv
 
 METHODS = ('probe', 'attention', 'cls_attention', 'rollout', 'gae', 'gradcam', 'integrated_gradients', 'centre',
            'random', 'mask')

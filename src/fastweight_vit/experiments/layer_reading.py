@@ -7,7 +7,7 @@ and CLS attention. Per image, family and layer:
   exceeds `norm_ratio` times the image's midpoint median patch norm at that layer (interventions.sink_tokens,
   the RQ3 diagnosis definition);
 - high_share: share of the map's mass on those patches;
-- mass and enrichment: object mass share and same-distance-ring enrichment (mita_probe.plausibility).
+- mass and enrichment: object mass share and same-distance-ring enrichment (fastweight_vit.plausibility).
 Output layer_reading.csv.
 """
 
@@ -20,7 +20,7 @@ from .. import plausibility
 from ..interventions import sink_tokens
 from ..io import write_json
 from ..models import load_model
-from ..probe import capture_input_norms, resolve
+from ..execution import capture_input_norms, resolve
 from . import common, datasets
 from .common import Sink
 from .explanations import layerwise_methods, method_scores

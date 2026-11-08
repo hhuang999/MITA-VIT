@@ -15,9 +15,9 @@ from pathlib import Path
 
 import pandas as pd
 
-from mita_probe.data.clickme import HUMAN_CEILING
-from mita_probe.results import load
-from mita_probe.stats import paired, resample_indices, summarise
+from fastweight_vit.data.clickme import HUMAN_CEILING
+from fastweight_vit.results import load
+from fastweight_vit.stats import paired, resample_indices, summarise
 
 PRIMARY = 'probe_mass'
 COMPARED = ['cls_attention', 'rollout', 'gae']
