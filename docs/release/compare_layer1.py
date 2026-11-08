@@ -119,6 +119,12 @@ def main():
             ('x6.csv', 'gae_gap.csv', ['model', 'metric'], ['n', 'c3_gain', 'gae_gap', 'share_closed', 'low', 'high']),
             ('x2_head_weights.csv', 'head_weights.csv', ['model', 'layer', 'head'], ['mean_length'])):
         rows.append(compare(f'supplementary: {new}', r(s / old), r(results / 'supplementary' / new), keys, values))
+    d = study / 'experiments/2026-11-08_explore_d2_analysis'
+    if d.exists():
+        rows.append(compare('D2: tests', r(d / 'tests.csv'), r(results / 'd2/tests.csv'),
+                            ['model', 'metric', 'test', 'method'], stat + ['verdict']))
+        rows.append(compare('D2: branch', r(d / 'branch.csv').assign(branch=lambda f: f.branch.str[-1]),
+                            r(results / 'd2/branch.csv'), ['item'], ['branch', 'higher', 'lower']))
     old_md = (a / 'table1.md').read_text()
     for before, after in RENAME.items():
         old_md = old_md.replace(f'| {before} |', f'| {after} |')

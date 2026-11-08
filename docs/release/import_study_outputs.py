@@ -140,6 +140,12 @@ def main():
                     copy(source, run, name, f, transform=methods if name != 'dose.csv' and name != 'head_weights.csv'
                          else None)
         copy(source, f'2026-11-05_correct_sanity_{model}', 'sanity.csv', place(out, 'sanity', model))
+        for dataset in ('imagenet_s', 'clickme'):
+            run = f'2026-11-08_explore_d2_{dataset}_{model}'
+            f = place(out, 'd2', model, dataset)
+            for name in ('plausibility.csv', 'alignment.csv'):
+                if source.find(run, name):
+                    copy(source, run, name, f)
         copy(source, f'2026-10-29_v3_e8_parts_{model}', 'reliance.csv', place(out, 'part_reliance', model))
         f = place(out, 'c2_analysis', model)
         copy(source, f'2026-11-07_explore_c2_probefix_{model}', 'probe_errors.csv', f, transform=methods)

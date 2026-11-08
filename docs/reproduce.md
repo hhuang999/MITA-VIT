@@ -41,7 +41,7 @@ output file, and the result of the three reproduction checks; then the map from 
 | Register units of "+register" | register | outputs/register/deit/gate.json | not rebuilt (units copied into configs/table1_register.yaml) | in progress | 0.02 h |
 | Appendix E: why C2 fails; appendix figure | c2_analysis | c2_analysis/*.csv; figures/figure_A_c2 | identical (figure: same data, visually identical) | in progress | 0.32 h |
 | Appendices D and E: supplementary analyses | supplementary_heldout, supplementary_eval | supplementary/*.csv | identical | in progress | 0.19 h + 2.46 h |
-| Appendix E: discount without relocation | d2 | d2/*.csv | new (run 2026-11-08) | in progress | — |
+| Appendix E: discount without relocation | d2 | d2/*.csv | identical | in progress | 0.9 h (2026-11-08 runs) |
 | Introduction: centre Gaussian vs ClickMe (0.41) | table1 | numbers.csv | identical to the earlier ClickMe run (0.4141) | in progress | — |
 | Section 4.1: ClickMe near-duplicates among held-out candidates | diagnose_probe | numbers.csv, data/splits/heldout_4000.json | identical | in progress | — |
 | Historical reproduction check (appendix C) | — | history/reproduction_check.csv | kept as a record (the earlier code is not here) | — | — |
