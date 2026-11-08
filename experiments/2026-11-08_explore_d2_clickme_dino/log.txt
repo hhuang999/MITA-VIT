@@ -1,0 +1,31 @@
+2026-11-08 10:14:28,004 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
+2026-11-08 10:14:28,006 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-08 10:14:41,452 correct_dino 640/17408 images; 13.1s
+2026-11-08 10:14:53,741 correct_dino 1280/17408 images; 25.4s
+2026-11-08 10:15:06,076 correct_dino 1920/17408 images; 37.7s
+2026-11-08 10:15:18,428 correct_dino 2560/17408 images; 50.1s
+2026-11-08 10:15:30,734 correct_dino 3200/17408 images; 62.4s
+2026-11-08 10:15:43,028 correct_dino 3840/17408 images; 74.7s
+2026-11-08 10:15:55,273 correct_dino 4480/17408 images; 86.9s
+2026-11-08 10:16:07,530 correct_dino 5120/17408 images; 99.2s
+2026-11-08 10:16:19,825 correct_dino 5760/17408 images; 111.5s
+2026-11-08 10:16:32,135 correct_dino 6400/17408 images; 123.8s
+2026-11-08 10:16:44,451 correct_dino 7040/17408 images; 136.1s
+2026-11-08 10:16:56,776 correct_dino 7680/17408 images; 148.4s
+2026-11-08 10:17:09,073 correct_dino 8320/17408 images; 160.7s
+2026-11-08 10:17:21,393 correct_dino 8960/17408 images; 173.1s
+2026-11-08 10:17:33,649 correct_dino 9600/17408 images; 185.3s
+2026-11-08 10:17:45,910 correct_dino 10240/17408 images; 197.6s
+2026-11-08 10:17:58,170 correct_dino 10880/17408 images; 209.8s
+2026-11-08 10:18:10,455 correct_dino 11520/17408 images; 222.1s
+2026-11-08 10:18:22,726 correct_dino 12160/17408 images; 234.4s
+2026-11-08 10:18:34,965 correct_dino 12800/17408 images; 246.6s
+2026-11-08 10:18:47,238 correct_dino 13440/17408 images; 258.9s
+2026-11-08 10:18:59,506 correct_dino 14080/17408 images; 271.2s
+2026-11-08 10:19:11,770 correct_dino 14720/17408 images; 283.4s
+2026-11-08 10:19:24,039 correct_dino 15360/17408 images; 295.7s
+2026-11-08 10:19:36,244 correct_dino 16000/17408 images; 307.9s
+2026-11-08 10:19:48,489 correct_dino 16640/17408 images; 320.2s
+2026-11-08 10:20:00,762 correct_dino 17280/17408 images; 332.4s
+2026-11-08 10:20:03,217 correct_dino 17408/17408 images; 334.9s
+2026-11-08 10:20:03,238 Complete: correct on clickme for dino (variant None)

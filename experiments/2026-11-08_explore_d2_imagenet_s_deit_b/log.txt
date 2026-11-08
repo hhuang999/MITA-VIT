@@ -1,0 +1,23 @@
+2026-11-08 10:43:00,042 Loading pretrained weights from Hugging Face hub (timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6)
+2026-11-08 10:43:00,045 [timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-08 10:43:29,816 correct_deit_b 640/12419 images; 28.6s
+2026-11-08 10:43:54,315 correct_deit_b 1280/12419 images; 53.1s
+2026-11-08 10:44:18,860 correct_deit_b 1920/12419 images; 77.6s
+2026-11-08 10:44:45,003 correct_deit_b 2560/12419 images; 103.8s
+2026-11-08 10:45:11,826 correct_deit_b 3200/12419 images; 130.6s
+2026-11-08 10:45:38,983 correct_deit_b 3840/12419 images; 157.7s
+2026-11-08 10:46:03,531 correct_deit_b 4480/12419 images; 182.3s
+2026-11-08 10:46:29,616 correct_deit_b 5120/12419 images; 208.4s
+2026-11-08 10:46:54,438 correct_deit_b 5760/12419 images; 233.2s
+2026-11-08 10:47:19,611 correct_deit_b 6400/12419 images; 258.4s
+2026-11-08 10:47:44,384 correct_deit_b 7040/12419 images; 283.1s
+2026-11-08 10:48:09,781 correct_deit_b 7680/12419 images; 308.5s
+2026-11-08 10:48:34,255 correct_deit_b 8320/12419 images; 333.0s
+2026-11-08 10:48:57,839 correct_deit_b 8960/12419 images; 356.6s
+2026-11-08 10:49:22,221 correct_deit_b 9600/12419 images; 381.0s
+2026-11-08 10:49:46,504 correct_deit_b 10240/12419 images; 405.3s
+2026-11-08 10:50:11,123 correct_deit_b 10880/12419 images; 429.9s
+2026-11-08 10:50:35,557 correct_deit_b 11520/12419 images; 454.3s
+2026-11-08 10:51:01,719 correct_deit_b 12160/12419 images; 480.5s
+2026-11-08 10:51:11,955 correct_deit_b 12419/12419 images; 490.7s
+2026-11-08 10:51:12,068 Complete: correct on imagenet_s for deit_b (variant None)

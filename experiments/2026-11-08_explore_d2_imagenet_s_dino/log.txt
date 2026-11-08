@@ -1,0 +1,23 @@
+2026-11-08 10:51:17,059 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
+2026-11-08 10:51:17,062 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-08 10:51:41,688 correct_dino 640/12419 images; 23.5s
+2026-11-08 10:52:01,266 correct_dino 1280/12419 images; 43.1s
+2026-11-08 10:52:20,909 correct_dino 1920/12419 images; 62.8s
+2026-11-08 10:52:42,097 correct_dino 2560/12419 images; 84.0s
+2026-11-08 10:53:03,715 correct_dino 3200/12419 images; 105.6s
+2026-11-08 10:53:25,832 correct_dino 3840/12419 images; 127.7s
+2026-11-08 10:53:45,445 correct_dino 4480/12419 images; 147.3s
+2026-11-08 10:54:06,457 correct_dino 5120/12419 images; 168.3s
+2026-11-08 10:54:26,573 correct_dino 5760/12419 images; 188.4s
+2026-11-08 10:54:46,964 correct_dino 6400/12419 images; 208.8s
+2026-11-08 10:55:06,829 correct_dino 7040/12419 images; 228.7s
+2026-11-08 10:55:27,168 correct_dino 7680/12419 images; 249.0s
+2026-11-08 10:55:46,816 correct_dino 8320/12419 images; 268.7s
+2026-11-08 10:56:05,516 correct_dino 8960/12419 images; 287.4s
+2026-11-08 10:56:25,187 correct_dino 9600/12419 images; 307.0s
+2026-11-08 10:56:44,661 correct_dino 10240/12419 images; 326.5s
+2026-11-08 10:57:04,308 correct_dino 10880/12419 images; 346.2s
+2026-11-08 10:57:23,635 correct_dino 11520/12419 images; 365.5s
+2026-11-08 10:57:44,918 correct_dino 12160/12419 images; 386.8s
+2026-11-08 10:57:53,102 correct_dino 12419/12419 images; 395.0s
+2026-11-08 10:57:53,158 Complete: correct on imagenet_s for dino (variant None)

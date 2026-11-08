@@ -1,0 +1,23 @@
+2026-11-08 10:36:12,970 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-11-08 10:36:12,972 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-08 10:36:38,047 correct_deit 640/12419 images; 24.0s
+2026-11-08 10:36:57,745 correct_deit 1280/12419 images; 43.7s
+2026-11-08 10:37:17,625 correct_deit 1920/12419 images; 63.6s
+2026-11-08 10:37:39,186 correct_deit 2560/12419 images; 85.1s
+2026-11-08 10:38:01,139 correct_deit 3200/12419 images; 107.1s
+2026-11-08 10:38:23,619 correct_deit 3840/12419 images; 129.6s
+2026-11-08 10:38:43,472 correct_deit 4480/12419 images; 149.4s
+2026-11-08 10:39:04,920 correct_deit 5120/12419 images; 170.9s
+2026-11-08 10:39:25,176 correct_deit 5760/12419 images; 191.1s
+2026-11-08 10:39:45,868 correct_deit 6400/12419 images; 211.8s
+2026-11-08 10:40:05,997 correct_deit 7040/12419 images; 231.9s
+2026-11-08 10:40:26,643 correct_deit 7680/12419 images; 252.6s
+2026-11-08 10:40:46,521 correct_deit 8320/12419 images; 272.5s
+2026-11-08 10:41:05,420 correct_deit 8960/12419 images; 291.4s
+2026-11-08 10:41:25,011 correct_deit 9600/12419 images; 311.0s
+2026-11-08 10:41:44,641 correct_deit 10240/12419 images; 330.6s
+2026-11-08 10:42:04,469 correct_deit 10880/12419 images; 350.4s
+2026-11-08 10:42:24,144 correct_deit 11520/12419 images; 370.1s
+2026-11-08 10:42:45,752 correct_deit 12160/12419 images; 391.7s
+2026-11-08 10:42:54,121 correct_deit 12419/12419 images; 400.1s
+2026-11-08 10:42:54,184 Complete: correct on imagenet_s for deit (variant None)

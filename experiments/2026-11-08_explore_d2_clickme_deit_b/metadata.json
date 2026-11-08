@@ -1,0 +1,31 @@
+{
+  "git_commit": "7f75fa1db6d5027a387bec50fa6afa510c47df26",
+  "timestamp": "2026-11-08T10:06:35.332119+00:00",
+  "torch": "2.7.0+cu128",
+  "timm": "1.0.30",
+  "device": "NVIDIA L4",
+  "dtype": "float32, no autocast",
+  "model": "deit_b",
+  "variant": null,
+  "dataset": "clickme",
+  "images": 17408,
+  "faithfulness_images": 0,
+  "methods": [
+    "R0",
+    "C2",
+    "C3",
+    "D2",
+    "D2_shuffle_s0",
+    "D2_shuffle_s1",
+    "D2_shuffle_s2",
+    "D2_shuffle_s3",
+    "D2_shuffle_s4",
+    "C3D2"
+  ],
+  "lens_runs": {
+    "probe": "experiments/2026-11-05_diagnose_probe_{model}",
+    "m1": "experiments/2026-11-05_diagnose_m1_{model}"
+  },
+  "smoke_images": 0,
+  "resumed_from": {}
+}
