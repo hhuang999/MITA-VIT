@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Rerun every experiment of the paper from scratch, then rebuild every table and figure.
-# Needs a CUDA GPU (about 18 GPU-hours on one NVIDIA L4), the datasets (scripts/prepare_data.py) and the models
+# Needs a CUDA GPU (about 12 GPU-hours on one NVIDIA L4), the datasets (scripts/prepare_data.py) and the models
 # (scripts/download_models.py). Completed runs are skipped, so the script can be restarted after an interruption
 # (an interrupted run continues with: python scripts/run.py --config <config> --resume).
 # Order: the lens (diagnose) first, then the main-text elements, then the appendix.
