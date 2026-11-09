@@ -10,9 +10,9 @@ For every result of the paper: the config that produces it, the summary table it
 | Summary tables | `python scripts/make_tables.py` | `results/*.csv` (every mean, interval and verdict) |
 | Figures | `python scripts/make_figures.py` | `figures/*.pdf, *.png` (see `figures/README.md`) |
 | LaTeX tables | `python scripts/make_latex_tables.py` | `paper/tables/*.tex` |
-| Everything | `bash reproduce/full.sh` (about 12 GPU hours on one L4), or `bash reproduce/from_outputs.sh` (tables and figures only, from existing `outputs/`) | all of the above |
+| Everything | `bash reproduce/from_outputs.sh` (CPU, a few minutes, from the committed `outputs/`), or `bash reproduce/full.sh` (rerun from scratch into `outputs/rerun/`, about 12 GPU hours on one L4) | all of the above |
 
-- **Committed files.** `results/`, `figures/` and `paper/tables/` hold the files of the original runs. The per-image `outputs/` (about 0.5 GB) are not committed; `full.sh` regenerates them.
+- **Committed files.** `outputs/` holds the per-image outputs of the original runs (about 0.6 GB; `outputs/README.md`), and `results/`, `figures/` and `paper/tables/` are built from them. `from_outputs.sh` rebuilds all three byte for byte.
 - **Clean code before a run.** `scripts/run.py` refuses to run on uncommitted code changes, because every output records its git commit.
 
 ## Result → config → files
