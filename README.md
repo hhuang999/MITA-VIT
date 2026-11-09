@@ -4,26 +4,17 @@ Code, fixed image lists and result tables for the paper of the same name (course
 
 ## Abstract
 
-For each image, an attention head computes a two-layer network: the keys are its first-layer weights, the softmax
-is its activation and the values are its second-layer weights; every token is a hidden unit. An attention map
-("attention received", R0) therefore reads hidden activations and draws unit *j* at patch *j*. This reading assumes
-three premises: the activations are specific to the image (M1), unit *j* still stands for patch *j* (M2), and a large
-activation means a large contribution (M3). We run one read → diagnose → correct loop on DeiT-S, DeiT-B and DINO
-ViT-S. **Read:** the units that attention selects are the ones the model executes: when every region of every layer
-may read only 16 units, the models keep 72% / 83% / 61% of their top-1 predictions, against 9% / 30% / 4% for random
-units and 0.1–0.2% with no attention at all. **Diagnose:** two premises fail in deep layers. M2 fails in all three
-models (a linear position probe recovers the patch of only 18% / 32% / 36% of layer-12 tokens); M3 fails only in the
-supervised models, where high-norm tokens receive much attention but carry short value vectors; M1 largely holds.
-**Correct:** each correction is paired with a simpler stand-in it must beat, under metrics that give no credit to a
-centre prior. Only weighting each unit by its contribution, ‖W_O v_j‖ (C3; value-norm weighting itself follows
-Kobayashi et al. 2020), improves the map beyond its stand-in, and only in the models where M3 fails (DINO: no change).
-Removing the image-independent part (C1) does no more than removing the centre bias. Relocating scores with the
-position probe (C2) makes the reading worse in every model; its mechanism is not yet determined, and four candidate
-causes were ruled out in exploratory analyses (far-away probe errors, a fixed position preference of the probe, probe
-capacity, and a link between how global a token is and how uncertain the probe is). Changing the model (a
-test-time register, top-k attention training) does not improve the reading more than changing the reading does. All
-decision rules were fixed before the main runs; the pre-registered combination of all three corrections partly
-holds (1 of 4 cells).
+Attention maps are the most common way to explain what a vision transformer (ViT) looks at, yet how to read them is
+rarely checked. We treat attention as a fast-weight network: for each image, fixed weights write a two-layer network
+whose hidden units are the tokens, so an attention map reads hidden activations. On DeiT-S, DeiT-B and DINO ViT-S,
+restricting every image region to the 16 units it reads keeps 72%, 83% and 61% of top-1 predictions, against 9%, 30%
+and 4% for random units. Of three premises behind the reading, two fail in deep layers: tokens lose their position in
+all models, and in supervised models a large activation is not a large contribution. Weighting each unit by its
+output contribution is the only correction that improves the map: in supervised ViTs it raises object focus and human
+alignment, beats removing high-norm tokens on object focus, and recovers 31–62% of their last-layer drop. Relocating scores with
+position probes makes maps worse. Part of what makes deep attention maps look poor is how we read them.
+
+The paper, with all appendices, is [`docs/paper.pdf`](docs/paper.pdf).
 
 ![Figure 2: execution check and example maps](figures/figure_2a.png) ![](figures/figure_2b.png)
 
@@ -97,7 +88,7 @@ scripts/              run.py, make_tables.py, make_figures.py, prepare_data.py, 
 reproduce/            from_outputs.sh, full.sh, smoke.sh, colab.ipynb
 data/splits/          fixed image lists (IDs only)
 results/, figures/    summary tables and paper figures
-docs/                 preregistration.md, reproduce.md
+docs/                 paper.pdf, preregistration.md, reproduce.md
 tests/
 ```
 
