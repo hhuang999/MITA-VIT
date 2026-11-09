@@ -41,8 +41,3 @@ def paired(table, base, others, draws, **labels):
                          verdict='higher' if low > 0 else 'lower' if high < 0 else 'uncertain'))
     return rows
 
-
-def summarise(table, draws, **labels):
-    """Rows of mean with bootstrap interval for each column of a per-image table (NaN-free columns)."""
-    return [dict(labels, quantity=name, **dict(zip(('mean', 'low', 'high'), interval(table[name].to_numpy(), draws))))
-            for name in table.columns]

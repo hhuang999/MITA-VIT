@@ -1,4 +1,5 @@
-# Table 1 "top-k training" row: MiTA-DeiT-S (weights: scripts/download_models.py), R0 on the Table 1 protocol.
+# "Top-k training" row of the main results table: MiTA-DeiT-S (weights: scripts/download_models.py), R0 on the
+# protocol of the main results table.
 experiment: correct
 models: [mita]
 datasets: [imagenet_s, clickme]

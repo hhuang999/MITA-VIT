@@ -12,7 +12,8 @@ CLS keeps its activations in both modes.
 `NeuronStats` accumulates, per FFN unit of the layers before the first high-norm layer L*, the mean
 activation on patches that will be high-norm at L* and on all patches, and the spread over all patches;
 `table` turns them into the search score (high mean - overall mean) / standard deviation. The register
-variant of Table 1 uses the units found this way (experiments/register_search.py; configs/register.yaml).
+variant of the main results table uses the units found this way (experiments/register_search.py;
+configs/register.yaml).
 """
 
 from contextlib import contextmanager

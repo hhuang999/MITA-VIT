@@ -1,6 +1,6 @@
-# Figure 3(c) and section 4.3: per ImageNet-S image and layer, the share of R0 on high-norm patches (block input
-# norm > 3 x the image median) and the value-norm ratio of high-norm to ordinary patches. Each model's own
-# preprocessing, all 12,419 images.
+# Premise of C3 (figures/premise_high_norm_share): per ImageNet-S image and layer, the share of R0 on high-norm
+# patches (block input norm > 3 x the image median) and the value-norm ratio of high-norm to ordinary patches. Each
+# model's own preprocessing, all 12,419 images.
 experiment: diagnose
 stage: high_norm
 models:

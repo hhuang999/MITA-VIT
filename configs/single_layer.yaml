@@ -1,4 +1,4 @@
-# Appendix B: one layer at a time reads only its reading sets (k = 16, m = 16), the other layers unchanged.
+# Single-layer checks: one layer at a time reads only its reading sets (k = 16, m = 16), the other layers unchanged.
 # Fixed 5,000 ImageNet images, each model's own preprocessing.
 experiment: execution
 stage: single_layer

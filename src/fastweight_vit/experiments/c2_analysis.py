@@ -1,4 +1,4 @@
-"""Why does relocation (C2) make the reading worse? (appendix E; exploratory, proposed after the main results)
+"""Why does relocation (C2) make the reading worse? (exploratory, proposed after the main results)
 
 Uses only saved material: the position probes and blur widths (diagnose `probe` run), the 2,000 test held-out
 images of that run (rows 2,001-4,000 of heldout.json, not used to train the probes), the R0 mean maps

@@ -1,6 +1,7 @@
-# Figure 2(a) "no attention" line and appendix B: the attention branch of all layers, or of one layer at a time,
-# outputs zero. Fixed 5,000 ImageNet images. `preprocessing: uniform` (Resize 256, crop 0.875 for every model) is
-# what the original runs used; for DeiT-S/B it differs from the 0.9 crop of the k sweep (docs/release/report.md).
+# The "attention removed" line of the execution test (k sweep) and the single-layer checks: the attention branch of
+# all layers, or of one layer at a time, outputs zero. Fixed 5,000 ImageNet images. `preprocessing: uniform` (Resize
+# 256, crop 0.875 for every model) is what the original runs used; for DeiT-S/B it differs from the 0.9 crop of the
+# k sweep.
 experiment: execution
 stage: attention_off
 models: [deit, deit_b, dino]

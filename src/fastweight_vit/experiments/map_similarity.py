@@ -1,5 +1,5 @@
-"""Top-k map similarity (appendix B): how close is the attention map read through the top-k reading sets to the
-full attention map (R0 up to a positive factor)?
+"""Top-k map similarity: how close is the attention map read through the top-k reading sets to the full attention
+map (R0 up to a positive factor)?
 
 Per ImageNet-S image, layers `layers` summed: the top-k map (references.topk_map: attention each patch receives
 when every query reads only its region's shared top-k set; the main budget of the execution checks) and the full

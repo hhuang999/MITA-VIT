@@ -1,4 +1,4 @@
-# Appendix E (exploratory): MLP position probes and the globalisation analysis on the held-out images.
+# Exploratory checks: MLP position probes and the globalisation analysis on the held-out images.
 experiment: supplementary
 stage: heldout
 models: [deit, deit_b, dino]

@@ -2,8 +2,8 @@
 
 `instrument` runs selected layers with an explicit softmax and records, per layer and head, how much attention
 every token receives from all queries ('received' [B, H, N]); with values=True also the value norm ||v_hj||. It
-gives R0 for the model variants of Table 1 (the test-time register and MiTA-DeiT-S) and the high-norm counts of
-the register-neuron search.
+gives R0 for the model variants of the main results table (the test-time register and MiTA-DeiT-S) and the
+high-norm counts of the register-neuron search.
 
 For MiTA models the weight a query puts on a summary slot is passed back to the tokens the slot averages:
 A = P_token + P_slot S, where S[s, j] = softmax_j(landmark_s . key_j). S's rows sum to 1, so A's rows still sum

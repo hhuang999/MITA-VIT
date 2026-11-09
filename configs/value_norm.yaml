@@ -1,6 +1,6 @@
-# Section 4.3, "the value vectors of high-norm tokens are 0.2-0.3 times as long": the setting of the original
-# measurement (uniform preprocessing, the 11,919-image formal part of ImageNet-S; the first 500 shuffled images
-# are the pilot part of the register search). Same code as high_norm.yaml.
+# Value-norm ratio of high-norm tokens ("the value vectors of high-norm tokens are 0.2-0.3 times as long"): the
+# setting of the original measurement (uniform preprocessing, the 11,919-image formal part of ImageNet-S; the first
+# 500 shuffled images are the pilot part of the register search). Same code as high_norm.yaml.
 experiment: diagnose
 stage: high_norm
 models: [deit, deit_b]

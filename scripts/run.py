@@ -1,8 +1,8 @@
-"""Run one paper element: every model (and dataset) its config lists.
+"""Run one experiment config: every model (and dataset) its config lists.
 
   python scripts/run.py --config configs/table1.yaml
   python scripts/run.py --config configs/table1.yaml --model deit --dataset clickme
-  python scripts/run.py --config configs/fig2a_k_sweep.yaml --smoke 16 --output outputs/smoke
+  python scripts/run.py --config configs/k_sweep.yaml --smoke 16 --output outputs/smoke
 
 Each run writes outputs/<config name>/[<dataset>/]<model>/ with the effective config, provenance (git commit,
 versions, GPU), log and result files. A run whose checks.json exists is complete and skipped; an interrupted run

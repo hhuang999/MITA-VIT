@@ -1,4 +1,4 @@
-# Appendix D: the other order of the combined correction (C3 -> C1 -> C2) next to R0 and R_all.
+# Combination checks: the other order of the combined correction (C3 -> C1 -> C2) next to R0 and R_all.
 experiment: correct
 models: [deit, deit_b, dino]
 datasets: [imagenet_s, clickme]

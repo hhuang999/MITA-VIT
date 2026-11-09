@@ -1,0 +1,31 @@
+# Execution test, k sweep (figures/execution_k_sweep): all 12 layers read only their reading sets (m = 16 regions,
+# spatial routing, CLS reads its own top-k set), k in 4..128, against random sets of the same size (seeds 0-4).
+# Fixed 5,000 ImageNet images, each model's own preprocessing. Fixed before the main runs (docs/preregistration.md,
+# P1).
+experiment: execution
+stage: k_sweep
+models: [deit, deit_b, dino]
+batch_size: 32
+num_workers: 2
+n_images: 5000
+subset_seed: 0
+indices: data/splits/imagenet_val_5000.json
+main:
+  cls: own
+  k: 16
+  m_side: 4
+  routing: spatial
+  scoring: query
+  summary_scale: mita
+random_seeds: [0, 1, 2, 3, 4]
+sweep:
+  k_sweep: [4, 8, 16, 32, 64, 128]
+  m_sweep: [4]
+  settings:
+  - mode: L3
+    name: L3_spatial
+    sweep: k
+  - mode: rand
+    name: rand
+    seeds: true
+    sweep: k

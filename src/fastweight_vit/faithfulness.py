@@ -40,8 +40,8 @@ def run_kept(model, images, keep):
     """Model output when every layer may read only the kept tokens.
 
     Computed by dropping the other tokens after the positional embedding, which equals masking them out of
-    every layer's attention (tests/test_explain.py) and runs the fused attention on a shorter sequence.
-    Rows are grouped by how many tokens they keep.
+    every layer's attention (tests/test_metrics.py, test_masking_tokens_equals_dropping_them) and runs the fused
+    attention on a shorter sequence. Rows are grouped by how many tokens they keep.
     """
     counts = keep.sum(1)
     groups = [(counts == count).nonzero()[:, 0] for count in counts.unique().tolist()]

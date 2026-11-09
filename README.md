@@ -14,12 +14,15 @@ output contribution is the only correction that improves the map: in supervised 
 alignment, beats removing high-norm tokens on object focus, and recovers 31–62% of their last-layer drop. Relocating scores with
 position probes makes maps worse. Part of what makes deep attention maps look poor is how we read them.
 
-The paper, with all appendices, is [`docs/paper.pdf`](docs/paper.pdf).
+![Execution test: top-1 agreement against the number of units read](figures/execution_k_sweep.png)
+![Two ClickMe images: human map and three readings](figures/gallery_layers9_12.png)
 
-![Figure 2: execution check and example maps](figures/figure_2a.png) ![](figures/figure_2b.png)
+*Left: top-1 agreement with the unmodified model when every image region reads only its top-k units in all layers
+(solid), random units of the same number (dashed), or no attention (dotted). Right: two randomly drawn ClickMe
+images with the human map and three readings of DeiT-S (layers 9–12).*
 
-*Figure 2. (a) Top-1 agreement when every layer reads only k units per region (solid), random units (dashed), or
-no attention (dotted). (b) Two randomly drawn ClickMe images: human map, R0, C3 and C2, layers 9–12.*
+The paper text is being written; `paper/` holds everything needed for it (naming, checked key facts, LaTeX tables,
+bibliography, the full evidence dossier) and `figures/` holds every figure.
 
 ## Installation
 
@@ -60,18 +63,19 @@ shows how they were found.
 
 | command | what it does | time |
 | --- | --- | --- |
-| `bash reproduce/from_outputs.sh` | rebuild every table (`results/`) and figure (`figures/`) from run outputs in `outputs/` | a few minutes, CPU |
+| `bash reproduce/from_outputs.sh` | rebuild every summary table (`results/`), figure (`figures/`) and LaTeX table (`paper/tables/`) from run outputs in `outputs/` | a few minutes, CPU |
 | `bash reproduce/full.sh` | rerun every experiment from scratch, then rebuild the tables and figures | about 12 hours on one L4 GPU |
 | `bash reproduce/smoke.sh` | every experiment on 16 images, then the tables | under 10 minutes on one GPU |
 
-`reproduce/colab.ipynb` runs the same steps on a Colab L4. `full.sh` ends by rewriting the tracked `results/` and `figures/`; `scripts/run.py` refuses to run on
-uncommitted changes (every output records its git commit), so commit them or restore them
-(`git checkout -- results figures`) before further runs. One paper element = one config = one command, e.g.
+`reproduce/colab.ipynb` runs the same steps on a Colab L4. `full.sh` ends by rewriting the tracked `results/`,
+`figures/` and `paper/tables/`; `scripts/run.py` refuses to run on uncommitted changes (every output records its git
+commit), so commit them or restore them (`git checkout -- results figures paper/tables`) before further runs. One
+result = one config = one command, e.g.
 `python scripts/run.py --config configs/table1.yaml`; outputs go to `outputs/<config>/[<dataset>/]<model>/` with the
 effective config, the git commit, versions, GPU and log. The per-image outputs of a full run (about 0.5 GB) are not
 in this repository; `full.sh` regenerates them. `results/` holds the summary tables of the original runs.
-`docs/reproduce.md` maps every table, figure and number of the paper to its command and output file, and records
-the reproduction checks. `docs/preregistration.md` lists the predictions, decision rules and freeze commits.
+`docs/reproduce.md` maps every result to its config, summary table and figure or LaTeX table, and records the
+reproduction checks (a full rerun from a fresh clone reproduced every table and verdict). `docs/preregistration.md` lists the predictions, decision rules and freeze commits.
 
 ```bash
 python -m pytest -q
@@ -82,22 +86,28 @@ python -m pytest -q
 ```
 src/fastweight_vit/   readings (R0, C1-C3, stand-ins), references (GAE, centre, random), probes, execution
                       (top-k reading sets), instrument, registers, metrics, enrichment, faithfulness, models, data,
-                      experiments/
-configs/              one YAML per paper element
-scripts/              run.py, make_tables.py, make_figures.py, prepare_data.py, download_models.py
+                      experiments/ (one module per experiment)
+configs/              one YAML per experiment; the comment at the top says what it produces
+scripts/              run.py (run a config), make_tables.py (results/), make_figures.py (figures/),
+                      make_latex_tables.py (paper/tables/), prepare_data.py, download_models.py, check_environment.py
 reproduce/            from_outputs.sh, full.sh, smoke.sh, colab.ipynb
 data/splits/          fixed image lists (IDs only)
-results/, figures/    summary tables and paper figures
-docs/                 paper.pdf, preregistration.md, reproduce.md
-tests/
+results/              summary tables (CSV) of the original runs: every mean, interval and verdict
+figures/              paper figures, one panel per file (figures/README.md lists them)
+paper/                materials for writing the paper: naming, key facts, LaTeX tables, bibliography, evidence dossier
+docs/                 preregistration.md, reproduce.md, verification/ (full-rerun comparison)
+tests/                pytest suite (CPU)
 ```
+
+Internal codes (R0 = received attention, C1-C3 = the three corrections, M1-M3 = the three premises, P1-P7 = the
+pre-registered predictions) are used in the code and in `results/`; `paper/naming.md` maps them to the names used in
+the paper. `AGENTS.md` is a short guide for continuing the work.
 
 ## Citation, licence, acknowledgements
 
 Please cite with `CITATION.cff`. Code under the MIT licence (`LICENSE`). We thank the authors of DeiT, DINO, timm,
 MiTA (Wen et al., 2026, arXiv:2602.01219), ImageNet-S, ClickMe / Harmonization and PartImageNet for releasing
-their models and data. GAE follows
-Chefer et al. (ICCV 2021); the test-time register follows Jiang et al. (2025).
+their models and data. GAE follows Chefer et al. (ICCV 2021); the test-time register follows Jiang et al. (2025).
 
 This is a course project of DSAA 2012 Deep Learning, HKUST(GZ). The code was written with an AI coding assistant
 under the author's design; the author checked every conclusion.

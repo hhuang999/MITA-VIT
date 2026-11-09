@@ -1,5 +1,6 @@
-# Appendix E (exploratory, proposed after the main results): the geometry of the probe's errors on the held-out
-# test images, its mean prediction, and where C2 moves the scores on ImageNet-S. Needs the diagnose outputs.
+# Exploratory analysis of probe relocation (C2; proposed after the main results): the geometry of the probe's errors
+# on the held-out test images, its mean prediction, and where C2 moves the scores on ImageNet-S. Needs the diagnose
+# outputs.
 experiment: c2_analysis
 models: [deit, deit_b, dino]
 batch_size: 64

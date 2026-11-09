@@ -4,15 +4,15 @@
 
 Reads outputs/<config name>/[<dataset>/]<model>/ as written by scripts/run.py and writes results/:
 
-| file | paper element |
+| file | result |
 | --- | --- |
-| k_sweep.csv, k_sweep_tests.csv | figure 2(a), section 4.2 (prediction P1) |
-| diagnose.csv, diagnose_tests.csv | figure 3, section 4.3 (P2); probe_accuracy.csv, radial.csv, value_norm.csv |
-| table1.csv, table1.md, table1_long.csv, correct_tests.csv | Table 1, sections 4.2 and 4.4, appendix D (P3, P5, P7) |
-| last_layer.csv, order.csv, variants.csv | appendix D (last-layer recovery, the other order), "change the model" (P6) |
-| sanity.csv, negative_controls.csv, predictions.csv | appendix C (P4), every registered prediction with its verdict |
-| single_layer.csv, part_reliance.csv, map_similarity.csv | appendix B |
-| c2_analysis/*.csv, supplementary/*.csv, d2/*.csv | appendix E and D (exploratory) |
+| k_sweep.csv, k_sweep_tests.csv | execution test, k sweep (figures/execution_k_sweep; prediction P1) |
+| diagnose.csv, diagnose_tests.csv | per-layer premises (P2); probe_accuracy.csv, radial.csv, value_norm.csv |
+| table1.csv, table1.md, table1_long.csv, correct_tests.csv | main results table, paired differences (P3, P5, P7) |
+| last_layer.csv, order.csv, variants.csv | last-layer recovery, the other order of the corrections, "change the model" (P6) |
+| sanity.csv, negative_controls.csv, predictions.csv | sanity check, negative controls (P4), every registered prediction with its verdict |
+| single_layer.csv, part_reliance.csv, map_similarity.csv | single-layer checks, head vs body patches, top-k map similarity |
+| c2_analysis/*.csv, supplementary/*.csv, d2/*.csv | exploratory: why C2 fails, combinations, probability discount |
 | numbers.csv | single numbers quoted in the text |
 
 Statistics (docs/preregistration.md): one value per image, paired bootstrap over images (1,000 resamples, seed 0),
@@ -119,12 +119,12 @@ def write(frame, path):
     return frame
 
 
-# --- RQ1: execution -----------------------------------------------------------------------------------------
+# --- execution --------------------------------------------------------------------------------------------
 
 def k_sweep(runs, out):
     rows, tests = [], []
     for model in MODELS:
-        run = runs.get('fig2a_k_sweep', model)
+        run = runs.get('k_sweep', model)
         if run is None:
             continue
         predictions, settings = read(run, 'predictions.csv'), pd.read_csv(run / 'settings.csv')
@@ -149,7 +149,7 @@ def k_sweep(runs, out):
 
 
 def single_layer(runs, out):
-    """One layer at a time: restricted to its reading sets, or its attention switched off (appendix B)."""
+    """One layer at a time: restricted to its reading sets, or its attention switched off (single-layer checks)."""
     rows = []
     for model in MODELS:
         table = read(runs.get('single_layer', model), 'predictions.csv')
@@ -202,7 +202,7 @@ def map_similarity(runs, out):
         write(rows, out / 'map_similarity.csv')
 
 
-# --- RQ2: diagnose ------------------------------------------------------------------------------------------
+# --- diagnose: per-layer premises -------------------------------------------------------------------------
 
 def diagnose(runs, out):
     rows = []
@@ -274,7 +274,7 @@ def diagnose_extras(runs, out):
         write(rows, out / 'value_norm.csv')
 
 
-# --- RQ3: correct -------------------------------------------------------------------------------------------
+# --- correct: main results table --------------------------------------------------------------------------
 
 def p4_rows(model, metric, table):
     """Negative controls: DINO, C3 - R0 on all three metrics (P4a); C2 - R0 at layers 1-4 on enrichment and ClickMe
@@ -342,7 +342,7 @@ def correct(runs, out):
 
 
 def variant_rows(runs, values):
-    """'+register' (DeiT-S) and 'top-k training' (MiTA-DeiT-S) on the Table 1 protocol, paired with DeiT-S R0."""
+    """'+register' (DeiT-S) and 'top-k training' (MiTA-DeiT-S) on the main-table protocol, paired with DeiT-S R0."""
     out = []
     for variant, config, model in (('register', 'table1_register', 'deit'), ('mita', 'table1_mita', 'mita')):
         data = per_image(runs.get(config, model, 'imagenet_s'), runs.get(config, model, 'clickme'))
@@ -458,7 +458,7 @@ def numbers(runs, out):
         write(rows, out / 'numbers.csv')
 
 
-# --- appendix E: why C2 fails (exploratory) -----------------------------------------------------------------
+# --- why C2 fails (exploratory) ---------------------------------------------------------------------------
 
 ERROR_METRICS = ['exact', 'top5', 'distance', 'near3x3', 'far3', 'far_share']
 GRID = 14
@@ -555,7 +555,7 @@ def c2_hypotheses(error_table, prediction_table, shift_table):
     return out
 
 
-# --- appendices D and E: supplementary analyses (exploratory) -----------------------------------------------
+# --- supplementary analyses (exploratory) -----------------------------------------------------------------
 
 SEEDS = [f'C3shuffle_s{seed}' for seed in range(5)]
 
@@ -770,14 +770,14 @@ def supplementary(runs, values, out):
         write(branches, folder / 'branches.csv')
 
 
-# --- appendix E: discount without relocation (exploratory, registered before running) -------------------------
+# --- discount without relocation (exploratory, registered before running) ---------------------------------
 
 D2_SEEDS = [f'D2_shuffle_s{seed}' for seed in range(5)]
 
 
 def d2(runs, values, out):
     """D2 - R0, D2 - D2_shuffle (seed mean per image), D2 - C2 on enrichment and ClickMe; branch rule; C3D2 - C3
-    (reported only under branch A); R0, C2 and C3 of the same run against Table 1 (consistency)."""
+    (reported only under branch A); R0, C2 and C3 of the same run against the main results table (consistency)."""
     rows, checks = [], []
     for model in MODELS:
         data = per_image(runs.get('d2', model, 'imagenet_s'), runs.get('d2', model, 'clickme'))

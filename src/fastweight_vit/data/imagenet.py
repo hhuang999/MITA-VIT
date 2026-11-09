@@ -12,7 +12,7 @@ IMAGENET_REVISION = "49e2ee26f3810fb5a7536bbf732a7b07389a47b5"
 
 
 class ImageNetValidation(Dataset):
-    """Load the pinned Hugging Face validation split saved by download_data.py."""
+    """Load the pinned Hugging Face validation split saved by scripts/prepare_data.py."""
 
     def __init__(self, root: Path, model, *, preprocessing=None):
         from datasets import load_from_disk
