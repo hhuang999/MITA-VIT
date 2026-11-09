@@ -29,3 +29,11 @@ dist/
 /paper/*.fls
 /paper/*.fdb_latexmk
 /paper/neurips_2025.sty
+/paper/review/*.aux
+/paper/review/*.log
+/paper/review/*.out
+/paper/review/*.bbl
+/paper/review/*.blg
+/paper/review/*.fls
+/paper/review/*.fdb_latexmk
+/paper/review/neurips_2025.sty
