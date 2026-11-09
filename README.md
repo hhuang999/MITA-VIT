@@ -63,8 +63,8 @@ shows how they were found.
 
 | command | what it does | time |
 | --- | --- | --- |
-| `bash reproduce/from_outputs.sh` | rebuild every summary table (`results/`), figure (`figures/`) and LaTeX table (`paper/tables/`) from run outputs in `outputs/` | a few minutes, CPU |
-| `bash reproduce/full.sh` | rerun every experiment from scratch, then rebuild the tables and figures | about 12 hours on one L4 GPU |
+| `bash reproduce/from_outputs.sh` | rebuild every summary table (`results/`), figure (`figures/`) and LaTeX table (`paper/tables/`) from the committed per-image outputs of the original runs in `outputs/` (byte for byte) | a few minutes, CPU |
+| `bash reproduce/full.sh` | rerun every experiment from scratch into `outputs/rerun/`, then rebuild the tables and figures from the rerun | about 12 hours on one L4 GPU |
 | `bash reproduce/smoke.sh` | every experiment on 16 images, then the tables | under 10 minutes on one GPU |
 
 `reproduce/colab.ipynb` runs the same steps on a Colab L4. `full.sh` ends by rewriting the tracked `results/`,
@@ -72,8 +72,8 @@ shows how they were found.
 commit), so commit them or restore them (`git checkout -- results figures paper/tables`) before further runs. One
 result = one config = one command, e.g.
 `python scripts/run.py --config configs/table1.yaml`; outputs go to `outputs/<config>/[<dataset>/]<model>/` with the
-effective config, the git commit, versions, GPU and log. The per-image outputs of a full run (about 0.5 GB) are not
-in this repository; `full.sh` regenerates them. `results/` holds the summary tables of the original runs.
+effective config, the git commit, versions, GPU and log. `outputs/` holds the per-image outputs of the original runs
+(about 0.6 GB, see `outputs/README.md`) and `results/` the summary tables built from them.
 `docs/reproduce.md` maps every result to its config, summary table and figure or LaTeX table, and records the
 reproduction checks (a full rerun from a fresh clone reproduced every table and verdict). `docs/preregistration.md` lists the predictions, decision rules and freeze commits.
 
@@ -92,6 +92,7 @@ scripts/              run.py (run a config), make_tables.py (results/), make_fig
                       make_latex_tables.py (paper/tables/), prepare_data.py, download_models.py, check_environment.py
 reproduce/            from_outputs.sh, full.sh, smoke.sh, colab.ipynb
 data/splits/          fixed image lists (IDs only)
+outputs/              per-image outputs of the original runs (one folder per config and model)
 results/              summary tables (CSV) of the original runs: every mean, interval and verdict
 figures/              paper figures, one panel per file (figures/README.md lists them)
 paper/                materials for writing the paper: naming, key facts, LaTeX tables, bibliography, evidence dossier

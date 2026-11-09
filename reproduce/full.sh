@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# Rerun every experiment of the paper from scratch, then rebuild every table and figure.
+# Rerun every experiment of the paper from scratch into outputs/rerun (or the folder given as the first argument),
+# then rebuild every table and figure from that rerun.
 # Needs a CUDA GPU (about 12 GPU-hours on one NVIDIA L4), the datasets (scripts/prepare_data.py) and the models
 # (scripts/download_models.py). Completed runs are skipped, so the script can be restarted after an interruption
-# (an interrupted run continues with: python scripts/run.py --config <config> --resume).
+# (an interrupted run continues with: python scripts/run.py --config <config> --output outputs/rerun --resume).
 # Order: the lens (diagnose) first, then the main results, then the supporting and exploratory checks.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 PY=${PYTHON:-python}
-run() { echo "== $1 ($(date -u +%FT%TZ))"; $PY scripts/run.py --config "configs/$1.yaml" "${@:2}"; }
+OUT=${1:-outputs/rerun}  # the committed outputs/ of the original runs are left untouched
+run() { echo "== $1 ($(date -u +%FT%TZ))"; $PY scripts/run.py --config "configs/$1.yaml" --output "$OUT" "${@:2}"; }
 
 # Lens: position probes, blur widths, mean maps (premises of C2 and C1; needed by every reading below)
 run diagnose_probe
@@ -35,6 +37,6 @@ run supplementary_heldout
 run supplementary_eval
 run d2
 
-$PY scripts/make_tables.py
-$PY scripts/make_figures.py
+$PY scripts/make_tables.py --outputs "$OUT"
+$PY scripts/make_figures.py --outputs "$OUT"
 $PY scripts/make_latex_tables.py

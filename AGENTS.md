@@ -2,7 +2,8 @@
 
 ## State
 
-- All experiments are finished. Their summary tables are in `results/`, their figures in `figures/` and the LaTeX tables in `paper/tables/`.
+- All experiments are finished. Their per-image outputs are in `outputs/`, their summary tables in `results/`, their figures in `figures/` and the LaTeX tables in `paper/tables/`.
+- `bash reproduce/from_outputs.sh` rebuilds `results/`, `figures/` and `paper/tables/` from `outputs/` byte for byte, on a CPU.
 - A full rerun from a fresh clone reproduced every table and every verdict (`docs/reproduce.md`).
 - The paper text is still to be written. Everything needed for it is in `paper/` (start with `paper/README.md`).
 
@@ -23,17 +24,18 @@
 
 ```bash
 python -m pytest -q                                       # 78 tests, CPU
+bash reproduce/from_outputs.sh                            # results/, figures/, paper/tables/ from outputs/ (CPU)
 python scripts/make_tables.py                             # results/ from outputs/
 python scripts/make_figures.py                            # figures/ from results/ (+ outputs/ for the image panels)
 python scripts/make_latex_tables.py                       # paper/tables/ from results/
 python scripts/run.py --config configs/<config>.yaml      # one experiment (GPU)
-bash reproduce/full.sh                                    # everything (about 12 GPU hours on one L4)
+bash reproduce/full.sh                                    # rerun everything into outputs/rerun/ (about 12 GPU hours on one L4)
 ```
 
 ## Rules
 
 - **Credentials.** `HF_TOKEN` is read only from `.env` or the environment; never print it.
-- **What stays out of Git.** Data, model weights, run outputs (`outputs/`), `.env` and third-party files (for example the NeurIPS style file) are not committed.
+- **What stays out of Git.** Data, model weights, new reruns and smoke tests (`outputs/rerun/`, `outputs/smoke/`), `.env` and third-party files (for example the NeurIPS style file) are not committed. The per-image outputs of the original runs (`outputs/<config>/...`) are committed and must not be overwritten.
 - **Clean code before runs.** `scripts/run.py` refuses to run on uncommitted code changes, because every output records its git commit. Commit first.
 - **Verdicts.** Registered verdicts are not changed. A new analysis is exploratory: write its definition and decision rule down (commit) before running it, and label it as exploratory.
 - **Figures and tables.**
