@@ -1,5 +1,7 @@
 # 论文图表清单（paper/figures/）
 
+> 接手的项目以 `release/v1` 分支为准：那里有同一套图（`figures/`）、全部 LaTeX 表格（`paper/tables/`）和写论文用的材料（`paper/`）。本文件夹是研究分支上的同一套文件。
+
 所有图表都由 `make_paper_figures.py` 一个脚本生成：
 
 ```bash
@@ -45,6 +47,10 @@ python paper/figures/make_paper_figures.py --results <release/v1 的 results/ �
 1. **示例图改成横排。** `gallery_*` 每行是一种图，每列是一张图片，不是“列为 image / human / …”。原因：在 2.8 英寸宽、7 pt 字号下，五个列标题（例如 “contribution weighting”）放不进约 0.5 英寸宽的列。
 2. **探针平均预测图没有做最小–最大归一化。** `c2_analysis_mean_prediction_*` 用的是原始比值（均匀分布 = 1）。原因：这张图要表达的就是“接近均匀”（峰值只有均匀值的 1.1–1.3 倍）；归一化以后，这个信息就看不出来了。示例图仍然按要求对每张图做最小–最大归一化，并配统一色标。
 3. **示意图拆成三个文件。** `schematic_*` 按“每个面板一个文件”的规则拆开，同时去掉了面板字母和内部编号。
+
+## 附录表格
+
+`appendix_tables/` 里有 18 个附录表格，由 `make_appendix_tables.py` 从 `results/` 生成：只含 tabular，名字按论文命名，文件开头的注释写明了内容、数据来源和建议的图注。
 
 ## 其他
 
