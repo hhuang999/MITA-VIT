@@ -57,8 +57,11 @@ python scripts/prepare_data.py --check
 python scripts/download_models.py
 ```
 
-Models: DeiT-S and DeiT-B (timm, pinned revisions), DINO ViT-S/16 with its official linear head, and MiTA-DeiT-S,
-whose checkpoint comes from the MiTA authors (fetched with gdown; every checkpoint is checked against a SHA-256).
+Models: DeiT-S and DeiT-B (timm, pinned revisions), DINO ViT-S/16 with its official linear head, and MiTA-DeiT-S.
+The MiTA-DeiT-S weights are not ours and are not redistributed here: they were released by the MiTA authors
+(Wen et al., *Mixture-of-top-k attention: Efficient attention via scalable fast weights*, arXiv:2602.01219, 2026),
+and `scripts/download_models.py` fetches them from the authors' download link with gdown. Please cite their paper
+if you use these weights. Every checkpoint is checked against a SHA-256.
 The test-time register uses 8 FFN units of DeiT-S, listed in `configs/table1_register.yaml`; `configs/register.yaml`
 shows how they were found.
 
@@ -101,7 +104,8 @@ tests/
 ## Citation, licence, acknowledgements
 
 Please cite with `CITATION.cff`. Code under the MIT licence (`LICENSE`). We thank the authors of DeiT, DINO, timm,
-MiTA, ImageNet-S, ClickMe / Harmonization and PartImageNet for releasing their models and data. GAE follows
+MiTA (Wen et al., 2026, arXiv:2602.01219), ImageNet-S, ClickMe / Harmonization and PartImageNet for releasing
+their models and data. GAE follows
 Chefer et al. (ICCV 2021); the test-time register follows Jiang et al. (2025).
 
 This is a course project of DSAA 2012 Deep Learning, HKUST(GZ). The code was written with an AI coding assistant
