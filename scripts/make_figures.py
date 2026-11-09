@@ -180,11 +180,11 @@ def figure_c2(out):
         ax.axhline(.5, color='#999999', lw=.8)
         ax.set_title('(b) Share of errors farther than 3 patches', fontsize=9)
         ax.set_xlabel('Layer')
-        for column, model in zip((2, 3), ('deit', 'dino')):
+        for column, model, letter in zip((2, 3), ('deit', 'dino'), 'cd'):
             ax = fig.add_subplot(grid[column])
             values = np.load(OUTPUTS / 'c2_analysis' / model / 'mean_prediction.npz')['layer12'].mean(0) * 196
             image = ax.imshow(values.reshape(14, 14), cmap='viridis')
-            ax.set_title(f'(c) {long[model]} L12\nmean prediction x 196', fontsize=8)
+            ax.set_title(f'({letter}) {long[model]} L12\nmean prediction x 196', fontsize=8)
             ax.set_xticks([])
             ax.set_yticks([])
             fig.colorbar(image, ax=ax, fraction=.046)
@@ -194,7 +194,7 @@ def figure_c2(out):
                 part = bin_table[(bin_table.model == model) & (bin_table.source == source)].sort_values('bin')
                 ax.plot(part['bin'], part['mean'], style, color=color, marker='o', ms=3, label=f'{long[model]} {label}')
         ax.axhline(0, color='#999999', lw=.8)
-        ax.set_title('(d) Change in score share by distance to centre\n(layers 9-12, ImageNet-S)', fontsize=9)
+        ax.set_title('(e) Change in score share by distance to centre\n(layers 9-12, ImageNet-S)', fontsize=9)
         ax.set_xlabel('Distance to centre (patches, floor)')
         ax.legend(fontsize=6)
         fig.tight_layout()
