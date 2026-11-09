@@ -1,0 +1,123 @@
+% Appendices A-E of the paper. Tables are generated from the result files by make_appendix_tables.py.
+\appendix
+\setcounter{topnumber}{4}\setcounter{totalnumber}{6}
+\renewcommand{\topfraction}{0.95}\renewcommand{\textfraction}{0.05}\renewcommand{\floatpagefraction}{0.75}
+
+\FloatBarrier
+\section{Implementation and reproducibility}
+\label{app:impl}
+
+\textbf{Code and reproduction.} Code, configurations, the fixed image lists and all result tables are in the accompanying repository (link withheld for anonymous review). Every table and figure is rebuilt from the saved run outputs by one command. A full rerun from a fresh copy of the repository in a fresh environment, on one NVIDIA L4 GPU (11.5 GPU hours), reproduced all 31 result tables: every verdict was identical, and the largest difference of a mean was $2.5\times10^{-5}$ (tolerance $10^{-4}$; $2\times10^{-3}$ for readings that use a retrained probe).
+
+\textbf{Hardware and numerics.} PyTorch 2.7.0, timm 1.0.30, float32 without autocast, deterministic algorithms. All runs of the main protocol and all exploratory runs used NVIDIA L4 GPUs. Three groups of earlier runs that we reuse ran in part on an NVIDIA A100: the single-layer restriction (DeiT-B), head versus body patches, and the centre-Gaussian ClickMe number of Section~1. All runs together took about 19 GPU hours.
+
+\textbf{Models and preprocessing.}
+DeiT-S and DeiT-B are the supervised timm checkpoints \nolinkurl{deit_small_patch16_224.fb_in1k} and \nolinkurl{deit_base_patch16_224.fb_in1k} (pinned revisions), resize to 248 and centre crop 224 (crop ratio 0.9).
+DINO ViT-S/16: timm \nolinkurl{vit_small_patch16_224.dino} with the official linear head (the CLS tokens of the last four blocks, concatenated), resize 256 and centre crop 224 (0.875).
+MiTA-DeiT-S: the checkpoint released by the MiTA authors \citep{wen2026}, with its own evaluation transform (resize 256, crop 0.875); its row in Table~\ref{tab:main} is paired with DeiT-S by image, so the two models see slightly different crops of the same image.
+The test-time register \citep{jiang2025} moves the activations of 8 FFN units of DeiT-S (layers 4 and 5) to one added token; the units were selected on 500 ImageNet-S pilot images that are not used for evaluation.
+The no-attention baseline of Figure~\ref{fig:read}(a) and the single-layer removal column of Table~\ref{tab:single_layer} used a uniform transform for all models (resize 256, crop 0.875), so for DeiT-S and DeiT-B they used a 0.875 centre crop instead of their own 0.9 crop; the image indices are the same.
+
+\textbf{Reading sets.} The $14\times14$ grid is pooled into 16 regions by $4\times4$ adaptive average pooling (windows $[0,4), [3,7), [7,11), [10,14)$ per axis). In every head, the mean query of each region is scored against all 197 keys and the top-$k$ keys form its reading set; each patch query is routed to its region by position, and CLS keeps its own top-$k$ set. The sets are computed in a forward pass of the unmodified model, then the model is rerun with a boolean attention mask. Random sets have the same size and routing (seeds 0--4, averaged per image). Before each run, an explicit-softmax implementation is checked against the model (same top-1 classes, largest logit difference $<5\times10^{-4}$).
+
+\textbf{Diagnostics and corrections.} High-norm tokens are patches whose block-input norm exceeds three times the image's median at that layer. The position probes are linear (196 classes) on the output of the block's first layer norm, trained on all patch tokens of 2,000 held-out images (Adam, learning rate 0.01, batch 4,096, 30 epochs, seed 0); the two-layer MLP probe of Appendix~\ref{app:c2} is trained on 1,800 of these images with the other 200 for early stopping. The mean map $\bar s^\ell$ and the probe accuracy use another 2,000 held-out images; the held-out set excludes ImageNet-S images and ClickMe near-duplicates (2 of 4,002 candidates matched). The matched blur is an isotropic Gaussian whose mean squared displacement equals that of C2 at the same layer on held-out images. The centred-Gaussian stand-in of C1 is scaled to the mean map's spatial spread.
+
+\textbf{Statistics.} Every difference is paired over images; intervals are 2.5th and 97.5th percentiles of 1,000 bootstrap resamples of the images (seed 0). The verdict rule and its margins are given in Section~4.1.
+
+\textbf{AI assistance.} Code and experiments were run with an AI coding assistant under the author's design; all claims were checked by the author.
+
+\FloatBarrier
+\section{Extensions of RQ1}
+\label{app:rq1}
+
+\textbf{One layer at a time.} Table~\ref{tab:single_layer} restricts or removes attention in a single layer. Restricting any single layer to its reading sets keeps at least 77\% of the predictions (DINO, layer 1) and at least 91.7\% in DeiT-S and DeiT-B. Removing the attention of one layer matters most at layer 1, and how much depends on the model: DINO keeps only 0.2\% of its predictions, DeiT-S 69\% and DeiT-B 88\%; removing any other single layer keeps at least 85.7\%.
+
+\input{tables/single_layer}
+
+\textbf{Head versus body patches, and top-$k$ maps versus full maps.} On PartImageNet \citep{he2022}, removing 4 head patches (drawn at random within the head, seeds 0--4, dropped from all layers) lowers the log-probability of the predicted class more than removing 4 body patches, in all three models (Table~\ref{tab:parts}); the ratio of the two drops is about 3.4 (DeiT-S), 3.6 (DeiT-B) and 5.1 (DINO). These images are ImageNet training images, and DeiT-B was run on a smaller subset. On ImageNet-S, the map of the top-$k$ reading sets and the full map R0 agree closely image by image (median Spearman 0.90--0.91).
+
+\input{tables/parts}
+
+\textbf{Figure 2(b) at layer 12.} Figure~\ref{fig:layer12} shows the two ClickMe images of Figure~\ref{fig:read}(b) with every map computed at layer 12 alone.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.62\linewidth]{../../figures/figure_A_2b_layer12.pdf}
+\caption{The two ClickMe images of Figure~\ref{fig:read}(b) (drawn with a fixed seed, not selected): image, human map, R0, C3 and C2 of DeiT-S, all at layer 12 alone; each map scaled to $[0,1]$.}
+\label{fig:layer12}
+\end{figure}
+
+\FloatBarrier
+\section{Pre-registration and checks}
+\label{app:prereg}
+
+\textbf{What was fixed before the runs.} Before the first main run, a dated entry in the project's decision log (a git commit) fixed the readings, stand-ins, references, data and held-out set, the three metrics and their margins, the statistics, the primary comparisons and predictions P1--P7. One implementation-check tolerance was then raised from $10^{-4}$ to $5\times10^{-4}$ because DeiT-B gave $1.4\times10^{-4}$ (identical classes); no research definition changed. Every exploratory analysis (Appendices~\ref{app:full} and~\ref{app:c2}) was proposed after the main results; its definitions and decision rules were committed before it ran. Some results had been seen before registration: the DeiT-S $k$ sweep, the earlier per-layer curves and probe, and the attention-budget results, so P1 (DeiT-S) and the M2 and M3 parts of P2 are replications.
+
+\textbf{Predictions.} P1: execution agreement rises with $k$, and reading sets beat random sets at every $k$. P2: M2 becomes more severe with depth; M3 concentrates in layers 6--12 of supervised models and is near 0 in DINO. P3 (main verdict): R\_all, the combination C3$\to$C2$\to$C1, is higher than R0 on enrichment and ClickMe in the two supervised models (4 cells; all 4 = holds, 1--3 = partly holds). P4: negative controls (C3 on DINO; C2 at layers 1--4) are comparable to R0; otherwise the runs stop. P5: the share of the last-layer drop that each correction recovers (descriptive). P6: the two model-side variants are not higher than DeiT-S R0. P7: the primary comparisons, with no predicted direction, are R\_all $-$ R0 and each correction minus its stand-in. Table~\ref{tab:predictions} gives the outcomes.
+
+\input{tables/predictions}
+
+\textbf{Negative controls and reproduction check.} Both negative controls are comparable in every cell, and the new R0 reproduces the earlier full-attention runs on the same images (all differences below the registered 0.01; Table~\ref{tab:controls}).
+
+\input{tables/controls}
+
+\textbf{Model-randomisation sanity check.} We re-initialise the model cumulatively, one stage at a time from the classifier down to the patch embedding, \citep{adebayo2018} on 1,000 ImageNet-S images and report the median Spearman correlation between the map of the randomised model and the original map. A reading passes if this median is below 0.5 after full randomisation. All readings pass (largest median 0.37); the centred Gaussian does not depend on the model and serves as the example that fails (Table~\ref{tab:sanity}).
+
+\input{tables/sanity}
+
+\FloatBarrier
+\section{Full Table 1 and exploratory checks of C3}
+\label{app:full}
+
+Tables~\ref{tab:full_srg}--\ref{tab:full_clickme} give every reading, stand-in and reference on all three metrics with intervals; SRG uses the fixed 2,000 ImageNet-S images. Table~\ref{tab:diffs} gives the paired differences with their verdicts, Table~\ref{tab:variants} the model-side variants, Table~\ref{tab:order} the two orders of combining all three corrections and Table~\ref{tab:last_layer} the share of the last-layer drop that each correction recovers.
+
+\input{tables/full_srg}
+\input{tables/full_enrichment}
+\input{tables/full_clickme}
+\input{tables/diffs}
+\input{tables/variants}
+\input{tables/order}
+\input{tables/last_layer}
+
+\textbf{Exploratory checks of C3 (post hoc).} Table~\ref{tab:c3_checks} compares C3 with three variants: weights shuffled among the tokens of a head, the head's mean weight for every token, and $\lVert v_j\rVert$ instead of $\lVert W_O v_j\rVert$. It also gives the dose--response correlation across images (the gain of C3 against R0's share on high-norm tokens) and the share of the R0-to-GAE gap that C3 closes. Table~\ref{tab:dose_layers} gives the gains at single layers, and Table~\ref{tab:pairs} the pairwise combinations of corrections.
+
+\input{tables/c3_checks}
+\input{tables/dose_layers}
+\input{tables/pairs}
+
+\FloatBarrier
+\section{Exploratory analysis of C2}
+\label{app:c2}
+
+All analyses in this appendix were proposed after the main results; their definitions and decision rules were committed before they ran.
+
+\textbf{Probe errors and probe prior.} For every patch token of the 2,000 held-out test images, $P$ is the probe's distribution over the 196 positions and $j$ the true position (grid distance in patches). Table~\ref{tab:probe_errors} and Figure~\ref{fig:c2}(a, b) give the probe's exact and top-5 accuracy, its probability within the $3\times3$ neighbourhood of $j$, the share of its error mass farther than 3 patches, and its expected distance, compared with the matched blur. The registered hypothesis ``the errors are mostly far'' required a far share above 0.5; the far share is 0.02--0.29 at layers 9--12. The probe's mean prediction over images (Figure~\ref{fig:c2}(c, d)) is close to uniform; the hypothesis that it carries an image-independent position preference was met in none of the 12 model--layer cells.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figure_A_c2.pdf}
+\caption{Why C2 fails (exploratory). (a) Expected distance between the true patch and the probe's distribution (solid) or the matched blur (dashed). (b) Share of the error mass farther than 3 patches; the grey line marks the registered threshold 0.5. (c, d) The probe's mean prediction at layer 12 divided by the uniform value $1/196$. (e) Change in the share of the score at each distance from the centre caused by C2 (solid) and by the matched blur (dashed), layers 9--12, ImageNet-S.}
+\label{fig:c2}
+\end{figure}
+
+\input{tables/probe_errors}
+
+\textbf{Where C2 moves the score.} Table~\ref{tab:shift} compares how much score C2 and the matched blur move off the object, and how they change the ranking of patches.
+
+\input{tables/shift}
+
+\textbf{Within-layer globalisation.} Within each image and layer, tokens are split into five groups by their cosine similarity to the mean of the other patch tokens. The registered rule required, at layers 10--12 and in at least two models, that more global tokens have both lower probe accuracy and higher probe entropy. Entropy falls with globality in all three models; accuracy falls only in DeiT-B; the rule holds in no model (Table~\ref{tab:global}).
+
+\input{tables/global}
+
+\textbf{A two-layer probe, and moving only confident tokens.} A two-layer MLP probe raises layer-12 accuracy by 1.8 / 3.8 / 6.7 points (DeiT-S / DeiT-B / DINO), and C2 with this probe is still lower than R0 in all six cells. Moving only tokens whose top probability is at least 0.5 removes 37\%--94\% of the loss of C2 but does not remove it (Table~\ref{tab:mlp}).
+
+\input{tables/mlp}
+
+\textbf{Discounting without relocation.} D2 keeps every score in place and multiplies it by the probe's probability that the unit is still at its own patch; its stand-in shuffles these probabilities among the tokens of the image. Table~\ref{tab:d2} gives the values and tests.
+
+\input{tables/d2}
+
+\textbf{ClickMe and smoothing.} A matched blur loses less on ClickMe than on object enrichment in every model, so the ClickMe metric rewards smoothing to some degree (Table~\ref{tab:smoothing}).
+
+\input{tables/smoothing}

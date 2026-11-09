@@ -15,7 +15,7 @@
 
 ## 0. Overview
 
-Locations refer to the review version of the paper (`paper_review_text.md`, typeset as `paper/review/main_review.pdf`), by its section numbers. "§" = section of the main text, "App." = appendix as listed in the planned appendix of the review version (A–E). "Pre-registered" means that the definition, the decision rule and (where stated) the predicted outcome were committed to the decision log before the formal runs (Section 3). "Exploratory, post hoc" means proposed after the formal results were seen; definitions were committed before these runs, and they do not change any registered verdict.
+Locations refer to the final version of the paper (`paper/review/main_review.pdf`; the main text follows `paper_review_text.md` with the corrections from the number check), by its section numbers. "§" = section of the main text, "App." = appendix A–E of that PDF. "Pre-registered" means that the definition, the decision rule and (where stated) the predicted outcome were committed to the decision log before the formal runs (Section 3). "Exploratory, post hoc" means proposed after the formal results were seen; definitions were committed before these runs, and they do not change any registered verdict.
 
 | # | Experiment | Question | Registration status | Location in the paper |
 | --- | --- | --- | --- | --- |
