@@ -15,36 +15,36 @@
 
 ## 0. Overview
 
-Locations refer to the paper draft of 2026-11-07 (`docs/handoff/2026-11-07/03_paper_draft.md`) and the paper manifest (`docs/handoff/2026-11-07/04_paper_manifest.md`). "§" = section of the main text, "App." = appendix. "Pre-registered" means that the definition, the decision rule and (where stated) the predicted outcome were committed to the decision log before the formal runs (Section 3). "Exploratory, post hoc" means proposed after the formal results were seen; definitions were committed before these runs, and they do not change any registered verdict.
+Locations refer to the review version of the paper (`paper_review_text.md`, typeset as `paper/review/main_review.pdf`), by its section numbers. "§" = section of the main text, "App." = appendix as listed in the planned appendix of the review version (A–E). "Pre-registered" means that the definition, the decision rule and (where stated) the predicted outcome were committed to the decision log before the formal runs (Section 3). "Exploratory, post hoc" means proposed after the formal results were seen; definitions were committed before these runs, and they do not change any registered verdict.
 
 | # | Experiment | Question | Registration status | Location in the paper |
 | --- | --- | --- | --- | --- |
 | 1 | Execution test and k sweep | Are the units read from attention used by the model? Agreement with the unmodified model when every query reads only its region's top-k units in all 12 layers | Pre-registered (prediction P1; replication for DeiT-S) | §3.2, §4.2, Fig. 2(a); App. C |
-| 2 | Single-layer restriction and single-layer removal of attention | Which single layers can be restricted to the reading sets, or lose attention, without changing the prediction | Earlier runs, reported per model as registered (descriptive) | App. B |
+| 2 | Single-layer restriction and single-layer removal of attention | Which single layers can be restricted to the reading sets, or lose attention, without changing the prediction | Earlier runs, reported per model as registered (descriptive) | §4.2; App. B |
 | 3 | Head vs body patches | Does removing 4 head patches hurt the prediction more than removing 4 body patches? | Pre-registered in the earlier study (PartImageNet prediction 1) | App. B |
 | 4 | Top-k map vs full map | Per-image Spearman between the top-k reading-set map and the full attention map (R0) | Pre-registered in the earlier study (median > 0.5) | App. B |
-| 5 | M1 (image-specific reading) | Share of within-image spatial variance of R0 explained by the model's mean map, per layer | Pre-registered as descriptive | §4.3, Fig. 3(a) |
-| 6 | M2 (unit j stands for patch j) | Position-probe accuracy per layer | Pre-registered (P2; replication) | §4.3, Fig. 3(b) |
-| 7 | M3 (activation = contribution) and value-norm ratio | Share of R0 on high-norm tokens per layer; value-vector norm of high-norm vs ordinary patches | P2 (replication) for the share; ratio from the earlier attention-budget study | §4.3, Fig. 3(c) |
+| 5 | M1 (image-specific reading) | Share of within-image spatial variance of R0 explained by the model's mean map, per layer | Pre-registered as descriptive | §3.3, §4.3, Fig. 3(a) |
+| 6 | M2 (unit j stands for patch j) | Position-probe accuracy per layer | Pre-registered (P2; replication) | §3.3, §4.3, Fig. 3(b) |
+| 7 | M3 (activation = contribution) and value-norm ratio | Share of R0 on high-norm tokens per layer; value-vector norm of high-norm vs ordinary patches | P2 (replication) for the share; ratio from the earlier attention-budget study | §3.3, §4.3, Fig. 3(c) |
 | 8 | Per-layer quality of R0 | ClickMe image-specific Spearman of single-layer R0 maps | Earlier run, descriptive | §4.3, Fig. 3(d) |
 | 9 | Table 1: readings, stand-ins, references | Three metrics for R0, C1–C3, R_all, stand-ins and references, layers 9–12 | Pre-registered (P3, P7) | §4.2, §4.4, Table 1; App. D |
 | 10 | Corrections vs R0 and vs stand-ins | Paired differences with verdicts | Pre-registered: R_all − R0 (P3) and correction − stand-in (P7) are primary; correction − R0 and stand-in − R0 are descriptive | §4.4; App. D |
 | 11 | Change the model | +register (DeiT-S) and top-k training (MiTA-DeiT-S) on the Table 1 protocol | Pre-registered (P6) | §4.4, Table 1 |
 | 12 | Combination orders | R_all (C3→C2→C1) vs the other order (C3→C1→C2) | Pre-registered as a descriptive order check | §4.4; App. D |
-| 13 | Last-layer recovery | Share of the R0 drop from the best of layers 8–11 to layer 12 that each correction recovers | Pre-registered as descriptive (P5) | §4.4; App. D |
+| 13 | Last-layer recovery | Share of the R0 drop from the best of layers 8–11 to layer 12 that each correction recovers | Pre-registered as descriptive (P5) | Abstract, §1, §4.4; App. D |
 | 14 | Sanity check | Model-randomisation test of every reading | Pre-registered threshold (median < 0.5) | §4.1; App. C |
 | 15 | Negative controls | C3 on DINO; C2 at layers 1–4 | Pre-registered (P4, stop rule) | §4.1; App. C |
 | 16 | Reproduction check | New R0 vs earlier full-attention runs on the same images | Pre-registered (difference < 0.01) | App. C |
-| 17 | Qualitative gallery | Two ClickMe images: human map, R0, C3, C2 | Image choice by a rule fixed in the earlier study (seeded draw, smallest indices) | Fig. 2(b); appendix figure (layer 12) |
+| 17 | Qualitative gallery | Two ClickMe images: human map, R0, C3, C2 | Image choice by a rule fixed in the earlier study (seeded draw, smallest indices) | §4.2, Fig. 2(b); App. B (layer 12) |
 | 18 | Probe error geometry, mean prediction, where C2 moves mass | Why does C2 lower the metrics? | Exploratory, post hoc; definitions and descriptive criteria written before running | §4.5; App. E |
 | 19 | ClickMe and smoothing | Compilation of existing differences for blur, C2, the other order | Exploratory, post hoc (no new runs) | §5 (practice point ii); App. E |
-| 20 | Pairwise combinations | C1+C3, C2+C3, C1+C2 | Exploratory, post hoc; branch rule written before running | §4.4 [PENDING in draft]; App. D/E |
-| 21 | C3 mechanism checks | C3 with ‖v‖, with shuffled weights, with head-mean weights | Exploratory, post hoc; rule written before running | §4.4 [PENDING in draft]; App. D/E |
-| 22 | C3 dose–response and per-layer | Across images, does the C3 gain grow with R0's high-norm share? | Exploratory, post hoc; branch rule written before running | §4.4; App. D/E |
+| 20 | Pairwise combinations | C1+C3, C2+C3, C1+C2 | Exploratory, post hoc; branch rule written before running | §4.4; App. D |
+| 21 | C3 mechanism checks | C3 with ‖v‖, with shuffled weights, with head-mean weights | Exploratory, post hoc; rule written before running | §4.4; App. D |
+| 22 | C3 dose–response and per-layer | Across images, does the C3 gain grow with R0's high-norm share? | Exploratory, post hoc; branch rule written before running | §4.4; App. D |
 | 23 | Within-layer globalisation | Are tokens closer to the image mean token harder to locate? | Exploratory, post hoc; rule written before running | §4.5; App. E |
-| 24 | MLP probe and C2 variants | Does a two-layer probe, or moving only confident tokens, change C2? | Exploratory, post hoc; branch rule written before running | §4.5; App. E |
-| 25 | Share of the GAE gap closed by C3 | (C3 − R0) ÷ (GAE − R0) | Exploratory, post hoc (descriptive) | App. D/E |
-| 26 | Discount without relocation | R0 × probability that token j is still at patch j | Exploratory, post hoc; definition and branch rule registered before running | Not yet assigned in the draft |
+| 24 | MLP probe and C2 variants | Does a two-layer probe, or moving only confident tokens, change C2? | Exploratory, post hoc; branch rule written before running | Abstract, §4.5; App. E |
+| 25 | Share of the GAE gap closed by C3 | (C3 − R0) ÷ (GAE − R0) | Exploratory, post hoc (descriptive) | §4.4; App. D |
+| 26 | Discount without relocation | R0 × probability that token j is still at patch j | Exploratory, post hoc; definition and branch rule registered before running | §4.5; App. E |
 
 ## 1. Models, data, preprocessing and compute
 
@@ -1209,6 +1209,7 @@ Source: `experiments/2026-11-08_explore_d2_analysis/tests.csv`.
 ### 5.1 Deviations from the plan
 
 - **Implementation-check tolerance.** The first DeiT-B k-sweep run stopped: the pre-execution check (explicit-softmax attention reproduces the model's logits) required a maximum difference < 1e-4; DeiT-B gave 1.4e-4 (float32 rounding between fused and explicit softmax; predicted classes identical). The tolerance was raised to 5e-4 (commit `5faa503`, authored 2026-11-05 16:42, committed 17:02), keeping the requirement of identical classes, and the DeiT-B k sweep was rerun from the start. Stored maximum in the rerun: 1.40e-04. The failed folder was kept on the instance and not retrieved. No research definition or decision rule changed.
+- **Preprocessing of the "no attention" baseline differs from its description.** The description of the attention-removal experiment says each model uses its own preprocessing, as in the execution figure, but its configuration sets `preprocessing: uniform` (`experiments/2026-11-03_ab_t7_*/config.yaml`). So the "no attention" baseline of Fig. 2(a) (and the single-layer removal column of App. B) used Resize 256 and a 0.875 centre crop for DeiT-S and DeiT-B, while the k sweep used their own 0.9 crop (DINO: 0.875 in both). Same 5,000 image indices. The setting was kept in the release so that the original numbers are reproduced, and it is stated in the configuration; the review version mentions it in App. A. See also Section 5.3.
 - **Two code commits in the formal runs** (`94bf426`, `5faa503`): they differ only in that tolerance.
 - **Operational incidents (experiment log, 2026-11-05):** an interrupted code upload left the queue starting on old code; it was stopped at the GPU-test stage before any experiment ran. Retrieval of runs was retried after timeouts. No result was produced by these incidents.
 - **Registered claim corrected:** the ClickMe images were registered (2026-10-29) as ImageNet validation images; this was corrected before the formal ClickMe runs ended (2026-11-05 17:07, `7584ed2`); experiments and rules unchanged (5.3).
