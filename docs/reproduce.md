@@ -1,101 +1,51 @@
 # Reproduction map
 
-**What this file holds:** for every table, figure and number of the paper, the command that produces it, the
-output file, and the result of the three reproduction checks; then the map from the names used during the study
-(branch `study/v5`) to the names used here.
+For every result of the paper: the config that produces it, the summary table it ends up in, the figure or LaTeX table built from it, and the GPU time of the original run. Names follow `paper/naming.md`.
 
-- Runs: `python scripts/run.py --config configs/<config>.yaml` (all models and datasets of the config), outputs in
-  `outputs/<config>/[<dataset>/]<model>/`. Tables: `python scripts/make_tables.py` → `results/`. Figures:
-  `python scripts/make_figures.py` → `figures/`. `reproduce/full.sh` runs everything in dependency order.
-- **Layer 1** (rebuild from saved outputs): the per-image outputs of the original study runs, laid out as release
-  outputs (`docs/release/import_study_outputs.py`), rebuilt with `make_tables.py` / `make_figures.py` and compared
-  with the study's tables (`docs/release/compare_layer1.py`). "Identical" = same rows, largest absolute difference 0.
-- **Layer 2** (full rerun from a fresh clone with `reproduce/full.sh`): tolerances — means 1e-4; every verdict
-  identical; execution agreement 0.1 percentage points; retrained probe accuracy 0.5 points; means of readings that
-  use the probe (C2 and its combinations) 0.002.
-- **Layer 3** (fresh environment): `pytest` and `reproduce/smoke.sh` (16 images).
-- GPU time: of the original runs (NVIDIA L4, some on A100/H100 for the older ones), from `elapsed_seconds`.
+## How results are produced
 
-## Paper elements
+| Step | Command | Output |
+| --- | --- | --- |
+| Run one experiment | `python scripts/run.py --config configs/<config>.yaml` | `outputs/<config>/[<dataset>/]<model>/`: per-image tables and arrays, the effective config, git commit, versions, GPU, log |
+| Summary tables | `python scripts/make_tables.py` | `results/*.csv` (every mean, interval and verdict) |
+| Figures | `python scripts/make_figures.py` | `figures/*.pdf, *.png` (see `figures/README.md`) |
+| LaTeX tables | `python scripts/make_latex_tables.py` | `paper/tables/*.tex` |
+| Everything | `bash reproduce/full.sh` (about 12 GPU hours on one L4), or `bash reproduce/from_outputs.sh` (tables and figures only, from existing `outputs/`) | all of the above |
 
-| paper element | config(s) | output file(s) in `results/` | layer 1 | layer 2 (largest difference) | GPU time of the original runs |
-| --- | --- | --- | --- | --- | --- |
-| Figure 2(a), section 4.2 (P1) | fig2a_k_sweep, attention_off | k_sweep.csv, k_sweep_tests.csv; figures/figure_2a | identical | identical | 0.60 h + 0.16 h |
-| Figure 2(b); appendix figure (layer 12) | table1 (ClickMe gallery of DeiT-S) | figures/figure_2b, figure_A_2b_layer12 | identical (pixel) | same maps; figure visually identical | (with table1) |
-| Figure 3(a), M1; mean-map ring share | diagnose_probe, diagnose_mean_maps | diagnose.csv (panel M1), radial.csv | identical | identical | 0.09 h + 0.33 h |
-| Figure 3(b), M2; probe accuracy, top probability | diagnose_probe | diagnose.csv (M2), probe_accuracy.csv, numbers.csv | identical | identical (probes retrained: accuracy difference 0) | (above) |
-| Figure 3(c), M3 | high_norm | diagnose.csv (M3) | identical (from the earlier per-layer run, see note 1) | 1.2e-6 | 2.08 h (earlier run) |
-| Figure 3(d), R0 vs ClickMe per layer | clickme_layers | diagnose.csv (quality) | identical (from the earlier ClickMe run, note 1) | 1.5e-7 (after restoring the original batch sizes, note 3) | 2.58 h (earlier run) |
-| P2 | (figure 3) | diagnose_tests.csv | identical | verdicts identical | — |
-| Value-norm ratio (section 4.3) | value_norm | value_norm.csv | identical (0.292 / 0.230) | 1.5e-8 | 0.90 h (earlier run) |
-| Table 1, sections 4.2 and 4.4, appendix D tables | table1 | table1.md, table1.csv, table1_long.csv, correct_tests.csv | identical | identical | 3.05 h |
-| Table 1 "change the model" rows, P6 | table1_register, table1_mita | variants.csv | identical | identical | 0.13 h + 0.13 h |
-| Last-layer recovery (P5) | table1 | last_layer.csv | identical | identical | — |
-| The other combination order | order | order.csv | identical | identical | 0.56 h |
-| Negative controls (P4) | table1 | negative_controls.csv, correct_tests.csv | identical | identical | — |
-| All predictions | — | predictions.csv | identical | verdicts identical | — |
-| Sanity check (appendix C) | sanity | sanity.csv | identical | identical | 0.39 h |
-| Appendix B: one layer restricted / attention off | single_layer, attention_off | single_layer.csv | means identical; intervals differ by ≤ 0.0012 (note 2) | identical | 1.60 h (earlier run) |
-| Appendix B: head vs body patches | part_reliance | part_reliance.csv | identical | 7.1e-6 | 1.37 h (earlier run) |
-| Appendix B: top-k map vs full map | map_similarity | map_similarity.csv | identical (recomputed from saved scores) | 2.5e-5 (medians) | 1.08 h (earlier run) |
-| Register units of "+register" | register | outputs/register/deit/gate.json | not rebuilt (units copied into configs/table1_register.yaml) | same 8 units (gate.json) | 0.02 h |
-| Appendix E: why C2 fails; appendix figure | c2_analysis | c2_analysis/*.csv; figures/figure_A_c2 | identical (figure: same data, visually identical) | identical | 0.32 h |
-| Appendices D and E: supplementary analyses | supplementary_heldout, supplementary_eval | supplementary/*.csv | identical | identical | 0.19 h + 2.46 h |
-| Appendix E: discount without relocation | d2 | d2/*.csv | identical | identical | 0.67 h (2026-11-08 runs) |
-| Introduction: centre Gaussian vs ClickMe (0.41) | table1 | numbers.csv | identical to the earlier ClickMe run (0.4141) | identical | — |
-| Section 4.1: ClickMe near-duplicates among held-out candidates | diagnose_probe | numbers.csv, data/splits/heldout_4000.json | identical | identical | — |
-| Historical reproduction check (appendix C) | — | history/reproduction_check.csv | kept as a record (the earlier code is not here) | — | — |
+- **Committed files.** `results/`, `figures/` and `paper/tables/` hold the files of the original runs. The per-image `outputs/` (about 0.5 GB) are not committed; `full.sh` regenerates them.
+- **Clean code before a run.** `scripts/run.py` refuses to run on uncommitted code changes, because every output records its git commit.
 
-Notes.
-1. In the study, figure 3(c) and 3(d) came from earlier runs that computed dense attention mass per layer; here
-   they come from the R0 reading per layer (`high_norm`, `clickme_layers`). Dense attention mass and R0 differ by a
-   positive factor only, so the shares and rank correlations are the same; layer 1 rebuilt the tables from the
-   earlier runs' saved per-image values, layer 2 reruns them with the new code.
-2. The study took these intervals from an earlier analysis that resampled the images in another row order; the
-   means are identical and the intervals differ by at most 0.0012.
-3. The image-specific ClickMe control pairs each image with the previous image of its batch, so the batch size is
-   part of the definition. The first full rerun used batch 64 for every model in `clickme_layers` and differed by
-   up to 3.0e-4 for DeiT-S and DINO; with the original batch sizes (128 / 64 / 128) the difference is 1.5e-7.
+## Result → config → files
 
-Layer 2 was run on 2026-11-08 on one NVIDIA L4 (Colab), from a fresh clone of this branch (code `9bbee6f`, and
-`0d47c04` for the figure 3(d) rerun) in a fresh environment, following the README: 11.5 GPU hours for all runs.
-The full comparison is `docs/release/layer2.csv` (31 tables, every verdict identical, nothing over its tolerance).
-Layer 3: 78 tests pass on CPU (fresh environment) and on the L4; `reproduce/smoke.sh` ran in 233 s.
+| Result | Config(s) | Summary table(s) in `results/` | Figure / LaTeX table | GPU time of the original run |
+| --- | --- | --- | --- | --- |
+| Execution test, k sweep; attention removed | `k_sweep`, `attention_off` | `k_sweep.csv`, `k_sweep_tests.csv` | `execution_k_sweep` | 0.60 h + 0.16 h |
+| One layer restricted or without attention | `single_layer`, `attention_off` | `single_layer.csv` | `appendix/single_layer.tex` | 1.60 h |
+| Head vs body patches (PartImageNet) | `part_reliance` | `part_reliance.csv` | `appendix/head_vs_body.tex` | 1.37 h |
+| Top-k map vs full map | `map_similarity` | `map_similarity.csv` | `appendix/head_vs_body.tex` | 1.08 h |
+| Mean map, share of variance explained | `diagnose_probe`, `diagnose_mean_maps` | `diagnose.csv` (M1), `radial.csv` | `premise_mean_map_share` | 0.09 h + 0.33 h |
+| Position probes and their accuracy | `diagnose_probe` | `diagnose.csv` (M2), `probe_accuracy.csv`, `numbers.csv` | `premise_probe_accuracy` | (above) |
+| Received attention on high-norm tokens | `high_norm` | `diagnose.csv` (M3) | `premise_high_norm_share` | 2.08 h |
+| Value-norm ratio of high-norm tokens | `value_norm` | `value_norm.csv` | — (text) | 0.90 h |
+| Per-layer ClickMe alignment of received attention | `clickme_layers` | `diagnose.csv` (quality) | `received_attention_vs_clickme` | 2.58 h |
+| Main results: readings, stand-ins, references; negative controls; last-layer recovery; ClickMe gallery | `table1` | `table1_long.csv`, `table1.csv`, `table1.md`, `correct_tests.csv`, `negative_controls.csv`, `last_layer.csv`, `numbers.csv` | `table1.tex`, `table1_full.tex`, `appendix/paired_differences.tex`, `appendix/last_layer_recovery.tex`, `gallery_layers9_12`, `gallery_layer12` | 3.05 h |
+| Model-side variants | `table1_register`, `table1_mita` (units from `register`) | `variants.csv` | `table1.tex`, `appendix/model_side_variants.tex` | 0.13 h + 0.13 h (+ 0.02 h) |
+| Order B of the three corrections | `order` | `order.csv` | `table1_full.tex`, `appendix/combination_orders.tex` | 0.56 h |
+| Sanity check (model randomisation) | `sanity` | `sanity.csv` | `appendix/sanity_check.tex` | 0.39 h |
+| All pre-registered predictions | — | `predictions.csv`, `diagnose_tests.csv` | `appendix/predictions.tex` | — |
+| Why probe relocation fails (exploratory) | `c2_analysis` | `c2_analysis/*.csv` | `c2_analysis_*`, `appendix/probe_errors.tex`, `appendix/score_shift.tex` | 0.32 h |
+| Exploratory checks (combinations, contribution checks, dose, globalisation, MLP probe, GAE gap) | `supplementary_heldout`, `supplementary_eval` | `supplementary/*.csv` | `appendix/*.tex` | 0.19 h + 2.46 h |
+| Probability discount (exploratory) | `d2` | `d2/*.csv` | `appendix/probability_discount.tex` | 0.67 h |
+| Earlier reproduction check (pre-registered) | — | `history/reproduction_check.csv` | `appendix/negative_controls.tex` | — |
 
-## Old names → new names
+GPU times are from the original runs: NVIDIA L4, except parts of the single-layer restriction (DeiT-B), head versus body and the centre-Gaussian ClickMe number, which ran on an NVIDIA A100.
 
-| study/v5 | here |
-| --- | --- |
-| package `mita_probe` | `fastweight_vit` |
-| `mita_probe.probe` (top-k reading sets) | `fastweight_vit.execution` |
-| `identity.py` (position probe), probe classes in `readings.py` and the MLP probe | `probes.py` |
-| `explain.py` (GAE, centre, random, attention mass, probe map) | `references.py` (`topk_map` = the old probe 'mass' map) |
-| `plausibility.py` | `enrichment.py` |
-| `interventions.sink_tokens` | `tokens.high_norm_tokens` |
-| `budget.instrument` | `instrument.instrument` |
-| `experiments/datasets.py` | `data/build.py` |
-| readings `blur`, `no_high`, `centre_sub` | `stand_in_blur`, `stand_in_no_high`, `stand_in_centre` |
-| supplementary maps `no_high_l<l>`, `blurMLP` | `stand_in_no_high_l<l>`, `stand_in_blur_MLP` |
-| experiment `anatomy` stage `rq2` (k sweep); runs `read_ksweep_*` | `execution` stage `k_sweep`; config `fig2a_k_sweep` |
-| experiment `anatomy` stage `rq1` (setting L3 only); runs `v2_rq1`, `v2_dino_rq1`, `v3_deit_b_rq1` | `execution` stage `single_layer`; config `single_layer` |
-| experiment `attention_off` (T7); runs `ab_t7_*` | `execution` stage `attention_off`; config `attention_off` |
-| `diagnose` stages `probe`, `m1`; runs `diagnose_probe_*`, `diagnose_m1_*` | stages `probe`, `mean_maps`; configs `diagnose_probe`, `diagnose_mean_maps` |
-| `identity.csv`, `identity_images.csv` | `probe_accuracy.csv`, `probe_accuracy_images.csv` |
-| `layer_reading` (S3; family 'attention'); runs `s_layers_*` | `diagnose` stage `high_norm`; config `high_norm` |
-| value-norm ratio of the budget study (T3, `heads.csv`); runs `ab_t3_*` | `diagnose` stage `high_norm`; config `value_norm` |
-| `human_alignment` (E7/S2, 'attention_layer<l>'); runs `s_e7_clickme_*` | `correct` with R0_l1–R0_l12; config `clickme_layers` |
-| `correct` runs `correct_ablation_*`, `correct_register_*`, `correct_mita_*`, `correct_order_*` | configs `table1`, `table1_register`, `table1_mita`, `order` |
-| `sanity` runs `correct_sanity_*` | config `sanity` |
-| `parts` (E8, reliance part); runs `v3_e8_parts_*` | `part_reliance` |
-| S1 similarity (`explanations`, probe_mass vs attention_mass); runs `s_e4_imagenet_s_*` | `map_similarity` |
-| `register` stage `search` (T2); run `ab_t2_deit`, `gate.json` | `register_search`; config `register`; units in `table1_register.yaml` |
-| `explore_c2` (E-C2); runs `explore_c2_*`, `explore_c2_probefix_*` | `c2_analysis` |
-| `supp` (X1–X5) stages `heldout`, `eval`; runs `supp_heldout_*`, `supp_eval_*` | `supplementary`; configs `supplementary_heldout`, `supplementary_eval` |
-| D2 (B50); runs `explore_d2_*` | `correct` with D2 readings; config `d2` |
-| analysis folders `v5_analysis` (A/), `explore_c2_analysis` (E/), `v5_supp_analysis` (S/) | `results/`, `results/c2_analysis/`, `results/supplementary/` |
-| `fig2a_ksweep.csv`, `p1_tests.csv`, `fig3_diagnose.csv`, `a2_single_layer.csv`, `a6_last_layer.csv`, `a7_order.csv` | `k_sweep.csv`, `k_sweep_tests.csv`, `diagnose.csv`, `single_layer.csv`, `last_layer.csv`, `order.csv` |
-| `x1.csv` … `x6.csv`, `x2_seeds.csv`, `x3_layers.csv`, `x3_dose.csv`, `x4_layers.csv`, `x5_probe.csv`, `x5.csv` | `combinations.csv`, `c3_mechanism.csv`, `c3_mechanism_seeds.csv`, `dose_layers.csv`, `dose.csv`, `globalisation.csv`, `mlp_probe.csv`, `c2_variants.csv`, `gae_gap.csv` |
-| branch labels X1-A/B, X3-A/B, M-weak, H-global | A/B, A/B, weak, holds / does not hold |
-| figures `figure_v5_A_c2` | `figure_A_c2` |
-| decision ids B05–B50, predictions P1–P7, extensions B/C/E, appendix ids A2/A6/A7 | `docs/preregistration.md` (P1–P7 kept) |
-| `colab/` scripts, `configs/v5.yaml` and its base chain | `reproduce/`, flattened configs |
+## Reproduction checks
+
+- **Full rerun.** On 2026-11-08 every experiment was rerun from a fresh clone, in a fresh environment, on one NVIDIA L4 (11.5 GPU hours), following the README.
+  - All 31 summary tables agreed with the committed ones within tolerance, and every verdict was identical.
+  - The largest difference of a mean was 2.5e-5 (map similarity); 26 tables were bit-identical.
+  - Tolerances: means 1e-4; readings with a retrained probe 2e-3; execution agreement 0.1 points; probe accuracy 0.5 points.
+  - Report: `docs/verification/rerun_2026-11-08.csv`; script: `docs/verification/compare_tables.py`.
+- **Batch size is part of one definition.** The image-specific ClickMe control pairs each image with the previous image of its batch, so the batch size matters. `clickme_layers` uses batch 128 / 64 / 128 (DeiT-S / DeiT-B / DINO ViT-S), as in the original runs.
+- **Tests.** `pytest` runs 78 tests on CPU. `bash reproduce/smoke.sh` runs every experiment on 16 images (about 4 minutes on an L4).

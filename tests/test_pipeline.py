@@ -101,7 +101,7 @@ def test_run_script_expands_models_and_datasets():
 
 def test_execution_stages(patched):
     tmp = patched
-    config = config_for('fig2a_k_sweep')
+    config = config_for('k_sweep')
     config['sweep']['k_sweep'] = [4, 16]
     execution.run(run_args(stage='k_sweep'), config, folder(tmp, 'k'), 'test')
     predictions = pd.read_csv(tmp / 'k' / 'predictions.csv')
@@ -213,7 +213,7 @@ def test_c2_analysis_and_supplementary(patched):
     assert 'C2MLP' in set(pd.read_csv(tmp / 'eval_c' / 'alignment.csv').method)
 
 
-def test_appendix_checks(patched):
+def test_part_reliance_map_similarity_and_register_search(patched):
     tmp = patched
     config = config_for('part_reliance')
     part_reliance.run(run_args(), config, folder(tmp, 'parts'), 'test')

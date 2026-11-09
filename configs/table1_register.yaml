@@ -1,6 +1,6 @@
-# Table 1 "+register" row: DeiT-S with a test-time register. register_units: the 8 FFN units (layer, unit) shifted to
-# the register token, as found by the register search (configs/register.yaml; the original search run of 2026-11-03,
-# its gate.json, is kept on the study/v5 branch).
+# "+register" row of the main results table: DeiT-S with a test-time register. register_units: the 8 FFN units
+# (layer, unit) shifted to the register token, as found by the register search (configs/register.yaml, which writes
+# them to outputs/register/deit/gate.json on 500 ImageNet-S pilot images).
 experiment: correct
 models: [deit]
 datasets: [imagenet_s, clickme]

@@ -1,8 +1,9 @@
 """Register-neuron search: the FFN units that make high-norm tokens (after Jiang et al. 2025).
 
-The "+register" row of Table 1 shifts these units to a test-time register token (experiments/correct.py,
-`variant: register`). The units found for DeiT-S are written into configs/register.yaml; this experiment shows how
-they were found (pilot split of ImageNet-S, UNIFORM_PREPROCESSING; config `search`):
+The "+register" row of the main results table shifts these units to a test-time register token
+(experiments/correct.py, `variant: register`). The units found for DeiT-S are written into
+configs/table1_register.yaml; this experiment (configs/register.yaml) shows how they were found (pilot split of
+ImageNet-S, UNIFORM_PREPROCESSING; config `search`):
 1. one unedited pass: high-norm patches per layer; L* = first layer where >= `presence_share` of the
    images have one (registers.first_high_layer). Without L* the search stops (`gate.json`: found False).
 2. second pass: FFN unit statistics in layers 1..L*-1 on the patches that are high-norm at L*

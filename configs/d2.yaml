@@ -1,4 +1,4 @@
-# Appendix E (exploratory, proposed after the main results; registered before running): discount without
+# Probability discount (exploratory, proposed after the main results; registered before running): discount without
 # relocation. D2 = R0 x P_l(j | x_j) per layer, layers 9-12; stand-in D2_shuffle (P_l(j | x_j) permuted within image
 # and layer, seeds 0-4, averaged per image); C3D2 = C3 x P_l(j | x_j), reported only under branch A of the rule in
 # docs/preregistration.md. Enrichment and ClickMe only (no SRG). Needs the diagnose outputs.

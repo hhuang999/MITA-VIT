@@ -1,6 +1,6 @@
-# Figure 3(a), section 4.3, the lens of C1: mean maps on the 2,000 test held-out images (two geometries: the
-# model's crop for ImageNet-S, the ClickMe storage format for ClickMe) and the M1 share on ImageNet-S.
-# Needs outputs/diagnose_probe.
+# Premise of C1 (figures/premise_mean_map_share): mean maps on the 2,000 test held-out images (two geometries: the
+# model's crop for ImageNet-S, the ClickMe storage format for ClickMe) and the M1 share on ImageNet-S. Needs
+# outputs/diagnose_probe.
 experiment: diagnose
 stage: mean_maps
 models: [deit, deit_b, dino]

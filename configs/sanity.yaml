@@ -1,5 +1,5 @@
-# Section 4.1 and appendix C: cascading weight randomisation of the readings (1,000 ImageNet-S images); the lens of
-# the trained model stays fixed.
+# Sanity check: cascading weight randomisation of the readings (1,000 ImageNet-S images); the lens of the trained
+# model stays fixed.
 experiment: sanity
 models: [deit, deit_b, dino]
 batch_size: 64

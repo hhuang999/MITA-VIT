@@ -1,5 +1,5 @@
-"""Supplementary analyses (appendices D and E; exploratory, proposed after the main results; no registered verdict
-changes): combinations of corrections, the C3 mechanism, dose-response, globalisation, the MLP probe.
+"""Supplementary analyses (exploratory, proposed after the main results; no registered verdict changes):
+combinations of corrections, the C3 mechanism, dose-response, globalisation, the MLP probe.
 
 Stage `heldout` (one run per model; the held-out images and linear probes of the diagnose `probe` run):
 - MLP probe: a two-layer MLP position probe per layer (D -> 1,024 -> GELU -> 196; standardised input, Adam, lr

@@ -1,5 +1,5 @@
-# Appendices D and E (exploratory): combinations, C3 mechanism, dose-response and C2 variants on ImageNet-S and
-# ClickMe. Needs outputs/supplementary_heldout and the diagnose outputs.
+# Exploratory checks: combinations, C3 mechanism, dose-response and C2 variants on ImageNet-S and ClickMe. Needs
+# outputs/supplementary_heldout and the diagnose outputs.
 experiment: supplementary
 stage: eval
 models: [deit, deit_b, dino]

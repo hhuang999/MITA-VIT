@@ -1,5 +1,5 @@
 """Execution checks: does the model still predict the same class when it may read only the units the attention
-map picks? (RQ1; figure 2(a) and appendix B)
+map picks? (the execution test with its k sweep, and the single-layer checks)
 
 On the fixed 5,000-image ImageNet validation subset (data/splits), per image and setting: top-1 agreement with the
 intact model and KL(intact || restricted).

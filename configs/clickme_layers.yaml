@@ -1,6 +1,6 @@
-# Figure 3(d): R0 of each single layer against the ClickMe human maps (image-specific Spearman). The batch sizes
-# are those of the original runs: the image-specific control pairs each image with the previous one in its batch, so
-# the batch size decides the pairs.
+# Per-layer ClickMe alignment of received attention (figures/received_attention_vs_clickme): R0 of each single layer
+# against the ClickMe human maps (image-specific Spearman). The batch sizes are those of the original runs: the
+# image-specific control pairs each image with the previous one in its batch, so the batch size decides the pairs.
 experiment: correct
 models:
   deit:

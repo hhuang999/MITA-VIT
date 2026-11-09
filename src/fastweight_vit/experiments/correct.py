@@ -1,4 +1,4 @@
-"""Correct (RQ3; Table 1): the lens readings, their stand-ins and the references on one dataset.
+"""Correct (the main results table): the lens readings, their stand-ins and the references on one dataset.
 
 One run scores a list of maps on one dataset:
 - `imagenet_s`: plausibility.csv (same-distance-ring enrichment, with the other measures of
@@ -15,7 +15,8 @@ Map entries in `correct.methods`:
 The lens (probes, blur widths) comes from the diagnose `probe` run and the mean maps from the diagnose
 `mean_maps` run of the same model (`lens_runs`, with {model}); ClickMe uses the ClickMe-geometry mean maps.
 
-`variant` changes the model instead of the reading (Table 1, "change the model" rows), with the R0 reading only:
+`variant` changes the model instead of the reading (the "change the model" rows of the main results table), with the
+R0 reading only:
 - `register`: DeiT-S with a test-time register (the FFN units in `gate`, found by the register search, shifted to
   an added register token), prefix = CLS + register;
 - `mita`: MiTA-DeiT-S (top-k training), attention with summary-slot weight passed back to tokens
@@ -27,7 +28,8 @@ Maps listed in `no_srg` skip the faithfulness part (the early-layer negative con
 and ClickMe only; docs/preregistration.md).
 
 A seeded gallery of `gallery_images` images keeps every map, and for ClickMe the image and the human map, in
-gallery_<start>.npz (figure 2(b): the two lowest-indexed of the 24 drawn images).
+gallery_<start>.npz (the ClickMe gallery figures, figures/gallery_*, show the two lowest-indexed of the 24 drawn
+images).
 """
 
 import logging

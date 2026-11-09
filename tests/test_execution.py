@@ -41,7 +41,12 @@ def full_plans(model, plan_for):
     return {layer: plan_for(layer) for layer in range(1, len(model.blocks) + 1)}
 
 
-def test_hand_example_of_design_section_4_3():
+def test_hand_worked_example_of_the_four_attention_modes():
+    """Four tokens on a 1 x 4 grid, two regions (tokens 1-2 and 3-4), scale 1: region 1 reads tokens {3, 2},
+    region 2 reads {1, 4}; the two landmarks are the mean queries of the regions. The expected outputs of queries 1
+    and 2 were worked out by hand (three decimals): softmax over all keys (full), over the two summary slots only
+    (summary; slot value = landmark's own softmax over all keys @ V), over the region's reading set only (shared),
+    and over the reading set plus the summary slots (mixed)."""
     q = torch.tensor([[3., 1.], [-1., 1.], [1., -1.], [1., -1.]])[None, None]
     k = torch.tensor([[1., 0.], [0., 2.], [2., 2.], [0., -1.]])[None, None]
     v = torch.tensor([[1., 0.], [0., 1.], [1., 1.], [0., -1.]])[None, None]
@@ -52,7 +57,7 @@ def test_hand_example_of_design_section_4_3():
     summary = mixed_attention(q, k, v, 1., None, lm)[0, 0]
     shared = mixed_attention(q, k, v, 1., mask)[0, 0]
     mixed = mixed_attention(q, k, v, 1., mask, lm)[0, 0]
-    expected = {  # q1 and q2 rows of the two tables in design section 4.3
+    expected = {  # outputs of queries 1 and 2, computed by hand
         'full': ([0.997, 0.993], [0.150, 0.880]), 'summary': ([0.843, 0.805], [0.843, 0.805]),
         'shared': ([0.998, 1.000], [0.119, 1.000]), 'mixed': ([0.994, 0.996], [0.206, 0.977])}
     for name, out in [('full', full), ('summary', summary), ('shared', shared), ('mixed', mixed)]:
@@ -163,7 +168,7 @@ def test_mita_native_equals_frozen_execution_of_its_own_pattern(model):
 
 
 def test_k_sweep_settings_and_plans():
-    config = config_for('fig2a_k_sweep')
+    config = config_for('k_sweep')
     specs = expand_settings(config)
     assert len(specs) == 6 + 6 * 5 and {spec['mode'] for spec in specs} == {'L3', 'rand'}
     q, k = torch.randn(2, 6, 197, 64), torch.randn(2, 6, 197, 64)

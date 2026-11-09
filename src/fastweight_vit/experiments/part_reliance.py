@@ -1,4 +1,4 @@
-"""Part reliance (appendix B): does the model depend more on an animal's head patches than on its body patches?
+"""Part reliance: does the model depend more on an animal's head patches than on its body patches?
 
 PartImageNet_Seg (ImageNet training images; see fastweight_vit.data.partimagenet), each model's own ImageNet
 preprocessing. For each image, the model's dependence on each part is measured by count-matched patch removal in

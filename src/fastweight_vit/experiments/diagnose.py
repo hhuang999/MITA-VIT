@@ -1,4 +1,5 @@
-"""Diagnose (RQ2; figure 3): held-out images, position probes (M2), mean maps and the M1 share, high-norm tokens (M3).
+"""Diagnose (the premises of the corrections, per layer): held-out images, position probes (M2), mean maps and the M1
+share, high-norm tokens (M3).
 
 Stage `probe`:
 - selects the held-out images (data.heldout; the same for every model): the first `probe_images` train the
@@ -21,7 +22,7 @@ Stage `mean_maps`, after `probe`:
 Stage `high_norm` (on a mask dataset; independent of the other stages): per image and layer, high_norm.csv holds
 - high_fraction: share of patches that are high-norm (block input norm before norm1 > `norm_ratio` x the image's
   median patch norm, tokens.high_norm_tokens);
-- high_share: share of the layer's R0 on those patches (M3, figure 3(c));
+- high_share: share of the layer's R0 on those patches (M3; figures/premise_high_norm_share);
 - value_ratio_sum, value_ratio_n: over heads, the sum and count of (mean ||v_j|| of the high-norm patches) /
   (median ||v_j|| of the other patches), for images with a high-norm patch. Per layer, sum / count over all
   images and heads; the paper reports its mean over layers 9-12.

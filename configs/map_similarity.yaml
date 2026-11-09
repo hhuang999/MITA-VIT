@@ -1,5 +1,5 @@
-# Appendix B: per-image Spearman between the top-k map (the reading sets of the execution checks) and the full
-# attention map, layers 9-12, ImageNet-S.
+# Top-k map similarity: per-image Spearman between the top-k map (the reading sets of the execution checks) and the
+# full attention map, layers 9-12, ImageNet-S.
 experiment: map_similarity
 models:
   deit:
