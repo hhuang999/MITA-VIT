@@ -1,0 +1,31 @@
+2026-10-31 08:02:48,516 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
+2026-10-31 08:02:48,518 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-10-31 08:04:20,936 clickme_dino 640/17408 images; 92.1s
+2026-10-31 08:05:46,146 clickme_dino 1280/17408 images; 177.4s
+2026-10-31 08:07:11,360 clickme_dino 1920/17408 images; 262.6s
+2026-10-31 08:08:36,609 clickme_dino 2560/17408 images; 347.8s
+2026-10-31 08:10:01,908 clickme_dino 3200/17408 images; 433.1s
+2026-10-31 08:11:27,303 clickme_dino 3840/17408 images; 518.5s
+2026-10-31 08:12:52,592 clickme_dino 4480/17408 images; 603.8s
+2026-10-31 08:14:17,970 clickme_dino 5120/17408 images; 689.2s
+2026-10-31 08:15:43,403 clickme_dino 5760/17408 images; 774.6s
+2026-10-31 08:17:08,816 clickme_dino 6400/17408 images; 860.0s
+2026-10-31 08:18:34,095 clickme_dino 7040/17408 images; 945.3s
+2026-10-31 08:19:59,510 clickme_dino 7680/17408 images; 1030.7s
+2026-10-31 08:21:24,788 clickme_dino 8320/17408 images; 1116.0s
+2026-10-31 08:22:50,199 clickme_dino 8960/17408 images; 1201.4s
+2026-10-31 08:24:15,500 clickme_dino 9600/17408 images; 1286.7s
+2026-10-31 08:25:40,862 clickme_dino 10240/17408 images; 1372.1s
+2026-10-31 08:27:06,156 clickme_dino 10880/17408 images; 1457.4s
+2026-10-31 08:28:31,440 clickme_dino 11520/17408 images; 1542.7s
+2026-10-31 08:29:56,760 clickme_dino 12160/17408 images; 1628.0s
+2026-10-31 08:31:21,968 clickme_dino 12800/17408 images; 1713.2s
+2026-10-31 08:32:47,104 clickme_dino 13440/17408 images; 1798.3s
+2026-10-31 08:34:12,373 clickme_dino 14080/17408 images; 1883.6s
+2026-10-31 08:35:37,747 clickme_dino 14720/17408 images; 1969.0s
+2026-10-31 08:37:03,097 clickme_dino 15360/17408 images; 2054.3s
+2026-10-31 08:38:28,196 clickme_dino 16000/17408 images; 2139.4s
+2026-10-31 08:39:53,439 clickme_dino 16640/17408 images; 2224.6s
+2026-10-31 08:41:18,706 clickme_dino 17280/17408 images; 2309.9s
+2026-10-31 08:41:35,752 clickme_dino 17408/17408 images; 2327.0s
+2026-10-31 08:41:35,811 Complete: ClickMe alignment for dino

@@ -26,11 +26,11 @@ NAME = {'deit': 'DeiT-S', 'deit_b': 'DeiT-B', 'dino': 'DINO ViT-S'}
 COLOR = {'deit': '#2f6db5', 'deit_b': '#d9822b', 'dino': '#3a9a5b'}
 MARK = {'deit': 'o', 'deit_b': 's', 'dino': '^'}
 rows = list(csv.DictReader(open(results + '/diagnose.csv')))
-PANELS = [('M1', 'R0', '(a) Specificity', 'Variance explained\nby the mean map (%)', 100.0, None),
-          ('M2', 'probe', '(b) Location', 'Position-probe\naccuracy (%)', 100.0, (0, 104)),
-          ('M3', 'R0', '(c) Contribution', 'Attention on\nhigh-norm tokens (%)', 100.0, None),
-          ('quality', 'R0', '(d) Map quality', 'Image-specific\nClickMe alignment', 1.0, None)]
-fig, axes = plt.subplots(1, 4, figsize=(5.5, 1.38))
+PANELS = [('M1', 'R0', '(a) Specificity', 'Variance\nexplained (%)', 100.0, None),
+          ('M2', 'probe', '(b) Location', 'Probe\naccuracy (%)', 100.0, (0, 104)),
+          ('M3', 'R0', '(c) Contribution', 'On high-norm\ntokens (%)', 100.0, None),
+          ('quality', 'R0', '(d) Map quality', 'ClickMe\nalignment', 1.0, None)]
+fig, axes = plt.subplots(1, 4, figsize=(5.5, 1.16))
 for ax, (panel, variant, title, ylabel, scale, ylim) in zip(axes, PANELS):
     ax.axvspan(8.5, 12.5, color='#000000', alpha=.06, lw=0)
     for m in MODELS:
@@ -50,7 +50,7 @@ handles = [Line2D([], [], color=COLOR[m], marker=MARK[m], ms=2.6, lw=1.0) for m 
 handles.append(Patch(facecolor='#000000', alpha=.10, lw=0))
 fig.legend(handles, [NAME[m] for m in MODELS] + ['layers 9–12 (summed in the maps)'], loc='lower center',
            ncol=4, frameon=False, handlelength=1.6, columnspacing=1.6, bbox_to_anchor=(.5, -.02))
-fig.subplots_adjust(left=.085, right=.995, top=.96, bottom=.39, wspace=.72)
+fig.subplots_adjust(left=.085, right=.995, top=.95, bottom=.39, wspace=.72)
 smallest = min(t.get_fontsize() for t in fig.findobj(matplotlib.text.Text) if t.get_text())
 assert smallest >= 7, smallest
 fig.savefig(out)

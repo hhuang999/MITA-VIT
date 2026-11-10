@@ -1,0 +1,24 @@
+2026-11-07 10:23:26,165 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
+2026-11-07 10:23:26,167 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-07 10:23:36,602 probe part done; 10.2s
+2026-11-07 10:23:55,340 shift_dino 640/12419 images; 18.6s
+2026-11-07 10:24:14,049 shift_dino 1280/12419 images; 37.3s
+2026-11-07 10:24:32,716 shift_dino 1920/12419 images; 56.0s
+2026-11-07 10:24:50,898 shift_dino 2560/12419 images; 74.1s
+2026-11-07 10:25:09,051 shift_dino 3200/12419 images; 92.3s
+2026-11-07 10:25:27,274 shift_dino 3840/12419 images; 110.5s
+2026-11-07 10:25:45,542 shift_dino 4480/12419 images; 128.8s
+2026-11-07 10:26:04,274 shift_dino 5120/12419 images; 147.5s
+2026-11-07 10:26:22,719 shift_dino 5760/12419 images; 166.0s
+2026-11-07 10:26:42,326 shift_dino 6400/12419 images; 185.6s
+2026-11-07 10:27:00,210 shift_dino 7040/12419 images; 203.5s
+2026-11-07 10:27:20,607 shift_dino 7680/12419 images; 223.8s
+2026-11-07 10:27:38,451 shift_dino 8320/12419 images; 241.7s
+2026-11-07 10:27:56,941 shift_dino 8960/12419 images; 260.2s
+2026-11-07 10:28:15,115 shift_dino 9600/12419 images; 278.4s
+2026-11-07 10:28:33,578 shift_dino 10240/12419 images; 296.8s
+2026-11-07 10:28:52,034 shift_dino 10880/12419 images; 315.3s
+2026-11-07 10:29:09,887 shift_dino 11520/12419 images; 333.1s
+2026-11-07 10:29:27,881 shift_dino 12160/12419 images; 351.1s
+2026-11-07 10:29:35,554 shift_dino 12419/12419 images; 358.8s
+2026-11-07 10:29:35,684 Complete: E-C2 for dino

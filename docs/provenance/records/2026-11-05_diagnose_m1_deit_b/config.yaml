@@ -1,0 +1,396 @@
+batch_size: 64
+bootstrap_resamples: 1000
+bootstrap_seed: 0
+confidence_level: 0.95
+correct:
+  budgets:
+  - 1
+  - 2
+  - 4
+  - 8
+  - 16
+  - 32
+  - 64
+  - 98
+  - 147
+  conditions:
+  - drop_top
+  - drop_bottom
+  dataset: imagenet_s
+  faithfulness_images: 2000
+  gallery_images: 24
+  gate: experiments/2026-11-03_ab_t2_deit/gate.json
+  lens_runs:
+    m1: experiments/2026-11-05_diagnose_m1_{model}
+    probe: experiments/2026-11-05_diagnose_probe_{model}
+  methods:
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    name: R0
+    reading: R0
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    name: C1
+    reading: C1
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    name: C2
+    reading: C2
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    name: C3
+    reading: C3
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    name: R_all
+    reading: R_all
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    name: blur
+    reading: blur
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    name: no_high
+    reading: no_high
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    name: centre_sub
+    reading: centre_sub
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    name: mean_map
+    reading: mean_map
+  - method: gae
+    name: gae
+  - method: centre
+    name: centre
+  - method: random
+    name: random
+  - layers:
+    - 8
+    name: R0_l8
+    reading: R0
+  - layers:
+    - 9
+    name: R0_l9
+    reading: R0
+  - layers:
+    - 10
+    name: R0_l10
+    reading: R0
+  - layers:
+    - 11
+    name: R0_l11
+    reading: R0
+  - layers:
+    - 12
+    name: R0_l12
+    reading: R0
+  - layers:
+    - 12
+    name: C1_l12
+    reading: C1
+  - layers:
+    - 12
+    name: C2_l12
+    reading: C2
+  - layers:
+    - 12
+    name: C3_l12
+    reading: C3
+  - layers:
+    - 12
+    name: R_all_l12
+    reading: R_all
+  - layers:
+    - 1
+    - 2
+    - 3
+    - 4
+    name: R0_early
+    reading: R0
+  - layers:
+    - 1
+    - 2
+    - 3
+    - 4
+    name: C2_early
+    reading: C2
+  no_srg:
+  - R0_early
+  - C2_early
+  norm_ratio: 3
+  random_seed: 0
+  shards: 17
+  subset_seed: 0
+  tie_seed: 0
+design: docs/experiment_plan_v5.md
+device: cuda
+diagnose:
+  dataset: imagenet_s
+  duplicate_threshold: 0.9
+  epochs: 30
+  heldout_seed: 0
+  mean_images: 2000
+  norm_ratio: 3
+  probe_images: 2000
+  probe_run: experiments/2026-11-05_diagnose_probe_{model}
+  seed: 0
+experiment: diagnose
+explanations:
+  budgets:
+  - 1
+  - 2
+  - 4
+  - 8
+  - 16
+  - 32
+  - 64
+  - 98
+  - 147
+  conditions:
+  - keep_top
+  - drop_top
+  - drop_bottom
+  dataset: imagenet_s
+  faithfulness_images: null
+  methods:
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    method: probe
+    name: probe_mass
+    weight: mass
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    method: probe
+    name: probe_count
+    weight: count
+  - layers:
+    - 9
+    - 10
+    - 11
+    - 12
+    method: probe
+    name: probe_value
+    weight: value
+  - layers:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    method: probe
+    name: probe_mass_all
+    weight: mass
+  - method: cls_attention
+    name: cls_attention
+  - method: rollout
+    name: rollout
+  - method: gae
+    name: gae
+  - method: gradcam
+    name: gradcam
+  - method: integrated_gradients
+    name: integrated_gradients
+  - method: centre
+    name: centre
+  - method: random
+    name: random
+  - method: mask
+    name: mask
+  probe_budget_from: probe_mass
+  probe_spec:
+    mode: L3
+  random_seed: 0
+  saco_groups: 10
+  subset_seed: 0
+  tie_seed: 0
+indices: data/imagenet_val_indices_seed0.json
+main:
+  cls: own
+  k: 16
+  m_side: 4
+  routing: spatial
+  scoring: query
+  summary_scale: mita
+mita:
+  checkpoint: checkpoints/mita/best_checkpoint.pth
+  k: 25
+  m_side: 5
+  reported_top1: 79.8
+  reproduce_images: 50000
+  reproduce_tolerance_pp: 0.2
+model: deit_b
+n_images: 5000
+noise:
+  shift_pixels: 1
+num_workers: 2
+pet:
+  composition:
+  - k: 16
+    landmark_mode: clean
+    m_side: 4
+  - k: 25
+    landmark_mode: clean
+    m_side: 5
+  - k: 25
+    landmark_mode: mita
+    m_side: 5
+  deletion_categories:
+  - sink
+  - foreground
+  - background
+  example_indices:
+  - 2335
+  - 1874
+  - 989
+  images: 3669
+  sink_threshold: 3
+random_seeds:
+- 0
+- 1
+- 2
+- 3
+- 4
+rq1:
+  cls_check:
+    k: 8
+    layer: 12
+  k:
+  - 16
+  per_query_k:
+  - 16
+  - 32
+rq2:
+  k_sweep:
+  - 4
+  - 8
+  - 16
+  - 32
+  - 64
+  - 128
+  m_sweep:
+  - 1
+  - 2
+  - 4
+  - 7
+  - 14
+  settings:
+  - mode: L1
+    name: L1
+    sweep: k
+  - mode: L2
+    name: L2
+    sweep: m
+  - mode: L3
+    name: L3_spatial
+    sweep: k
+  - mode: L3
+    name: L3_dot
+    routing: dot
+    sweep: k
+  - mode: L4
+    name: L4_spatial
+    sweep: k
+  - mode: L4
+    name: L4_dot
+    routing: dot
+    sweep: k
+  - mode: L3
+    name: L3_spatial_m
+    sweep: m
+  - mode: L3
+    name: L3_dot_m
+    routing: dot
+    sweep: m
+  - mode: L4
+    name: L4_spatial_m
+    sweep: m
+  - mode: L4
+    name: L4_dot_m
+    routing: dot
+    sweep: m
+  - mode: rand
+    name: rand
+    seeds: true
+    sweep: k
+  - mode: randC
+    name: randC
+    seeds: true
+  - cls: routed
+    mode: L3
+    name: v1_regression
+    routing: dot
+    sweep: k
+  - cls: routed
+    k: 25
+    landmark_mode: mita
+    m_side: 5
+    mode: L4
+    name: mita_default_dot
+    routing: dot
+  - k: 25
+    m_side: 5
+    mode: L4
+    name: mita_default_spatial
+  - cls: routed
+    mode: L3
+    name: ablate_cls_routed_L3
+  - cls: routed
+    mode: L4
+    name: ablate_cls_routed_L4
+  - mode: L3
+    name: ablate_attention_scoring_L3
+    scoring: attention
+  - mode: L4
+    name: ablate_attention_scoring_L4
+    scoring: attention
+  - mode: L2
+    name: ablate_standard_scale_L2
+    summary_scale: standard
+  - mode: L4
+    name: ablate_standard_scale_L4
+    summary_scale: standard
+smoke_images: 0
+stage: m1
+subset_seed: 0
