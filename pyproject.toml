@@ -23,6 +23,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest"]
 
+[project.urls]
+Repository = "https://github.com/hhuang999/vit-fastweight-lens"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
