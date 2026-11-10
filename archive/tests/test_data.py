@@ -28,4 +28,3 @@ def test_partimagenet_reads_the_release_layout(tmp_path):
     assert image.shape == (3, 224, 224) and fractions.shape == (196, 41) and index == 3
     assert torch.allclose(fractions.sum(-1), torch.ones(196)) and fractions[:, 1].sum() > 0
     assert foreground.sum() > 0 and partimagenet.PART_NAMES[13] == 'Bird Head'
-
