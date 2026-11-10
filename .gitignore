@@ -9,7 +9,6 @@ env/
 /local-paper-materials/
 /paper/key_facts.md
 /paper/evidence_dossier.md
-/paper/references.bib
 
 # Python build and cache files
 __pycache__/
