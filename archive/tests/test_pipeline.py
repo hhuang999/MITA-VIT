@@ -130,5 +130,3 @@ def test_part_reliance_and_map_similarity(patched):
     map_similarity.run(run_args(), config_for('map_similarity'), folder(tmp, 'similarity'), 'test')
     rho = pd.read_csv(tmp / 'similarity' / 'similarity.csv')
     assert len(rho) == 6 and rho.spearman.between(-1, 1).all()
-
-

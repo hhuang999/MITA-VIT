@@ -22,4 +22,3 @@ class FakeParts(Dataset):
         fractions[columns >= 10, 40] = 1
         obj = columns < 10
         return torch.randn(3, 224, 224, generator=generator), obj, torch.ones(196, dtype=torch.bool), fractions, index
-
