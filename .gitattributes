@@ -8,3 +8,5 @@
 *.bib text eol=lf
 *.txt text eol=lf
 *.pdf binary
+
+/archive export-ignore
