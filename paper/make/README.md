@@ -1,23 +1,15 @@
-# How the figure and tables made for this paper were produced
+# Build the paper figure and tables
 
-All scripts only read files of the repository and write a figure or LaTeX; they compute no new numbers
-(values are rounded or copied). Run them from this folder, with the repository layout
-(`results/` and `paper/tables/` as in the repository):
+Run from the repository root:
 
 ```bash
-python -I make_diagnosis_figure.py ../../results ../figures_own/diagnosis.pdf        # Figure 2
-python -I make_main_table.py       ../../results ../tables_own/main_results.tex      # Table 1
-python -I diag_table.py ../../results/diagnose.csv ../tables_own/diagnostics_per_layer.tex   # Table B.1
-python -I make_paired_table.py     ../tables ../tables_own/paired_differences.tex    # Table B.2
+python -I paper/make/make_main_table.py results paper/tables_own/main_results.tex
+python -I paper/make/diag_table.py results/diagnose.csv paper/tables_own/diagnostics_per_layer.tex
+python -I paper/make/make_paired_table.py paper/tables paper/tables_own/paired_differences.tex
+python -I paper/make/make_diagnosis_figure.py results paper/figures_own/diagnosis.pdf
 ```
 
-- Figure 2 (`figures_own/diagnosis.pdf`): the four per-layer panels of `results/diagnose.csv` in one
-  figure with a shared legend (5.5 in wide, fonts 7 pt or larger, TrueType fonts). The image holds no
-  panel letters or titles; the labels (a)-(d) are set in LaTeX above the image (`\plabel` in `main.tex`).
-- Table 1: `results/table1_long.csv` (values), `results/correct_tests.csv` and `results/variants.csv`
-  (higher/lower marks).
-- Table B.2: seven blocks copied from `paper/tables/appendix/paired_differences.tex`; the script
-  checks that every number occurs in the source.
-- `tables_own/relocation_explanations.tex` (Table C.1) is written by hand from the evidence dossier.
-
-Figure 1, Figure B.1 and Figure D.1 are the repository's own figures (`figures/`).
+These scripts round or copy existing results. They do not run inference.
+The paired source is first rebuilt by `scripts/make_latex_tables.py`.
+The fourth table, `tables_own/relocation_explanations.tex`, is hand-written and remains unchanged.
+See [the reproduction map](../../docs/reproduce.md) for every input, including its four supporting analyses.
