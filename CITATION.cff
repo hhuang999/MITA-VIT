@@ -2,6 +2,7 @@ cff-version: 1.2.0
 message: "If you use this code or its results, please cite it as below."
 title: "Attention as Fast Weights: Reading, Diagnosing, and Correcting Attention Maps in Vision Transformers"
 type: software
+repository-code: "https://github.com/hhuang999/vit-fastweight-lens"
 authors:
   - name: "The fastweight-vit authors"  # to be replaced by the author list of the final paper
 license: MIT

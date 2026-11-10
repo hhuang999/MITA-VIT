@@ -1,6 +1,11 @@
-# Attention as Fast Weights: Reading, Diagnosing, and Correcting Attention Maps in Vision Transformers
+# ViT FastWeight Lens
 
-Code, fixed image lists and result tables for the paper of the same name (course project, see the note at the end).
+Understanding Vision Transformers through fast and slow weights.
+
+Code, fixed image lists and result tables for *Attention as Fast Weights: Reading, Diagnosing, and Correcting
+Attention Maps in Vision Transformers* (course project, see the note at the end).
+
+Repository: [hhuang999/vit-fastweight-lens](https://github.com/hhuang999/vit-fastweight-lens).
 
 ## Abstract
 
@@ -29,6 +34,8 @@ bibliography, the full evidence dossier) and `figures/` holds every figure.
 Python 3.12, one CUDA GPU for the experiments (CPU is enough for the tests and for rebuilding the tables).
 
 ```bash
+git clone https://github.com/hhuang999/vit-fastweight-lens.git
+cd vit-fastweight-lens
 pip install -r requirements-torch.txt --index-url https://download.pytorch.org/whl/cu128
 pip install -r requirements.txt
 pip install -e . --no-deps
