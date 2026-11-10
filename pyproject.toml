@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "fastweight-vit"
 version = "0.1.0"
-description = "Reading, diagnosing and correcting attention maps of Vision Transformers through the fast-weight lens"
+description = "Tools and experiments for analyzing ViT attention maps through fast and slow weights"
 requires-python = ">=3.11,<3.13"
 dependencies = [
     "timm==1.0.30",
