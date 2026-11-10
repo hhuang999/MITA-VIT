@@ -1,7 +1,7 @@
 # The main results table (Table 1), its full version with the paired differences, the negative controls, last-layer
 # recovery and the ClickMe gallery (figures/gallery_*): every reading, stand-in and reference, layers 9-12 summed
 # (plus single-layer and early-layer rows), on ImageNet-S (enrichment on all 12,419 images, SRG on a fixed 2,000)
-# and ClickMe (17,408 images). Fixed before the main runs (docs/preregistration.md). Needs the diagnose outputs. The
+# and ClickMe (17,408 images). Fixed before the main runs (docs/reproduce.md). Needs the diagnose outputs. The
 # method order fixes how the seeded tie-break stream is consumed; keep it.
 experiment: correct
 models: [deit, deit_b, dino]

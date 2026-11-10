@@ -8,7 +8,7 @@
 | attention | attention each patch receives from every query and head (R0 up to a positive factor) |
 | topk | attention each patch receives when every layer reads only the shared top-k reading sets (`execution`) |
 
-`topk` and `attention` are compared in the top-k map similarity check (experiments/map_similarity.py).
+`topk` and `attention` are additional map helpers retained in this shared module.
 """
 
 from contextlib import contextmanager

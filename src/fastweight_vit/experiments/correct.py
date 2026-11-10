@@ -25,7 +25,7 @@ The register variant has the faithfulness part too: the register token is insert
 tokens are dropped, so it is kept like CLS (prefix 2). MiTA has none: its summary slots pool fixed regions of
 the full 14 x 14 grid (5 x 5 landmarks), which are undefined once patch tokens are removed.
 Maps listed in `no_srg` skip the faithfulness part (the early-layer negative control is judged on enrichment
-and ClickMe only; docs/preregistration.md).
+and ClickMe only; docs/reproduce.md).
 
 A seeded gallery of `gallery_images` images keeps every map, and for ClickMe the image and the human map, in
 gallery_<start>.npz (the ClickMe gallery figures, figures/gallery_*, show the two lowest-indexed of the 24 drawn
