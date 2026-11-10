@@ -1,130 +1,117 @@
-# ViT FastWeight Lens
+# Is It the Model or the Reading? A Fast-Weight View of ViT Attention Maps
 
-Tools and experiments for analyzing Vision Transformer attention maps through fast and slow weights.
+**Hongbo Huang** · DSAA 2012 Deep Learning course project
 
-This README describes [`release/v1`](https://github.com/hhuang999/vit-fastweight-lens/tree/release/v1).
-Use that branch for the current code documentation and reproduction instructions.
+[Paper (PDF)](paper/main.pdf) · [Reproduction map](docs/reproduce.md) · [Code branch: release/v1](https://github.com/hhuang999/vit-fastweight-lens/tree/release/v1)
 
-The analysis treats an attention head as a two-layer network: the learned slow weights produce keys and values
-for each image, which serve as the network's fast weights; tokens act as hidden units. The code uses this view to
-read attention maps, measure three premises of that reading, and evaluate corrections against matched controls.
+Deep-layer attention maps often look poor. This project asks how much of that comes from how the maps are read.
+It uses the long-established fast-weight view of an attention head as a two-layer network whose hidden units
+are tokens. The code tests three premises of received-attention maps: specificity, location and contribution.
 
-## What the code does
+On DeiT-S, DeiT-B and DINO ViT-S, two premises fail in deep layers. The diagnosis predicts the correction's
+outcome for two of the three premises. Contribution weighting, in practice value-norm weighting, improves
+object enrichment by 0.038 and 0.065 in the supervised models. Probe relocation hurts all three models.
+The paper explains the interpretation, sources and limits of these findings.
 
-- **Read and intervene:** extract received-attention maps and restrict the units read by each query to top-k or
-  random sets, then measure agreement with the unmodified model.
-- **Diagnose and correct:** measure each premise per layer and compare its correction with a matched control.
-- **Evaluate:** compute same-ring object enrichment, image-specific ClickMe alignment and deletion faithfulness
-  (SRG), with paired-bootstrap intervals and the registered comparison rules.
-- **Reproduce:** rebuild summary tables, figures and LaTeX tables from the committed per-image outputs, or rerun
-  the experiments with the released configurations.
+![Execution test](figures/execution_k_sweep.png)
+![Example maps on two randomly drawn ClickMe images](figures/gallery_layers9_12.png)
 
-| Premise | Diagnostic | Correction |
-| --- | --- | --- |
-| Specificity (M1): activations are specific to the image | Share of variance explained by the mean map | Mean-map subtraction (C1) |
-| Location (M2): token j still represents patch j | Position-probe accuracy | Probe relocation (C2) |
-| Contribution (M3): activation size reflects output contribution | Share of received attention on high-norm tokens | Contribution weighting (C3) |
+## What the code contains
 
-Implemented models are DeiT-S, DeiT-B, DINO ViT-S/16 and the MiTA-DeiT-S variant. The analysis modules are in
-[`src/fastweight_vit/`](src/fastweight_vit/); [the experiment names](paper/naming.md) map configuration and output
-codes to descriptive labels.
+| Part | Implementation |
+| --- | --- |
+| Check which units the model uses | Restrict attention to top-k or matched random reading sets |
+| Measure the three premises | Mean-map variance share, position probes and attention on high-norm tokens |
+| Compare readings and controls | Mean-map subtraction, probe relocation and contribution weighting |
+| Evaluate maps | Same-ring enrichment, image-specific ClickMe alignment and deletion faithfulness |
+| Check the failure mechanisms | Probe errors, MLP probes, globality and contribution-weight shuffling |
 
-![Execution test: top-1 agreement against the number of units read](figures/execution_k_sweep.png)
-![Two ClickMe images: human map and three readings](figures/gallery_layers9_12.png)
+## Install
 
-*Left: top-1 agreement with the unmodified model when every image region reads only its top-k units in all layers
-(solid), random units of the same number (dashed), or no attention (dotted). Right: two randomly drawn ClickMe
-images with the human map and three readings of DeiT-S (layers 9–12).*
-
-## Installation
-
-Python 3.12. Experiments need a CUDA GPU; tests and rebuilding tables and figures run on CPU.
+Use Python 3.12. CPU tests and result rebuilding need no datasets, checkpoints or GPU.
+For CPU use:
 
 ```bash
 git clone --branch release/v1 https://github.com/hhuang999/vit-fastweight-lens.git
 cd vit-fastweight-lens
-pip install -r requirements-torch.txt --index-url https://download.pytorch.org/whl/cu128
-pip install -r requirements.txt
-pip install -e . --no-deps
-pip install gdown  # only for downloading the MiTA-DeiT-S checkpoint
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-torch.txt --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -r requirements.txt
+python -m pip install -e . --no-deps
 ```
 
-`requirements.txt` pins the analysis dependencies, including timm 1.0.30. For ImageNet access, put a Hugging Face
-token in `.env` as `HF_TOKEN=...`, or set it in the environment. Credentials, datasets and checkpoints stay out of Git.
+On Windows, activate with `.venv\Scripts\Activate.ps1`. Run shell workflows with Bash, for example in WSL.
+For GPU experiments, install the PyTorch requirements from `https://download.pytorch.org/whl/cu128` instead.
+Linux with Liberation Sans fonts gives the closest figure rendering to the supplied files.
 
-## Data and models
+## Rebuild the paper results
 
 ```bash
-python scripts/prepare_data.py imagenet imagenet_s clickme partimagenet
+python -m pytest -q
+bash reproduce/from_outputs.sh
+```
+
+The rebuild reads the committed `outputs/`. It writes the retained summaries in `results/`, three figures in
+`figures/`, the paired-difference source in `paper/tables/`, and the generated paper tables and diagnostic figure.
+The fourth paper table is hand-written and stays unchanged. See [the paper build guide](paper/README.md).
+
+Summary values agree within absolute error 1e-12 and all verdicts must match. Floating-point last digits and
+font rendering can vary across machines. The supplied results and figures are the original files.
+Build in a copy if you want to keep them unchanged.
+
+## Rerun experiments
+
+New inference runs need a CUDA GPU, external datasets and model checkpoints. ImageNet access needs a Hugging Face
+token in `.env` as `HF_TOKEN=...`, or in the environment. Keep credentials out of Git.
+
+```bash
+python scripts/prepare_data.py imagenet imagenet_s clickme
 python scripts/prepare_data.py --check
+python -m pip install gdown  # MiTA checkpoint download only
 python scripts/download_models.py
-```
-
-Datasets are downloaded separately; `scripts/prepare_data.py` documents their sources, licences and checks.
-[`data/splits/`](data/splits/) contains the fixed image lists: 5,000 ImageNet validation images for the execution
-checks, 2,000 ImageNet-S images for deletion, and 4,000 held-out images (2,000 for fitting position probes and 2,000
-for probe evaluation and mean maps).
-
-DeiT checkpoints use pinned timm revisions; DINO ViT-S/16 uses its official linear head. The MiTA-DeiT-S checkpoint
-comes from the [MiTA authors](https://arxiv.org/abs/2602.01219) and is fetched with gdown; it is not redistributed here.
-The download script checks checkpoint SHA-256 hashes. The test-time register uses the 8 FFN units listed in
-`configs/table1_register.yaml`; `configs/register.yaml` specifies their search.
-
-## Run an experiment
-
-Each YAML file in `configs/` specifies an experiment, its models, data, parameters and dependencies. Its opening
-comment describes the outputs. Run a selected model, for example:
-
-```bash
 python scripts/run.py --config configs/k_sweep.yaml --model deit --output outputs/rerun
+# All paper configurations, in dependency order:
+bash reproduce/full.sh
 ```
 
-Outputs are written to `<output>/<config>/[<dataset>/]<model>/`, including the effective config, source commit,
-software versions and per-image results. Completed runs are skipped. `scripts/run.py` requires a committed source
-tree so that each run records its source revision. Use `outputs/rerun/` for new runs; the original runs are committed
-under `outputs/`.
+Data and checkpoints are downloaded separately. Their sources, access terms and hash checks are in the preparation
+scripts. Fixed image lists are in `data/splits/`. `reproduce/smoke.sh` and `reproduce/colab.ipynb` provide GPU workflows.
+Some shared experiment modules also compute additional analyses; the default builders export only paper results.
+The two historical register summaries used in Appendix A are supplied with their provenance in
+[`results/register/`](results/register/README.md); the full historical accuracy check is not part of the current rerun.
 
-Experiments that use probes or mean maps need those diagnostic runs first. [`docs/reproduce.md`](docs/reproduce.md)
-maps each experiment to its configuration and generated files; `reproduce/full.sh` runs them in dependency order.
-
-## Reproduce and test
-
-| Command | Purpose | Compute |
-| --- | --- | --- |
-| `bash reproduce/from_outputs.sh` | Rebuild `results/`, `figures/` and `paper/tables/` from the committed `outputs/` | CPU, a few minutes |
-| `bash reproduce/full.sh` | Rerun all experiments into `outputs/rerun/`, then rebuild the tables and figures | One L4 GPU, about 12 hours |
-| `bash reproduce/smoke.sh` | Run every experiment on 16 images and build summary tables | One GPU, under 10 minutes |
-| `python -m pytest -q` | Run the CPU test suite | CPU |
-
-[`reproduce/colab.ipynb`](reproduce/colab.ipynb) provides the same workflow on Colab. A full rerun needs the datasets
-and checkpoints above. Both rebuild commands write tracked summary tables, figures and LaTeX tables; inspect any
-changes before committing them. Reproduction checks and environment details are recorded in
-[`docs/reproduce.md`](docs/reproduce.md). Statistical decision rules and the distinction between registered and
-exploratory analyses are in [`docs/preregistration.md`](docs/preregistration.md).
+Runs record their source revision. A Git checkout must have committed source changes. A course ZIP made with
+`git archive` carries the revision in `.git_archival.txt` and works without `.git`.
 
 ## Layout
 
 | Path | Contents |
 | --- | --- |
-| `src/fastweight_vit/` | Readings, probes, interventions, metrics, model and data loaders; `experiments/` contains the experiment workflows |
-| `configs/` | One YAML file per experiment |
-| `scripts/` | Experiment runner, data and checkpoint preparation, summary-table and figure builders |
-| `reproduce/` | Rebuild, full-rerun and smoke-test scripts; Colab notebook |
-| `data/splits/` | Fixed image lists (IDs only) |
-| `outputs/` | Committed per-image outputs of the original runs; see `outputs/README.md` |
-| `results/` | Generated summary tables, intervals and verdicts |
-| `figures/` | Generated plots and image panels; see `figures/README.md` |
-| `paper/tables/` | Generated LaTeX tables; see `paper/README.md` |
-| `docs/` | Reproduction map, comparison rules and verification records |
-| `tests/` | CPU tests |
+| `src/fastweight_vit/` | Models, readings, metrics, interventions, data loaders and experiments |
+| `configs/` | Fourteen paper configurations |
+| `scripts/` | Data preparation, experiment runner and result builders |
+| `reproduce/` | CPU rebuild, GPU rerun, smoke workflow and Colab notebook |
+| `data/splits/` | Fixed image lists |
+| `outputs/` | Original per-image outputs; new runs go to ignored subfolders |
+| `results/` | Paper summaries and the two historical register evidence tables |
+| `figures/` | Schematic, execution plot and example maps |
+| `paper/` | Final PDF, LaTeX source, paper figures, tables and their builders |
+| `docs/reproduce.md` | Paper-to-code and result map |
+| `tests/` | CPU tests with synthetic data and random model weights |
+| `archive/` | Experiments and old materials outside the final paper |
 
-The code and results retain internal identifiers: R0 is received attention, C1–C3 are corrections, M1–M3 refer to
-specificity, location and contribution, and P1–P7 identify registered predictions. See
-[`paper/naming.md`](paper/naming.md) for the complete mapping and [`AGENTS.md`](AGENTS.md) for maintenance guidance.
+## Export the course code
+
+```bash
+git archive --format=zip -o course_code.zip release/v1
+```
+
+Git excludes `archive/` automatically. The ZIP contains the paper code and original outputs. External datasets,
+checkpoints, local writing materials and credentials are not included. After extraction, follow the install and
+rebuild steps above. The archive is not needed to run the exported code.
 
 ## Licence and sources
 
-Code is released under the [MIT licence](LICENSE). Model, dataset and reused-method sources are recorded beside
-their loaders and implementations. The implementation builds on DeiT, DINO, timm, MiTA, ImageNet-S, ClickMe /
-Harmonization and PartImageNet; GAE follows Chefer et al. (2021), and the test-time register follows Jiang et al.
-(2025). Please follow the original sources' licences and citation requirements when using their assets.
+Code is under the [MIT licence](LICENSE). Dataset, model and reused-method sources and terms are recorded beside
+their implementations. Follow their original licences when downloading or using those assets.

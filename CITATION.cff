@@ -1,19 +1,20 @@
 cff-version: 1.2.0
-message: "If you use this code or its results, please cite it as below."
-title: "Attention as Fast Weights: Reading, Diagnosing, and Correcting Attention Maps in Vision Transformers"
+message: "Please cite the course paper when using this code or its results."
+title: "Is It the Model or the Reading? A Fast-Weight View of ViT Attention Maps"
 type: software
 repository-code: "https://github.com/hhuang999/vit-fastweight-lens"
 authors:
-  - name: "The fastweight-vit authors"  # to be replaced by the author list of the final paper
+  - family-names: Huang
+    given-names: Hongbo
 license: MIT
 version: 0.1.0
-date-released: 2026-12-11
 keywords: [vision transformer, attention, interpretability, fast weights]
 preferred-citation:
   type: report
-  title: "Attention as Fast Weights: Reading, Diagnosing, and Correcting Attention Maps in Vision Transformers"
+  title: "Is It the Model or the Reading? A Fast-Weight View of ViT Attention Maps"
   authors:
-    - name: "The fastweight-vit authors"
+    - family-names: Huang
+      given-names: Hongbo
   institution:
     name: "The Hong Kong University of Science and Technology (Guangzhou)"
   notes: "Course project, DSAA 2012 Deep Learning"
