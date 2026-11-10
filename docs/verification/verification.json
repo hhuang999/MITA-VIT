@@ -1,0 +1,308 @@
+{
+  "timestamp_utc": "2026-11-10T15:33:38.428544+00:00",
+  "verified_source_revision": "02a0e73e50944a70a5383bd83417ee91053ae2bd",
+  "scope": "release engineering + paper/code consistency + artifact verification; CPU only",
+  "passed": true,
+  "pytest": {
+    "passed": 106,
+    "warnings": 1,
+    "warning_status": "existing NumPy deprecation in test_metrics.py; no failed tests"
+  },
+  "environment": {
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "packages": {
+      "torch": "2.7.0+cpu",
+      "torchvision": "0.22.0+cpu",
+      "timm": "1.0.30",
+      "numpy": "2.5.4",
+      "pandas": "3.1.0",
+      "matplotlib": "3.11.2",
+      "pytest": "9.1.1"
+    }
+  },
+  "cpu_commands": [
+    {
+      "command": "python -m pytest -q",
+      "status": "passed in an actual extracted Git archive; temporary test-output path supplied"
+    },
+    {
+      "command": "python scripts/validate_release.py --strict",
+      "status": "passed"
+    },
+    {
+      "command": "bash reproduce/from_outputs.sh",
+      "status": "passed at 534c8b6; same numerical builders also executed by final-source integration test"
+    },
+    {
+      "command": "python scripts/validate_release.py --strict --archive-check",
+      "status": "passed; real archive extracted and audited"
+    },
+    {
+      "command": "python -m pip check",
+      "status": "passed"
+    },
+    {
+      "command": "python scripts/run.py --help; python scripts/prepare_data.py --help",
+      "status": "passed"
+    }
+  ],
+  "scientific_invariants": {
+    "C3_deit_enrichment": 0.0375663428926721,
+    "C3_deit_b_enrichment": 0.0653888540864858,
+    "C3_deit_clickme": 0.0333341463690849,
+    "C3_deit_b_clickme": 0.0575702764539142,
+    "register_enrichment": 0.0119796443956672,
+    "register_clickme": 0.0128495262140819,
+    "R1": "3/3 and 6/6 comparable",
+    "R2": "1/4 higher: deit_b/clickme",
+    "R3": "4/4 not higher",
+    "relocation": "9/9 lower",
+    "deletion": "3/3 comparable",
+    "interpretation": "post hoc"
+  },
+  "summary_comparison": [
+    {
+      "path": "results/c2_analysis/errors.csv",
+      "rows": 378,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/c2_analysis/mean_prediction.csv",
+      "rows": 147,
+      "max_absolute_difference": 1.6263032587282567e-19,
+      "byte_identical": false
+    },
+    {
+      "path": "results/correct_tests.csv",
+      "rows": 99,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/diagnose.csv",
+      "rows": 252,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/k_sweep.csv",
+      "rows": 39,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/k_sweep_tests.csv",
+      "rows": 33,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/last_layer.csv",
+      "rows": 24,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/negative_controls.csv",
+      "rows": 9,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/numbers.csv",
+      "rows": 9,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/probe_accuracy.csv",
+      "rows": 36,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/radial.csv",
+      "rows": 288,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/supplementary/c2_variants.csv",
+      "rows": 33,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/supplementary/c3_mechanism.csv",
+      "rows": 18,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/supplementary/dose.csv",
+      "rows": 8,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/supplementary/globalisation.csv",
+      "rows": 462,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/supplementary/mlp_probe.csv",
+      "rows": 216,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/table1_long.csv",
+      "rows": 201,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/value_norm.csv",
+      "rows": 26,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    },
+    {
+      "path": "results/variants.csv",
+      "rows": 10,
+      "max_absolute_difference": 0.0,
+      "byte_identical": true
+    }
+  ],
+  "generated_paper_tables_byte_identical": {
+    "paper/tables/appendix/paired_differences.tex": true,
+    "paper/tables_own/main_results.tex": true,
+    "paper/tables_own/diagnostics_per_layer.tex": true,
+    "paper/tables_own/paired_differences.tex": true
+  },
+  "expected_rounded_contribution_gains": {
+    "deit_enrichment": 0.038,
+    "deit_b_enrichment": 0.065,
+    "deit_clickme": 0.033,
+    "deit_b_clickme": 0.058
+  },
+  "registered_replication_review": {
+    "execution_tests_holds": 33,
+    "execution_k16": {
+      "deit": {
+        "reading": 0.7152,
+        "random": 0.09192
+      },
+      "deit_b": {
+        "reading": 0.8276,
+        "random": 0.29584
+      },
+      "dino": {
+        "reading": 0.6148,
+        "random": 0.04236
+      }
+    }
+  },
+  "figure_comparison": {
+    "example_maps": {
+      "text_equal": true,
+      "pixels_equal_at_144dpi": true,
+      "bytes_equal": false
+    },
+    "example_maps_more": {
+      "text_equal": true,
+      "pixels_equal_at_144dpi": true,
+      "bytes_equal": false
+    },
+    "diagnosis": {
+      "text_equal": true,
+      "pixels_equal_at_144dpi": true,
+      "bytes_equal": false
+    }
+  },
+  "original_artifact_files_unchanged": 175,
+  "configuration_count": 14,
+  "scientific_implementation_fingerprints": 37,
+  "run_combinations": 42,
+  "authentic_run_records": 232,
+  "evidence_map": {
+    "paper_items": 12,
+    "empirical_claim_rows": 26
+  },
+  "archive": {
+    "passed": true,
+    "source_revision": "02a0e73e50944a70a5383bd83417ee91053ae2bd",
+    "files": 541,
+    "artifacts_checked": 192
+  },
+  "manual_interpretation_review": {
+    "Table 1": "Single-correction correspondence is post hoc; C1 has no gain beyond its control; C3 matched-control exception retained.",
+    "Table A.1": {
+      "C3_deit_enrichment": 0.0375663428926721,
+      "C3_deit_b_enrichment": 0.0653888540864858,
+      "C3_deit_clickme": 0.0333341463690849,
+      "C3_deit_b_clickme": 0.0575702764539142,
+      "register_enrichment": 0.0119796443956672,
+      "register_clickme": 0.0128495262140819,
+      "R1": "3/3 and 6/6 comparable",
+      "R2": "1/4 higher: deit_b/clickme",
+      "R3": "4/4 not higher",
+      "relocation": "9/9 lower",
+      "deletion": "3/3 comparable",
+      "interpretation": "post hoc"
+    },
+    "Table C.1": {
+      "layer12_near3x3": {
+        "deit": 0.4520073256492615,
+        "deit_b": 0.6573214282244444,
+        "dino": 0.8053863669633865
+      },
+      "far_error_share_min_max": [
+        0.0174398774013971,
+        0.2943918776512146
+      ],
+      "mlp_accuracy_gains": {
+        "deit": 0.01778316284902401,
+        "deit_b": 0.038150509409606514,
+        "dino": 0.06706887578964232
+      },
+      "mean_prediction_peak_min_max": [
+        1.1362065862266353,
+        1.3343077580804747
+      ],
+      "accuracy_decreases_consistently_with_globality": [
+        "deit_b"
+      ]
+    }
+  },
+  "not_executed": [
+    {
+      "command": "bash reproduce/smoke.sh",
+      "reason": "GPU workflow, explicitly outside the authorised release audit"
+    },
+    {
+      "command": "bash reproduce/full.sh outputs/rerun",
+      "reason": "GPU experiments completed previously; new reruns prohibited"
+    },
+    {
+      "command": "model/probe training or original inference regeneration",
+      "reason": "prohibited by the scope"
+    },
+    {
+      "command": "pdflatex/bibtex compilation",
+      "reason": "no local LaTeX toolchain; supplied 11-page author PDF preserved and citations/labels checked statically"
+    }
+  ],
+  "limitations": [
+    "Historical register full-validation accuracy/reduction is source evidence, not regenerated by the active pipeline.",
+    "Earlier GPU verification records refer to 9bbee6f and 0d47c04, not a new GPU run of this release.",
+    "Exact launch commands, driver versions, full historical pip freeze and execution-time checkpoint digests were not recovered and remain unknown."
+  ],
+  "manuscript_suggestions": [
+    "Appendix A: object patch = at least half of non-ignored pixels; valid patch has at least one non-ignored pixel.",
+    "Appendix A: supporting value-norm ratios use uniform crop 0.875; main DeiT evaluations use crop 0.9."
+  ]
+}
