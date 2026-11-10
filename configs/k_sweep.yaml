@@ -1,6 +1,6 @@
 # Execution test, k sweep (figures/execution_k_sweep): all 12 layers read only their reading sets (m = 16 regions,
 # spatial routing, CLS reads its own top-k set), k in 4..128, against random sets of the same size (seeds 0-4).
-# Fixed 5,000 ImageNet images, each model's own preprocessing. Fixed before the main runs (docs/preregistration.md,
+# Fixed 5,000 ImageNet images, each model's own preprocessing. Fixed before the main runs (docs/reproduce.md,
 # P1).
 experiment: execution
 stage: k_sweep

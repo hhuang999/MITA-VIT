@@ -4,25 +4,22 @@
 | --- | --- | --- |
 | imagenet | the fixed 5,000-image ImageNet validation subset (data/splits), no masks | the model's ImageNet evaluation |
 | imagenet_s | ImageNet-S919 validation masks, 12,419 images | the model's ImageNet evaluation |
-| partimagenet | PartImageNet_Seg part masks, 24,080 ImageNet training images (`partimagenet_splits` selects
-  splits) | the model's ImageNet evaluation |
+
 
 `preprocessing: uniform` runs every model with models.UNIFORM_PREPROCESSING (Resize 256, crop 0.875; used by the
 attention-off check and the register search). `split: pilot|formal` (with `pilot_images`, `split_seed`) keeps one
 part of a mask dataset (data.splits; the register search uses the pilot part).
 
-Mask datasets yield (image, object, valid, index); `imagenet` yields (image, label); `partimagenet` adds per-patch
-part fractions: (image, object, valid, parts, index).
+Mask datasets yield (image, object, valid, index); `imagenet` yields (image, label).
 """
 
 from ..models import IMAGENET_PREPROCESSING, UNIFORM_PREPROCESSING, data_reference
 from ..runtime import data_root, project_path
 from .imagenet import ImageNetFiles, ImageNetValidation, experiment_indices
 from .imagenet_s import ImageNetS
-from .partimagenet import PartImageNet
 from .splits import split_indices
 
-NAMES = ('imagenet', 'imagenet_s', 'partimagenet')
+NAMES = ('imagenet', 'imagenet_s')
 _FILES = {}
 
 
@@ -45,10 +42,6 @@ def build(name, model, model_name, config):
     if name == 'imagenet_s':
         dataset = ImageNetS(data_root() / 'imagenet_s' / 'ImageNetS919', imagenet_files(), reference,
                             preprocessing=preprocessing)
-    elif name == 'partimagenet':
-        splits = tuple(config.get('partimagenet_splits', ('train', 'val', 'test')))
-        dataset = PartImageNet(data_root() / 'partimagenet' / 'PartImageNet', reference, preprocessing=preprocessing,
-                               splits=splits)
     else:
         raise ValueError(f'Unknown dataset {name}; choose from {NAMES}')
     split = config.get('split', 'all')

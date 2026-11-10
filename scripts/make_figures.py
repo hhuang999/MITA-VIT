@@ -1,16 +1,4 @@
-"""Paper figures, one panel per file, at print size (PDF and 300-dpi PNG).
-
-  python scripts/make_figures.py [--results results] [--outputs outputs] [--figures figures]
-
-Sources: the summary tables in results/ (built by scripts/make_tables.py) for every line plot; the per-image run
-outputs for the two image panels (the ClickMe gallery of DeiT-S, outputs/table1/clickme/deit/gallery_*.npz, and the
-probes' mean prediction, outputs/c2_analysis/<model>/mean_prediction.npz). Without those outputs the image figures
-are skipped and the committed files are kept. figures/README.md lists every file, its size and its source.
-
-Rules: no figure numbers, panel letters or captions inside a figure; no internal codes (the names follow
-paper/naming.md); every panel is a complete figure with its own axis labels and legend; fonts at least 7 pt at the
-stated size. The script stops if a font is smaller than 7 pt or if drawn content leaves the figure.
-"""
+"""Build the schematic, execution plot and example maps used by the paper."""
 
 import argparse
 from pathlib import Path
@@ -23,7 +11,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
-from matplotlib.patches import Circle, FancyBboxPatch, Rectangle  # noqa: E402
+from matplotlib.patches import Circle, FancyBboxPatch  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'figures'
@@ -52,7 +40,10 @@ GREY = '#8c8c8c'
 FILES = []  # (file, inches) for the manifest printout
 
 
-# ---------------------------------------------------------------------------------------------------- helpers
+KEY, VALUE, INK = '#6a3d9a', '#a50f15', '#262626'
+HEAT = plt.get_cmap('inferno')
+
+
 def check_and_save(fig, name):
     fig.canvas.draw()
     renderer = fig.canvas.get_renderer()
@@ -97,7 +88,6 @@ def model_handles():
     return [Line2D([], [], color=COLOR[m], marker='o', ms=2.5, lw=1.0) for m in MODELS], [NAME[m] for m in MODELS]
 
 
-# ---------------------------------------------------------------------------------------------------- execution
 def execution_k_sweep(results):
     sweep = pd.read_csv(results / 'k_sweep.csv')
     fig = plt.figure(figsize=(2.6, 1.9))
@@ -122,7 +112,6 @@ def execution_k_sweep(results):
     check_and_save(fig, 'execution_k_sweep')
 
 
-# ---------------------------------------------------------------------------------------------------- gallery
 def gallery_arrays():
     """The two lowest indices of the seeded random ClickMe gallery of DeiT-S (rule fixed in advance)."""
     paths = sorted((OUTPUTS / 'table1' / 'clickme' / 'deit').glob('gallery_*.npz'))
@@ -170,90 +159,6 @@ def gallery(name, suffix):
     check_and_save(fig, name)
 
 
-# ---------------------------------------------------------------------------------------------------- premises
-def premise_panel(results, name, panel, variant, ylabel, ylim=None, yticks=None):
-    frame = pd.read_csv(results / 'diagnose.csv')
-    fig = plt.figure(figsize=(1.35, 1.5))
-    ax = axes_at(fig, .52, .62, .78, .78)
-    for model in MODELS:
-        part = frame[(frame.panel == panel) & (frame.variant == variant) & (frame.model == model)].sort_values('layer')
-        ax.plot(part.layer, part['mean'], color=COLOR[model], marker='o', ms=1.6, lw=.9)
-        ax.fill_between(part.layer, part.low, part.high, color=COLOR[model], alpha=.18, lw=0)
-    ax.set_xticks([1, 4, 8, 12])
-    ax.set_xlabel('Layer', labelpad=1)
-    ax.set_ylabel(ylabel, labelpad=2, linespacing=1.05)
-    if ylim:
-        ax.set_ylim(*ylim)
-    if yticks is not None:
-        ax.set_yticks(yticks)
-    fit(fig, ax)
-    handles, labels = model_handles()
-    fig.legend(handles, labels, loc='lower left', bbox_to_anchor=(.0, .0), ncol=2, handlelength=1.2,
-               columnspacing=.6)
-    check_and_save(fig, name)
-
-
-# ---------------------------------------------------------------------------------------------------- C2 analysis
-def c2_lines(results, name, table, metric, sources, ylabel, xlabel, threshold=None, xticks=None):
-    frame = pd.read_csv(results / 'c2_analysis' / table)
-    fig = plt.figure(figsize=(2.6, 1.9))
-    ax = axes_at(fig, .55, .78, 1.95, 1.02)
-    for model in MODELS:
-        for source, style, _ in sources:
-            part = frame[(frame.model == model) & (frame.source == source)]
-            if metric:
-                part = part[part.metric == metric]
-            key = 'layer' if 'layer' in part else 'bin'
-            part = part.sort_values(key)
-            ax.plot(part[key], part['mean'], style, color=COLOR[model], marker='o', ms=2)
-    extra_handles, extra_labels = [], []
-    if threshold is not None:
-        ax.axhline(threshold, color=GREY, lw=.7)
-        extra_handles, extra_labels = [Line2D([], [], color=GREY, lw=.7)], ['pre-registered threshold']
-    if metric is None:
-        ax.axhline(0, color=GREY, lw=.6)
-    ax.set_xlabel(xlabel, labelpad=1.5)
-    ax.set_ylabel(ylabel, linespacing=1.05)
-    if xticks is not None:
-        ax.set_xticks(xticks)
-    fit(fig, ax)
-    handles, labels = model_handles()
-    styles = [Line2D([], [], color='k', ls=style) for _, style, _ in sources] + extra_handles
-    fig.legend(handles + styles, labels + [label for _, _, label in sources] + extra_labels,
-               loc='lower left', bbox_to_anchor=(.01, .0), ncol=2)
-    check_and_save(fig, name)
-
-
-def c2_mean_prediction(name, model):
-    path = OUTPUTS / 'c2_analysis' / model / 'mean_prediction.npz'
-    if not path.exists():
-        print(f'{name}: no c2_analysis outputs, skipped')
-        return
-    values = np.load(path)['layer12'].mean(0) * 196  # mean over the 2,000 held-out test images; uniform = 1
-    fig = plt.figure(figsize=(1.35, 1.3))
-    ax = axes_at(fig, .06, .08, 1.0, 1.0)
-    image = ax.imshow(values.reshape(14, 14), cmap='viridis', interpolation='nearest')
-    ax.set_xticks([])
-    ax.set_yticks([])
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-    ax.set_title(f'{NAME[model]}, layer 12', pad=2)
-    bar = fig.colorbar(image, cax=axes_at(fig, 1.1, .08, .06, 1.0))
-    bar.ax.tick_params(width=.5, length=2)
-    bar.outline.set_linewidth(.4)
-    bar.set_label('Mean probe prediction\n(uniform = 1)', labelpad=2, linespacing=1.05)
-    # the colour bar label sits right of the bar; make room
-    fig.set_size_inches(1.35 + .45, 1.3)
-    ax.set_position([.06 / 1.8, .08 / 1.3, 1.0 / 1.8, 1.0 / 1.3])
-    bar.ax.set_position([1.1 / 1.8, .08 / 1.3, .06 / 1.8, 1.0 / 1.3])
-    check_and_save(fig, name)
-
-
-# ---------------------------------------------------------------------------------------------------- schematic
-KEY, VALUE, INK = '#6a3d9a', '#a50f15', '#262626'
-HEAT = plt.get_cmap('inferno')
-
-
 def schematic_network():
     fig = plt.figure(figsize=(2.6, 1.9))
     ax = fig.add_axes([0, 0, 1, 1])
@@ -285,88 +190,18 @@ def schematic_network():
     check_and_save(fig, 'schematic_fast_weight_network')
 
 
-def schematic_reading():
-    fig = plt.figure(figsize=(1.45, 1.9))
-    ax = fig.add_axes([0, 0, 1, 1])
-    ax.set_xlim(0, 29)
-    ax.set_ylim(0, 38)
-    ax.set_aspect('equal')
-    ax.axis('off')
-    rng = np.random.default_rng(0)
-    n, s, x0, y0 = 7, 2.9, 4.35, 6.2
-    yy, xx = np.mgrid[0:n, 0:n]
-    heat = np.exp(-((xx - 3.2) ** 2 + (yy - 3.4) ** 2) / 5.0) + .25 * rng.random((n, n))
-    heat[1, 5] = 1.35
-    heat /= heat.max()
-    for r in range(n):
-        for c in range(n):
-            ax.add_patch(Rectangle((x0 + c * s, y0 + (n - 1 - r) * s), s, s, facecolor=HEAT(.05 + .9 * heat[r, c]),
-                                   edgecolor='white', lw=.35))
-    ax.add_patch(Rectangle((x0 + 3 * s, y0 + 3 * s), s, s, fill=False, edgecolor='white', lw=1.0))
-    ax.text(x0 + 3.5 * s, y0 + 3.5 * s, '$j$', ha='center', va='center', color='white')
-    ax.text(14.5, 34.6, 'received attention', ha='center', va='center')
-    ax.text(14.5, 30.6, r'$s_j = \sum_h \sum_i a_{ij}$', ha='center', va='center')
-    ax.text(14.5, 2.6, 'unit $j$ drawn at patch $j$', ha='center', va='center', color=GREY)
-    check_and_save(fig, 'schematic_reading')
-
-
-def schematic_premises():
-    fig = plt.figure(figsize=(5.5, 1.5))
-    ax = fig.add_axes([0, 0, 1, 1])
-    ax.set_xlim(0, 110)
-    ax.set_ylim(0, 30)
-    ax.axis('off')
-    cols = [1.0, 25.5, 58.0, 81.0]
-    for x, head in zip(cols, ['premise of the reading', 'measured by', 'correction', 'stand-in it must beat']):
-        ax.text(x, 27.6, head, color=GREY, va='center')
-    ax.plot([0.5, 109.5], [25.6, 25.6], color=GREY, lw=.5)
-    rows = [('the activations are\nspecific to the image', 'share of variance explained\nby the mean map',
-             'mean-map subtraction', 'centre-Gaussian subtraction'),
-            ('unit $j$ still stands\nfor patch $j$', 'position-probe accuracy', 'probe relocation', 'matched blur'),
-            ('a large activation means\na large contribution', 'share of received attention\non high-norm tokens',
-             'contribution weighting', 'zero high-norm tokens')]
-    for k, row in enumerate(rows):
-        y = 21.0 - 8.2 * k
-        if k % 2 == 0:
-            ax.add_patch(Rectangle((0.5, y - 4.0), 109, 8.0, facecolor='#f3f3f3', lw=0, zorder=0))
-        for x, text in zip(cols, row):
-            ax.text(x, y, text, va='center', linespacing=1.1)
-    check_and_save(fig, 'schematic_premises')
-
-
 def main():
     global OUT, OUTPUTS
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--results', type=Path, default=ROOT / 'results')
     parser.add_argument('--outputs', type=Path, default=OUTPUTS)
     parser.add_argument('--figures', type=Path, default=OUT)
     args = parser.parse_args()
-    results, OUTPUTS, OUT = args.results, args.outputs, args.figures
+    OUTPUTS, OUT = args.outputs, args.figures
     OUT.mkdir(parents=True, exist_ok=True)
     schematic_network()
-    schematic_reading()
-    schematic_premises()
-    execution_k_sweep(results)
+    execution_k_sweep(args.results)
     gallery('gallery_layers9_12', '')
-    gallery('gallery_layer12', '_l12')
-    premise_panel(results, 'premise_mean_map_share', 'M1', 'R0', 'Share of variance\nexplained by\nthe mean map')
-    premise_panel(results, 'premise_probe_accuracy', 'M2', 'probe', 'Position-probe\naccuracy', (0, 1.03),
-                  [0, .25, .5, .75, 1])
-    premise_panel(results, 'premise_high_norm_share', 'M3', 'R0',
-                  'Share of received\nattention on\nhigh-norm tokens')
-    premise_panel(results, 'received_attention_vs_clickme', 'quality', 'R0',
-                  'Received attention:\nimage-specific\nClickMe Spearman')
-    probe_vs_blur = [('probe', '-', 'position probe'), ('stand_in_blur', '--', 'matched blur')]
-    c2_lines(results, 'c2_analysis_distance_error', 'errors.csv', 'distance', probe_vs_blur,
-             'Expected distance from\nthe true patch (patches)', 'Layer', xticks=range(6, 13))
-    c2_lines(results, 'c2_analysis_far_error_share', 'errors.csv', 'far_share', probe_vs_blur,
-             'Share of error mass\nfarther than 3 patches', 'Layer', threshold=.5, xticks=range(6, 13))
-    c2_lines(results, 'c2_analysis_shift_by_distance', 'shift_bins.csv', None,
-             [('C2', '-', 'probe relocation'), ('stand_in_blur', '--', 'matched blur')],
-             'Change in share of\nthe score, layers 9–12', 'Distance from the image centre (patches)',
-             xticks=range(0, 10, 2))
-    c2_mean_prediction('c2_analysis_mean_prediction_deit_s', 'deit')
-    c2_mean_prediction('c2_analysis_mean_prediction_dino', 'dino')
 
 
 if __name__ == '__main__':

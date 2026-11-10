@@ -11,13 +11,13 @@ import pytest
 import torch
 
 from fastweight_vit.experiments import (EXPERIMENTS, c2_analysis, common, correct, diagnose, execution, load,
-                                        map_similarity, part_reliance, register_search, sanity, supplementary)
+                                        register_search, supplementary)
 from fastweight_vit.io import load_config
 
-from fakes import (ROOT, FakeClickMe, FakeFiles, FakeImageNet, FakeImageNetS, FakeMasks, FakeParts, config_for,
+from fakes import (ROOT, FakeClickMe, FakeFiles, FakeImageNet, FakeImageNetS, FakeMasks, config_for,
                    tiny)
 
-MODULES = (execution, diagnose, correct, sanity, part_reliance, map_similarity, register_search, c2_analysis,
+MODULES = (execution, diagnose, correct, register_search, c2_analysis,
            supplementary)
 PREPROCESSING = dict(input_size=(3, 224, 224), interpolation='bicubic', crop_pct=0.875, crop_mode='center',
                      mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
@@ -31,8 +31,6 @@ def patched(monkeypatch, tmp_path):
     def build(name, model_, model_name, config):
         if name == 'imagenet':
             return FakeImageNet(4), list(range(4))
-        if name == 'partimagenet':
-            return FakeParts(3), list(range(3))
         split = config.get('split', 'all')
         return FakeMasks(model_, n=8), dict(all=list(range(6)), pilot=[0, 1, 2], formal=list(range(3, 8)))[split]
 
@@ -95,8 +93,6 @@ def test_run_script_expands_models_and_datasets():
     smoke = script.rooted(table1, 'outputs/smoke')
     assert smoke['correct']['lens_runs']['probe'] == 'outputs/smoke/diagnose_probe/{model}'
     assert script.rooted(table1, 'outputs') == table1
-    parts = script.runs(load_config(ROOT / 'configs/part_reliance.yaml'), model='deit_b')
-    assert len(parts) == 1 and parts[0][2]['batch_size'] == 64
 
 
 def test_execution_stages(patched):
@@ -108,15 +104,12 @@ def test_execution_stages(patched):
     settings = pd.read_csv(tmp / 'k' / 'settings.csv')
     assert len(settings) == 2 + 2 * 5 and len(predictions) == 4 * len(settings)
     assert set(settings.name) == {'L3_spatial', 'rand'} and json.loads((tmp / 'k' / 'checks.json').read_text())['complete']
-    execution.run(run_args(stage='single_layer'), config_for('single_layer'), folder(tmp, 'one'), 'test')
-    single = pd.read_csv(tmp / 'one' / 'predictions.csv')
-    assert len(single) == 4 * 12 and set(single.setting) == {'L3'}
     execution.run(run_args(stage='attention_off'), config_for('attention_off'), folder(tmp, 'off'), 'test')
     off = pd.read_csv(tmp / 'off' / 'attention_off.csv')
     assert len(off) == 4 * 13 and set(off.layers.astype(str)) == {'all'} | {str(layer) for layer in range(1, 13)}
 
 
-def test_diagnose_correct_and_sanity(patched):
+def test_diagnose_and_correct(patched):
     tmp = patched
     make_lens(tmp)
     held = json.loads((tmp / 'probe' / 'heldout.json').read_text())
@@ -152,10 +145,6 @@ def test_diagnose_correct_and_sanity(patched):
     assert set(pd.read_csv(tmp / 'clickme' / 'alignment.csv').method) == set(names)
     assert any('image' in np.load(path).files for path in (tmp / 'clickme').glob('gallery_*.npz'))
 
-    order = lens_config('order', tmp)
-    correct.run(run_args(), order, folder(tmp, 'order'), 'test')
-    assert set(pd.read_csv(tmp / 'order' / 'plausibility.csv').method) == {'R0', 'R_all', 'R_all_alt'}
-
     layers = lens_config('clickme_layers', tmp)
     layers['correct']['dataset'] = 'clickme'
     correct.run(run_args(), layers, folder(tmp, 'layers'), 'test')
@@ -166,19 +155,6 @@ def test_diagnose_correct_and_sanity(patched):
     correct.run(run_args(), register, folder(tmp, 'register'), 'test')
     assert set(pd.read_csv(tmp / 'register' / 'plausibility.csv').method) == {'R0', 'R0_l12'}
     assert set(pd.read_csv(tmp / 'register' / 'faithfulness.csv').method) == {'R0', 'R0_l12'}
-
-    d2 = lens_config('d2', tmp)
-    d2['correct']['faithfulness_images'] = 0  # as in configs/d2.yaml: no SRG
-    correct.run(run_args(), d2, folder(tmp, 'd2'), 'test')
-    assert {'D2', 'D2_shuffle_s4', 'C3D2'} <= set(pd.read_csv(tmp / 'd2' / 'plausibility.csv').method)
-    assert pd.read_csv(tmp / 'd2' / 'faithfulness.csv').empty
-
-    config = lens_config('sanity', tmp)
-    config['sanity']['images'] = 4
-    sanity.run(run_args(), config, folder(tmp, 'sanity'), 'test')
-    table = pd.read_csv(tmp / 'sanity' / 'sanity.csv')
-    assert {'R0', 'C1', 'C2', 'C3', 'R_all', 'centre'} == set(table.method)
-    assert (table[table.method == 'centre'].spearman > .999).all()
 
 
 def test_c2_analysis_and_supplementary(patched):
@@ -213,18 +189,8 @@ def test_c2_analysis_and_supplementary(patched):
     assert 'C2MLP' in set(pd.read_csv(tmp / 'eval_c' / 'alignment.csv').method)
 
 
-def test_part_reliance_map_similarity_and_register_search(patched):
+def test_register_search(patched):
     tmp = patched
-    config = config_for('part_reliance')
-    part_reliance.run(run_args(), config, folder(tmp, 'parts'), 'test')
-    reliance = pd.read_csv(tmp / 'parts' / 'reliance.csv')
-    assert set(reliance.condition) == {'part', 'object', 'background'} and set(reliance.removed) == {4, 8}
-    assert set(reliance[reliance.condition == 'part'].part) == {0, 1} and set(reliance.seed) == set(range(5))
-
-    map_similarity.run(run_args(), config_for('map_similarity'), folder(tmp, 'similarity'), 'test')
-    rho = pd.read_csv(tmp / 'similarity' / 'similarity.csv')
-    assert len(rho) == 6 and rho.spearman.between(-1, 1).all()
-
     config = config_for('register')
     config['search']['norm_ratio'] = 1.2
     config['register'].update(counts=[1, 2], seeds=[0, 1], presence_share=0.0)

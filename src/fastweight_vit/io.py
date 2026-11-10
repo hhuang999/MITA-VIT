@@ -2,6 +2,7 @@
 
 import csv
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -24,6 +25,12 @@ def load_config(path: Path) -> dict:
 
 
 def source_commit(root: Path) -> str:
+    if not (root / '.git').exists():
+        marker = root / '.git_archival.txt'
+        revision = marker.read_text(encoding='utf-8').strip() if marker.exists() else ''
+        if not re.fullmatch(r'[0-9a-f]{40}', revision):
+            raise RuntimeError('Run from a Git checkout or a git archive export with a source revision')
+        return revision
     status = subprocess.check_output(
         ["git", "status", "--porcelain", "--untracked-files=no"], cwd=root, text=True
     )
