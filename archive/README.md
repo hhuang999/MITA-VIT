@@ -15,6 +15,7 @@ To run the old experiments, check out commit
 | `order` | Compare another order of the corrections |
 | `sanity` | Randomise model weights |
 | `d2` | Discount scores without relocation |
+| Extra gallery arrays | Unused ImageNet-S examples and ClickMe examples from the other models |
 | Other result tables and figures | Analyses and exports not used in the paper |
 | `docs/` and old `paper/` guides | Earlier study rules, verification records and naming notes |
 | `scripts/` and `reproduce/` | Original shared build and run scripts |
