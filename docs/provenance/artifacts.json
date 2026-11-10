@@ -73,7 +73,10 @@
     "figures/example_maps.png",
     "figures/example_maps_more.png",
     "CITATION.cff",
-    "LICENSE"
+    "LICENSE",
+    "docs/verification/README.md",
+    "docs/verification/changed-files.txt",
+    "docs/verification/verification.json"
   ],
   "artifacts": [
     {
@@ -5222,6 +5225,21 @@
       "path": "figures/example_maps_more.png",
       "sha256": "b40452d037662569cd47d0578522de3071f75bd83d419082bd8f983e464a4654",
       "kind": "v8_qualitative_render_from_original_arrays"
+    },
+    {
+      "path": "docs/verification/README.md",
+      "sha256": "9957142610333a810a446eaacd9834aab5a7dda64d7f4f47dc8fe4a1ee4172ea",
+      "kind": "release_verification_record"
+    },
+    {
+      "path": "docs/verification/changed-files.txt",
+      "sha256": "b0e74412a5fb043621b30f14f5d849ff44985f4227cec7dbab33cf155c962ed4",
+      "kind": "release_verification_record"
+    },
+    {
+      "path": "docs/verification/verification.json",
+      "sha256": "637dd5fd81c1484d0cef6d68afb8421d43bd8ec8c6eff63b07393e4ecf30eef7",
+      "kind": "release_verification_record"
     }
   ]
 }
