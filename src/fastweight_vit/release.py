@@ -152,6 +152,25 @@ def scientific_invariants(root):
     return result
 
 
+def validate_evidence_map(root):
+    mapping = json.loads((root/'docs/evidence.json').read_text(encoding='utf-8'))
+    expected = {'Figure 1a','Figure 1b','Table 1','Figure 2','Table 2','Table A.1','Figure B.1',
+                'Table B.1','Table B.2','Table C.1','Figure D.1','Appendix E'}
+    require(mapping['paper_version'] == 8 and set(mapping['paper_artifacts']) == expected,
+            'Incomplete v8 paper-to-code map')
+    for label, paths in mapping['paper_artifacts'].items():
+        require(paths and all((root/p).is_file() for p in paths), f'Missing evidence for {label}')
+    require(len(mapping['items']) == 26, 'Incomplete empirical-claim map')
+    for item in mapping['items']:
+        for field in ('config_files','original_artifact_paths','reference_files'):
+            require(all((root/p).is_file() for p in item[field]), f'Broken {field}: {item["paper_item"]}')
+        require(item['cpu_commands'] and item['source_artifact_revision'], f'Unmapped claim: {item["paper_item"]}')
+    require(mapping['manual_tables'] == {'Table 1':'paper/main.tex', 'Table A.1':'paper/appendix.tex',
+                                         'Table C.1':'paper/tables_own/relocation_explanations.tex'},
+            'Authored tables must be distinguished from generated numeric tables')
+    return {'paper_items':len(expected),'empirical_claim_rows':len(mapping['items'])}
+
+
 def validate(root):
     root = Path(root).resolve()
     manifest = json.loads((root / 'docs/provenance/artifacts.json').read_text(encoding='utf-8'))
@@ -194,7 +213,7 @@ def validate(root):
     invariants = scientific_invariants(root)
     return {'passed': True, 'artifact_count': len(artifacts), 'artifacts': artifacts,
             'run_combinations': len(expected_runs), 'scientific_invariants': invariants,
-            'new_gpu_experiments': False, 'absolute_tolerance': ATOL}
+            'new_gpu_experiments': False, 'absolute_tolerance': ATOL, 'evidence_map': validate_evidence_map(root)}
 
 
 def compare_csv(reference, rebuilt):
