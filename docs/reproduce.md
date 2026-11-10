@@ -48,7 +48,7 @@ Never overwrite those original outputs with a new experiment run.
 | Sample counts, splits, models, learning rate, epochs, seeds and bootstrap rules | The named configs, `src/fastweight_vit/models/`, `src/fastweight_vit/stats.py`, `src/fastweight_vit/probes.py` | Counts in per-image outputs and held-out lists | `data/splits/*.json`; n columns in the result tables; `configs/*.yaml` | P and the strict audit check lists/protocols; historical records preserve effective settings |
 | Appendix E: received/contribution reading and relocation | Implementations, no separate run | Covered by main-result runs | `src/fastweight_vit/readings.py` and `src/fastweight_vit/probes.py` | P |
 
-Appendix A's early top-k comparison (S -0.011, Tiny +0.037) comes from `study/v5`, commit `1d66c0f7b39119e3ee7777ad7d086df68769d427`, `docs/analysis/v5_report.md` (the original B32 judgment); that earlier study is not included here.
+Appendix A's early top-k comparison (S -0.011, Tiny +0.037) comes from `study/v5`, commit `1d66c0f7b39119e3ee7777ad7d086df68769d427`, [the original B32 report](https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/docs/analysis/v5_report.md); that earlier study is not included here.
 
 ## Registered outcomes (Table A.1)
 

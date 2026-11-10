@@ -16,6 +16,7 @@ from fastweight_vit.gallery import SELECTED, load_gallery
 from fastweight_vit.release import (archive_check, compare_csv, csv_digest, csv_profile, rebuild,
                                    scientific_invariants, semantic_config, sha256, validate,
                                    validate_artifact, validate_completed_run)
+from fastweight_vit.release import validate_evidence_map
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -111,6 +112,14 @@ def test_gallery_fails_on_incomplete_or_incompatible_input(tmp_path, kind):
 def test_all_required_artifacts_and_authentic_records():
     report = validate(ROOT)
     assert report['passed'] and report['run_combinations'] == 42
+
+
+def test_paper_map_requires_actual_files_not_just_labels(tmp_path):
+    folder = tmp_path/'docs'
+    folder.mkdir()
+    shutil.copyfile(ROOT/'docs/evidence.json',folder/'evidence.json')
+    with pytest.raises(ValueError,match='Missing evidence for'):
+        validate_evidence_map(tmp_path)
 
 
 @pytest.mark.parametrize('damage', ['missing','truncated','duplicate','bad_gzip','both_variants'])
