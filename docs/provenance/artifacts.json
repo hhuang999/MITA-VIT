@@ -69,7 +69,11 @@
     "paper/appendix.tex",
     "paper/figures_own/example_maps.pdf",
     "paper/figures_own/example_maps_more.pdf",
-    "figures/gallery_selection.json"
+    "figures/gallery_selection.json",
+    "figures/example_maps.png",
+    "figures/example_maps_more.png",
+    "CITATION.cff",
+    "LICENSE"
   ],
   "artifacts": [
     {
@@ -5208,6 +5212,16 @@
       "path": "figures/schematic_fast_weight_network.png",
       "sha256": "bc0e2c063320ee9c2b013f84975bff55532bdbd56653dd306d71bb36219128ee",
       "kind": "original_figure"
+    },
+    {
+      "path": "figures/example_maps.png",
+      "sha256": "7703e630250eb06ff39e65241bb0092756b05f9dde8a5f09ccb6ca279308a62b",
+      "kind": "v8_qualitative_render_from_original_arrays"
+    },
+    {
+      "path": "figures/example_maps_more.png",
+      "sha256": "b40452d037662569cd47d0578522de3071f75bd83d419082bd8f983e464a4654",
+      "kind": "v8_qualitative_render_from_original_arrays"
     }
   ]
 }

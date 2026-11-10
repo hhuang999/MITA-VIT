@@ -3,18 +3,21 @@
 The fast-weight lens reads an attention map as the hidden-neuron activations of a network the slow weights
 write for each image: keys are first-layer weights, values second-layer weights, every token one neuron.
 Reading the map as "this image's, position-accurate, contribution-ranked" importance rests on three premises
-(M1-M3); each correction below repairs one of them. Notation: layer l, head h, query i (all 197 tokens),
+(M1-M3); the corrections experimentally test these premises. A position probe measures patch-index
+decodability, not the spatial origin of token content. C3 weights output-contribution magnitude;
+it is not causal attribution to the final prediction and ignores cancellation and later layers.
+Notation: layer l, head h, query i (all 197 tokens),
 key j (the 196 patches), a = softmax attention.
 
-| reading | per layer l | repairs |
+| reading | per layer l | premise tested |
 | --- | --- | --- |
 | R0 | s_j = sum_h sum_i a_hij (attention received) | - |
 | C3 | c_j = sum_h sum_i a_hij * ||W_O^h v_hj|| (output-projected value length; bias excluded) | M3 activation is not contribution |
-| C2 | r_p = sum_j s_j P_l(p | x_j) (position probe on the block-l attention input, after norm1) | M2 token j is not patch j |
+| C2 | r_p = sum_j s_j P_l(p | x_j) (patch-index prediction on block-l attention input, after norm1) | M2 experimental probe relocation |
 | C1 | s_j - mean_j (the model's mean map of this reading on held-out images) | M1 image-independent part |
 | R_all | C3 -> C2 -> C1: relocate c, then subtract the held-out mean of relocated c | all three |
 | R_all_alt | C3 -> C1 -> C2: subtract the held-out mean of c, then relocate | order check |
-| D2 | s_j * P_l(j | x_j): discount by the probe's probability that token j is still at patch j, no relocation | exploratory |
+| D2 | s_j * P_l(j | x_j): discount by predicted original patch-index probability, no relocation | exploratory |
 
 Stand-ins (each matched to one correction, which must beat it) and a reference:
 - stand_in_blur (for C2): s relocated by a Gaussian kernel whose mean squared displacement equals C2's on held-out

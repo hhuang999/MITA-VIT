@@ -9,8 +9,8 @@ no model/probe retraining and no original inference-output regeneration. Origina
 authentic historical source directory, execution revision and recovered records. Records in `records/` are
 byte-for-byte copies from `study/v5` commit `1d66c0f7b39119e3ee7777ad7d086df68769d427`; their old names/settings
 describe original executions. They are not invented metadata for the release revision. Missing fields remain
-JSON null (unknown). Multiple sources are recorded when probe-error fixes and mean predictions came from different runs.
-Their hashes are checked by the strict release audit. No original `checks.json` is rewritten.
+JSON null (unknown), including launch command, driver version, complete environment freeze and execution-time checkpoint digest. Multiple sources are recorded when probe-error fixes and mean predictions came from different runs.
+All 232 recovered run records (including 16 additional register records) are checked by the strict release audit. No original `checks.json` is rewritten.
 
 The outputs were imported into release layout before the audited base
 `7477ad5da9ab4d46f646ba2c0d2c3fe0316d9722`. The authentic import script is

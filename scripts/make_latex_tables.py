@@ -271,7 +271,7 @@ def main():
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--results', type=Path, default=root / 'results')
-    parser.add_argument('--out', type=Path, default=root / 'paper' / 'tables')
+    parser.add_argument('--out', type=Path, default=root / 'build/rebuilt/paper/tables')
     args = parser.parse_args()
     target = args.out / 'appendix' / 'paired_differences.tex'
     target.parent.mkdir(parents=True, exist_ok=True)

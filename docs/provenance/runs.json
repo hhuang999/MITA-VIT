@@ -49,7 +49,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/attention_off/deit/attention_off.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-03_ab_t7_deit/attention_off.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-03_ab_t7_deit/attention_off.csv"
+        }
+      ]
     },
     {
       "run": "attention_off/deit_b",
@@ -94,7 +109,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/attention_off/deit_b/attention_off.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-03_ab_t7_deit_b/attention_off.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-03_ab_t7_deit_b/attention_off.csv"
+        }
+      ]
     },
     {
       "run": "attention_off/dino",
@@ -139,7 +169,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/attention_off/dino/attention_off.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-03_ab_t7_dino/attention_off.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-03_ab_t7_dino/attention_off.csv"
+        }
+      ]
     },
     {
       "run": "c2_analysis/deit",
@@ -214,7 +259,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/c2_analysis/deit/mean_prediction.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_explore_c2_deit/mean_prediction.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_explore_c2_deit/mean_prediction.npz"
+        },
+        {
+          "release_artifact": "outputs/c2_analysis/deit/probe_errors.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_explore_c2_probefix_deit/probe_errors.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_explore_c2_probefix_deit/probe_errors.csv"
+        }
+      ]
     },
     {
       "run": "c2_analysis/deit_b",
@@ -289,7 +356,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/c2_analysis/deit_b/mean_prediction.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_explore_c2_deit_b/mean_prediction.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_explore_c2_deit_b/mean_prediction.npz"
+        },
+        {
+          "release_artifact": "outputs/c2_analysis/deit_b/probe_errors.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_explore_c2_probefix_deit_b/probe_errors.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_explore_c2_probefix_deit_b/probe_errors.csv"
+        }
+      ]
     },
     {
       "run": "c2_analysis/dino",
@@ -364,7 +453,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/c2_analysis/dino/mean_prediction.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_explore_c2_dino/mean_prediction.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_explore_c2_dino/mean_prediction.npz"
+        },
+        {
+          "release_artifact": "outputs/c2_analysis/dino/probe_errors.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_explore_c2_probefix_dino/probe_errors.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_explore_c2_probefix_dino/probe_errors.csv"
+        }
+      ]
     },
     {
       "run": "clickme_layers/clickme/deit",
@@ -409,7 +520,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/clickme_layers/clickme/deit/alignment.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-10-31_s_e7_clickme_deit/raw/alignment.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-10-31_s_e7_clickme_deit/raw/alignment.csv.gz"
+        }
+      ]
     },
     {
       "run": "clickme_layers/clickme/deit_b",
@@ -454,7 +580,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/clickme_layers/clickme/deit_b/alignment.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-10-31_s_e7_clickme_deit_b/raw/alignment.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-10-31_s_e7_clickme_deit_b/raw/alignment.csv.gz"
+        }
+      ]
     },
     {
       "run": "clickme_layers/clickme/dino",
@@ -499,7 +640,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/clickme_layers/clickme/dino/alignment.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-10-31_s_e7_clickme_dino/raw/alignment.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-10-31_s_e7_clickme_dino/raw/alignment.csv.gz"
+        }
+      ]
     },
     {
       "run": "diagnose_mean_maps/deit",
@@ -544,7 +700,43 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/deit/m1.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_deit/m1.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_deit/m1.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/deit/means_clickme.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_deit/means_clickme.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_deit/means_clickme.npz"
+        },
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/deit/means_crop.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_deit/means_crop.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_deit/means_crop.npz"
+        },
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/deit/radial.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_deit/radial.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_deit/radial.csv"
+        }
+      ]
     },
     {
       "run": "diagnose_mean_maps/deit_b",
@@ -589,7 +781,43 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/deit_b/m1.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_deit_b/m1.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_deit_b/m1.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/deit_b/means_clickme.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_deit_b/means_clickme.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_deit_b/means_clickme.npz"
+        },
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/deit_b/means_crop.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_deit_b/means_crop.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_deit_b/means_crop.npz"
+        },
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/deit_b/radial.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_deit_b/radial.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_deit_b/radial.csv"
+        }
+      ]
     },
     {
       "run": "diagnose_mean_maps/dino",
@@ -634,7 +862,43 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/dino/m1.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_dino/m1.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_dino/m1.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/dino/means_clickme.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_dino/means_clickme.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_dino/means_clickme.npz"
+        },
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/dino/means_crop.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_dino/means_crop.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_dino/means_crop.npz"
+        },
+        {
+          "release_artifact": "outputs/diagnose_mean_maps/dino/radial.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_m1_dino/radial.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_m1_dino/radial.csv"
+        }
+      ]
     },
     {
       "run": "diagnose_probe/deit",
@@ -674,7 +938,43 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/diagnose_probe/deit/heldout.json",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_deit/heldout.json",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_deit/heldout.json"
+        },
+        {
+          "release_artifact": "outputs/diagnose_probe/deit/probe_accuracy.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_deit/identity.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_deit/identity.csv"
+        },
+        {
+          "release_artifact": "outputs/diagnose_probe/deit/probe_accuracy_images.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_deit/identity_images.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_deit/identity_images.csv"
+        },
+        {
+          "release_artifact": "outputs/diagnose_probe/deit/probes.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_deit/probes.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_deit/probes.npz"
+        }
+      ]
     },
     {
       "run": "diagnose_probe/deit_b",
@@ -714,7 +1014,43 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/diagnose_probe/deit_b/heldout.json",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_deit_b/heldout.json",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_deit_b/heldout.json"
+        },
+        {
+          "release_artifact": "outputs/diagnose_probe/deit_b/probe_accuracy.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_deit_b/identity.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_deit_b/identity.csv"
+        },
+        {
+          "release_artifact": "outputs/diagnose_probe/deit_b/probe_accuracy_images.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_deit_b/identity_images.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_deit_b/identity_images.csv"
+        },
+        {
+          "release_artifact": "outputs/diagnose_probe/deit_b/probes.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_deit_b/probes.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_deit_b/probes.npz"
+        }
+      ]
     },
     {
       "run": "diagnose_probe/dino",
@@ -754,7 +1090,43 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/diagnose_probe/dino/heldout.json",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_dino/heldout.json",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_dino/heldout.json"
+        },
+        {
+          "release_artifact": "outputs/diagnose_probe/dino/probe_accuracy.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_dino/identity.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_dino/identity.csv"
+        },
+        {
+          "release_artifact": "outputs/diagnose_probe/dino/probe_accuracy_images.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_dino/identity_images.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_dino/identity_images.csv"
+        },
+        {
+          "release_artifact": "outputs/diagnose_probe/dino/probes.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_diagnose_probe_dino/probes.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_diagnose_probe_dino/probes.npz"
+        }
+      ]
     },
     {
       "run": "high_norm/deit",
@@ -799,7 +1171,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/high_norm/deit/high_norm.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-10-31_s_layers_deit/raw/layer_reading.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-10-31_s_layers_deit/raw/layer_reading.csv.gz"
+        }
+      ]
     },
     {
       "run": "high_norm/deit_b",
@@ -844,7 +1231,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/high_norm/deit_b/high_norm.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-10-31_s_layers_deit_b/raw/layer_reading.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-10-31_s_layers_deit_b/raw/layer_reading.csv.gz"
+        }
+      ]
     },
     {
       "run": "high_norm/dino",
@@ -889,7 +1291,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/high_norm/dino/high_norm.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-10-31_s_layers_dino/raw/layer_reading.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-10-31_s_layers_dino/raw/layer_reading.csv.gz"
+        }
+      ]
     },
     {
       "run": "k_sweep/deit",
@@ -934,7 +1351,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/k_sweep/deit/predictions.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_read_ksweep_deit/predictions.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_read_ksweep_deit/predictions.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/k_sweep/deit/settings.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_read_ksweep_deit/settings.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_read_ksweep_deit/settings.csv"
+        }
+      ]
     },
     {
       "run": "k_sweep/deit_b",
@@ -979,7 +1418,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/k_sweep/deit_b/predictions.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_read_ksweep_deit_b/predictions.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_read_ksweep_deit_b/predictions.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/k_sweep/deit_b/settings.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_read_ksweep_deit_b/settings.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_read_ksweep_deit_b/settings.csv"
+        }
+      ]
     },
     {
       "run": "k_sweep/dino",
@@ -1024,7 +1485,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/k_sweep/dino/predictions.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_read_ksweep_dino/predictions.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_read_ksweep_dino/predictions.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/k_sweep/dino/settings.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_read_ksweep_dino/settings.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_read_ksweep_dino/settings.csv"
+        }
+      ]
     },
     {
       "run": "supplementary_eval/clickme/deit",
@@ -1069,7 +1552,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/supplementary_eval/clickme/deit/alignment.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_clickme_deit/alignment.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_clickme_deit/alignment.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/supplementary_eval/clickme/deit/dose.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_clickme_deit/dose.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_clickme_deit/dose.csv"
+        }
+      ]
     },
     {
       "run": "supplementary_eval/clickme/deit_b",
@@ -1114,7 +1619,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/supplementary_eval/clickme/deit_b/alignment.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_clickme_deit_b/alignment.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_clickme_deit_b/alignment.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/supplementary_eval/clickme/deit_b/dose.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_clickme_deit_b/dose.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_clickme_deit_b/dose.csv"
+        }
+      ]
     },
     {
       "run": "supplementary_eval/clickme/dino",
@@ -1159,7 +1686,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/supplementary_eval/clickme/dino/alignment.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_clickme_dino/alignment.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_clickme_dino/alignment.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/supplementary_eval/clickme/dino/dose.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_clickme_dino/dose.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_clickme_dino/dose.csv"
+        }
+      ]
     },
     {
       "run": "supplementary_eval/imagenet_s/deit",
@@ -1204,7 +1753,36 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/supplementary_eval/imagenet_s/deit/dose.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_imagenet_s_deit/dose.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_imagenet_s_deit/dose.csv"
+        },
+        {
+          "release_artifact": "outputs/supplementary_eval/imagenet_s/deit/faithfulness.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_imagenet_s_deit/faithfulness.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_imagenet_s_deit/faithfulness.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/supplementary_eval/imagenet_s/deit/plausibility.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_imagenet_s_deit/plausibility.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_imagenet_s_deit/plausibility.csv.gz"
+        }
+      ]
     },
     {
       "run": "supplementary_eval/imagenet_s/deit_b",
@@ -1249,7 +1827,36 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/supplementary_eval/imagenet_s/deit_b/dose.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_imagenet_s_deit_b/dose.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_imagenet_s_deit_b/dose.csv"
+        },
+        {
+          "release_artifact": "outputs/supplementary_eval/imagenet_s/deit_b/faithfulness.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_imagenet_s_deit_b/faithfulness.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_imagenet_s_deit_b/faithfulness.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/supplementary_eval/imagenet_s/deit_b/plausibility.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_imagenet_s_deit_b/plausibility.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_imagenet_s_deit_b/plausibility.csv.gz"
+        }
+      ]
     },
     {
       "run": "supplementary_eval/imagenet_s/dino",
@@ -1294,7 +1901,36 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/supplementary_eval/imagenet_s/dino/dose.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_imagenet_s_dino/dose.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_imagenet_s_dino/dose.csv"
+        },
+        {
+          "release_artifact": "outputs/supplementary_eval/imagenet_s/dino/faithfulness.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_imagenet_s_dino/faithfulness.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_imagenet_s_dino/faithfulness.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/supplementary_eval/imagenet_s/dino/plausibility.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_eval_imagenet_s_dino/plausibility.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_eval_imagenet_s_dino/plausibility.csv.gz"
+        }
+      ]
     },
     {
       "run": "supplementary_heldout/deit",
@@ -1334,7 +1970,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/supplementary_heldout/deit/global.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_heldout_deit/global.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_heldout_deit/global.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/supplementary_heldout/deit/mlp_probe.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_heldout_deit/mlp_probe.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_heldout_deit/mlp_probe.csv"
+        }
+      ]
     },
     {
       "run": "supplementary_heldout/deit_b",
@@ -1374,7 +2032,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/supplementary_heldout/deit_b/global.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_heldout_deit_b/global.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_heldout_deit_b/global.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/supplementary_heldout/deit_b/mlp_probe.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_heldout_deit_b/mlp_probe.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_heldout_deit_b/mlp_probe.csv"
+        }
+      ]
     },
     {
       "run": "supplementary_heldout/dino",
@@ -1414,7 +2094,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/supplementary_heldout/dino/global.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_heldout_dino/global.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_heldout_dino/global.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/supplementary_heldout/dino/mlp_probe.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-07_supp_heldout_dino/mlp_probe.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-07_supp_heldout_dino/mlp_probe.csv"
+        }
+      ]
     },
     {
       "run": "table1/clickme/deit",
@@ -1459,7 +2161,183 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/table1/clickme/deit/alignment.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/alignment.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/alignment.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_000000.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_000000.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_000000.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_000256.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_000256.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_000256.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_000704.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_000704.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_000704.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_001280.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_001280.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_001280.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_003008.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_003008.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_003008.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_004672.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_004672.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_004672.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_004800.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_004800.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_004800.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_005312.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_005312.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_005312.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_008704.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_008704.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_008704.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_008832.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_008832.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_008832.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_009408.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_009408.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_009408.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_009728.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_009728.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_009728.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_010496.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_010496.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_010496.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_010944.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_010944.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_010944.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_011072.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_011072.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_011072.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_011264.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_011264.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_011264.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_011648.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_011648.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_011648.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_012672.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_012672.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_012672.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_014144.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_014144.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_014144.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_014784.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_014784.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_014784.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_015872.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_015872.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_015872.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_016256.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_016256.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_016256.npz"
+        },
+        {
+          "release_artifact": "outputs/table1/clickme/deit/gallery_016832.npz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit/gallery_016832.npz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit/gallery_016832.npz"
+        }
+      ]
     },
     {
       "run": "table1/clickme/deit_b",
@@ -1504,7 +2382,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/table1/clickme/deit_b/alignment.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_deit_b/alignment.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_deit_b/alignment.csv.gz"
+        }
+      ]
     },
     {
       "run": "table1/clickme/dino",
@@ -1549,7 +2442,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/table1/clickme/dino/alignment.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_clickme_dino/alignment.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_clickme_dino/alignment.csv.gz"
+        }
+      ]
     },
     {
       "run": "table1/imagenet_s/deit",
@@ -1594,7 +2502,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/table1/imagenet_s/deit/faithfulness.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_imagenet_s_deit/faithfulness.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_imagenet_s_deit/faithfulness.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/table1/imagenet_s/deit/plausibility.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_imagenet_s_deit/plausibility.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_imagenet_s_deit/plausibility.csv.gz"
+        }
+      ]
     },
     {
       "run": "table1/imagenet_s/deit_b",
@@ -1639,7 +2569,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/table1/imagenet_s/deit_b/faithfulness.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_imagenet_s_deit_b/faithfulness.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_imagenet_s_deit_b/faithfulness.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/table1/imagenet_s/deit_b/plausibility.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_imagenet_s_deit_b/plausibility.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_imagenet_s_deit_b/plausibility.csv.gz"
+        }
+      ]
     },
     {
       "run": "table1/imagenet_s/dino",
@@ -1684,7 +2636,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/table1/imagenet_s/dino/faithfulness.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_imagenet_s_dino/faithfulness.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_imagenet_s_dino/faithfulness.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/table1/imagenet_s/dino/plausibility.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_ablation_imagenet_s_dino/plausibility.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_ablation_imagenet_s_dino/plausibility.csv.gz"
+        }
+      ]
     },
     {
       "run": "table1_mita/clickme/mita",
@@ -1729,7 +2703,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/table1_mita/clickme/mita/alignment.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_mita_clickme_mita/alignment.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_mita_clickme_mita/alignment.csv"
+        }
+      ]
     },
     {
       "run": "table1_mita/imagenet_s/mita",
@@ -1774,7 +2763,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/table1_mita/imagenet_s/mita/faithfulness.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_mita_imagenet_s_mita/faithfulness.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_mita_imagenet_s_mita/faithfulness.csv"
+        },
+        {
+          "release_artifact": "outputs/table1_mita/imagenet_s/mita/plausibility.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_mita_imagenet_s_mita/plausibility.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_mita_imagenet_s_mita/plausibility.csv"
+        }
+      ]
     },
     {
       "run": "table1_register/clickme/deit",
@@ -1819,7 +2830,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/table1_register/clickme/deit/alignment.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_register_clickme_deit/alignment.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_register_clickme_deit/alignment.csv"
+        }
+      ]
     },
     {
       "run": "table1_register/imagenet_s/deit",
@@ -1864,7 +2890,29 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/table1_register/imagenet_s/deit/faithfulness.csv.gz",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_register_imagenet_s_deit/faithfulness.csv.gz",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_register_imagenet_s_deit/faithfulness.csv.gz"
+        },
+        {
+          "release_artifact": "outputs/table1_register/imagenet_s/deit/plausibility.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-05_correct_register_imagenet_s_deit/plausibility.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-05_correct_register_imagenet_s_deit/plausibility.csv"
+        }
+      ]
     },
     {
       "run": "value_norm/deit",
@@ -1909,7 +2957,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/value_norm/deit/high_norm.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-03_ab_t3_deit/heads.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-03_ab_t3_deit/heads.csv"
+        }
+      ]
     },
     {
       "run": "value_norm/deit_b",
@@ -1954,7 +3017,22 @@
         }
       ],
       "artifact_status": "original observations imported into release layout; not a new inference run",
-      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README."
+      "transformation": "Historical import script documents method/column renaming, filtering and batch aggregation; see README.",
+      "unrecovered_fields": {
+        "exact_launch_command": null,
+        "driver_version": null,
+        "complete_pip_freeze": null,
+        "checkpoint_file_sha256_at_execution": null
+      },
+      "artifact_sources": [
+        {
+          "release_artifact": "outputs/value_norm/deit_b/high_norm.csv",
+          "historical_source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+          "historical_source_path": "experiments/2026-11-03_ab_t3_deit_b/heads.csv",
+          "status": "authentic source located; import transformations documented",
+          "source_url": "https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/experiments/2026-11-03_ab_t3_deit_b/heads.csv"
+        }
+      ]
     }
   ],
   "missing_records": "Unknown fields remain null; restored records describe historical executions, never the new release commit.",
@@ -1970,5 +3048,103 @@
   "limitations": [
     "Historical register full-validation accuracy/reduction is not regenerated by the active pipeline.",
     "No GPU experiments or position-probe training are part of this release audit."
+  ],
+  "register_evidence_records": [
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit/metadata.json",
+      "source": "experiments/2026-11-03_ab_t2_deit/metadata.json",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "35b2588f3e31dd77867d30c5843616e5d7bc5eccbd6906a7feb10ec4a3ddc023"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit/config.yaml",
+      "source": "experiments/2026-11-03_ab_t2_deit/config.yaml",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "ea2e4e02f287244276257ac7c4fa9bd8003bf3f6152a9823d8a5700b70d2ede1"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit/log.txt",
+      "source": "experiments/2026-11-03_ab_t2_deit/log.txt",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "9bc38112b1dc753b07aae75155a8e90e204ae0c7b33695c579397375c3637480"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit/checks.json",
+      "source": "experiments/2026-11-03_ab_t2_deit/checks.json",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "9c690bec1cc46bc8f682e944cea51f469776000ee5ac22245f9ebba1a1c47d60"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit/gate.json",
+      "source": "experiments/2026-11-03_ab_t2_deit/gate.json",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "6077080c0d60001805c0f68b2f3f62232b193af56db819affe97ff43220995c2"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit/gate.csv",
+      "source": "experiments/2026-11-03_ab_t2_deit/gate.csv",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "ddcf1b9a99169880369e6b07b01a5289bec07ab0567737755c85e0d5b8a013e7"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit_b/metadata.json",
+      "source": "experiments/2026-11-03_ab_t2_deit_b/metadata.json",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "694d24fd3d22bf5fd3723672b0454acb4470dcf6555bdc209d1030d530b2b800"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit_b/config.yaml",
+      "source": "experiments/2026-11-03_ab_t2_deit_b/config.yaml",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "e1ee1a37d6fad76bf23e23699c2eba5df84f0994697083c1472161d0c9399b88"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit_b/log.txt",
+      "source": "experiments/2026-11-03_ab_t2_deit_b/log.txt",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "ef264555e581fd555ffd353af69134b900777c4351bffe49fa506e54a50f6769"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit_b/checks.json",
+      "source": "experiments/2026-11-03_ab_t2_deit_b/checks.json",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "e7a384d9caf70272c9cb653ed69ed0405af4f95678362c358a53a6b06ad491f7"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit_b/gate.json",
+      "source": "experiments/2026-11-03_ab_t2_deit_b/gate.json",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "3269ef1b7f79ec34f93e72320090bbcfd23d8d3eb1145a78497af5757bb8b814"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t2_deit_b/gate.csv",
+      "source": "experiments/2026-11-03_ab_t2_deit_b/gate.csv",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "10d0aa8f652a945aca4643ec01e2871ab0ed8363cda98445b5ad3643d75b9ff5"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t6_deit/metadata.json",
+      "source": "experiments/2026-11-03_ab_t6_deit/metadata.json",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "4026347c207e68ccb98509e7b047dcb85d75c6a66d00c7646e2af43564848e25"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t6_deit/config.yaml",
+      "source": "experiments/2026-11-03_ab_t6_deit/config.yaml",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "5c90e5edf3695cbb68fe5396209424a1717f11bd6fcd5b1f4d6047c1c9b6f2dd"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t6_deit/log.txt",
+      "source": "experiments/2026-11-03_ab_t6_deit/log.txt",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "a41aa0a7edc2300af0a654193a2d7509409ba071c57b1632b25213720f6c9cee"
+    },
+    {
+      "path": "docs/provenance/records/2026-11-03_ab_t6_deit/checks.json",
+      "source": "experiments/2026-11-03_ab_t6_deit/checks.json",
+      "source_revision": "1d66c0f7b39119e3ee7777ad7d086df68769d427",
+      "sha256": "ed46d81fb3361eca7ae07f9eb2a88808c740897010c0a146415467b7cd323396"
+    }
   ]
 }
