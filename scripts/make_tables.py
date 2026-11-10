@@ -490,7 +490,7 @@ def supplementary(runs, out):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--outputs', type=Path, default=ROOT / 'outputs')
-    parser.add_argument('--results', type=Path, default=ROOT / 'results')
+    parser.add_argument('--results', type=Path, default=ROOT / 'build/rebuilt/results')
     args = parser.parse_args()
     runs, out = Runs(args.outputs), args.results
     out.mkdir(parents=True, exist_ok=True)

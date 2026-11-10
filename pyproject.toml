@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fastweight-vit"
-version = "0.1.0"
+version = "0.2.0"
 description = "Tools and experiments for analyzing ViT attention maps through fast and slow weights"
 requires-python = ">=3.11,<3.13"
 dependencies = [
@@ -22,6 +22,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest"]
+download = ["gdown==5.2.0"]
 
 [project.urls]
 Repository = "https://github.com/hhuang999/vit-fastweight-lens"

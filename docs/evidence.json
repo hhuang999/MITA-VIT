@@ -1,0 +1,204 @@
+{
+  "paper_version": 8,
+  "base_revision": "7477ad5da9ab4d46f646ba2c0d2c3fe0316d9722",
+  "interpretation_status": "Model-dependent single-correction correspondence and mechanism checks are post hoc.",
+  "items": [
+    {
+      "paper_item": "Figure 1a: fast-weight network",
+      "configuration": "Static drawing",
+      "original_outputs": "None",
+      "evidence": "`figures/schematic_fast_weight_network.{pdf,png}`",
+      "command": "R (static schematic and execution source unchanged)"
+    },
+    {
+      "paper_item": "Figure 2; Table B.1; main text premise and map-quality percentages",
+      "configuration": "`diagnose_probe`, `diagnose_mean_maps` (needs probes), `high_norm`, `clickme_layers`",
+      "original_outputs": "Corresponding folders in `outputs/`",
+      "evidence": "`results/diagnose.csv`; `paper/figures_own/diagnosis.pdf`; `paper/tables_own/diagnostics_per_layer.tex`",
+      "command": "E for each config, then R"
+    },
+    {
+      "paper_item": "Execution: k=16 agreement 72/83/61%, random 9/30/4%; Figure B.1 and every-k comparison",
+      "configuration": "`k_sweep`, `attention_off`",
+      "original_outputs": "`outputs/k_sweep/`, `outputs/attention_off/`",
+      "evidence": "`results/k_sweep.csv`, `results/k_sweep_tests.csv`; `figures/execution_k_sweep.{pdf,png}`",
+      "command": "E for both, then R"
+    },
+    {
+      "paper_item": "Mean maps 82-98% radial in deep layers",
+      "configuration": "`diagnose_mean_maps`, needs `diagnose_probe`",
+      "original_outputs": "`outputs/diagnose_mean_maps/<model>/radial.csv`",
+      "evidence": "`results/radial.csv`",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "High-norm value-vector ratios 0.29 and 0.23",
+      "configuration": "`value_norm`",
+      "original_outputs": "`outputs/value_norm/<model>/high_norm.csv.gz`",
+      "evidence": "`results/value_norm.csv`, rows with config=value_norm and layer=9-12 mean",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "Table 2: readings, controls, GAE and paired verdicts",
+      "configuration": "`table1`, needs probes and mean maps",
+      "original_outputs": "`outputs/table1/{imagenet_s,clickme}/`",
+      "evidence": "`results/table1_long.csv`, `results/correct_tests.csv`; `paper/tables_own/main_results.tex`",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "Table 2 model-side rows; Appendix B variant differences and intervals",
+      "configuration": "`table1_register`, `table1_mita`; register search and lens dependencies",
+      "original_outputs": "`outputs/table1_register/`, `outputs/table1_mita/`",
+      "evidence": "`results/variants.csv`",
+      "command": "E for both, then R"
+    },
+    {
+      "paper_item": "Table B.2: paired differences and intervals",
+      "configuration": "`table1`, lens dependencies",
+      "original_outputs": "`outputs/table1/`",
+      "evidence": "`results/correct_tests.csv` -> `paper/tables/appendix/paired_differences.tex` -> `paper/tables_own/paired_differences.tex`",
+      "command": "R"
+    },
+    {
+      "paper_item": "Table 1: premises, proxies, corrections, controls and post-hoc outcomes",
+      "configuration": "Diagnostics plus `table1`",
+      "original_outputs": "Diagnostic and main-result folders above",
+      "evidence": "`results/diagnose.csv`, `results/correct_tests.csv`; the interpretive table is written in `paper/main.tex`",
+      "command": "R; inspect the named diagnostics and paired comparisons"
+    },
+    {
+      "paper_item": "Last-layer recovery: enrichment 62/33%, ClickMe 31/45%, deletion 8/29%",
+      "configuration": "`table1`",
+      "original_outputs": "`outputs/table1/`",
+      "evidence": "`results/last_layer.csv`, reading=C3",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "DINO changes at most 0.004; early relocation changes at most 0.004",
+      "configuration": "`table1`",
+      "original_outputs": "`outputs/table1/`",
+      "evidence": "`results/negative_controls.csv`, tests P4a/P4b",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "Contribution gains track high-norm attention: 0.075/0.132 enrichment, 0.045/0.158 ClickMe",
+      "configuration": "`supplementary_eval`, needs lens and `supplementary_heldout`",
+      "original_outputs": "`outputs/supplementary_eval/`",
+      "evidence": "`results/supplementary/dose.csv`, improvement=C3 - R0",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "Shuffled-weight comparisons; value-only weighting differences -0.010 to 0.000",
+      "configuration": "`supplementary_eval`, same dependencies",
+      "original_outputs": "`outputs/supplementary_eval/`",
+      "evidence": "`results/supplementary/c3_mechanism.csv`, tests C3 - C3shuffle and C3 - C3v",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "Table C.1: 2-29% far error mass; layer-12 neighbourhood probabilities 45/66/81%",
+      "configuration": "`c2_analysis`, needs probes and mean maps",
+      "original_outputs": "`outputs/c2_analysis/<model>/probe_errors.csv.gz`",
+      "evidence": "`results/c2_analysis/errors.csv`, source=probe, metric=far_share/near3x3",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "Table C.1: probe mean prediction peak 1.1-1.3, weak relation to mean map",
+      "configuration": "`c2_analysis`, same dependencies",
+      "original_outputs": "`outputs/c2_analysis/<model>/mean_prediction.npz` and held-out mean maps",
+      "evidence": "`results/c2_analysis/mean_prediction.csv`, max_ratio and correlations",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "Table C.1: MLP accuracy gains 1.8/3.8/6.7 points, relocation lower in six cells",
+      "configuration": "`supplementary_heldout`, `supplementary_eval`, lens dependencies",
+      "original_outputs": "Corresponding folders in `outputs/`",
+      "evidence": "`results/supplementary/mlp_probe.csv`; `results/supplementary/c2_variants.csv`, test=C2MLP - R0",
+      "command": "E for both, then R"
+    },
+    {
+      "paper_item": "Table C.1: globality and probe accuracy/entropy at layers 10-12",
+      "configuration": "`supplementary_heldout`, needs probes",
+      "original_outputs": "`outputs/supplementary_heldout/<model>/global.csv`",
+      "evidence": "`results/supplementary/globalisation.csv`",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "Table C.1: hand-written summary",
+      "configuration": "The four analyses above",
+      "original_outputs": "As above",
+      "evidence": "`paper/tables_own/relocation_explanations.tex`",
+      "command": "R rebuilds its evidence; preserve this table as supplied"
+    },
+    {
+      "paper_item": "Figures 1b / D.1: first two / next four fixed-seed examples",
+      "configuration": "`table1`, ClickMe dataset",
+      "original_outputs": "`outputs/table1/clickme/deit/gallery_*.npz`",
+      "evidence": "`paper/figures_own/example_maps.pdf`, `example_maps_more.pdf`; `figures/example_maps{,_more}.png`; `figures/gallery_selection.json`",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "Appendix A: centre-Gaussian raw ClickMe correlation 0.41; two excluded duplicates",
+      "configuration": "`table1`, `diagnose_probe`",
+      "original_outputs": "`outputs/table1/clickme/`, `outputs/diagnose_probe/<model>/heldout.json`",
+      "evidence": "`results/numbers.csv`; fixed held-out list in `data/splits/heldout_4000.json`",
+      "command": "E for both, then R"
+    },
+    {
+      "paper_item": "Appendix A: random/radial controls near zero and Gaussian deletion 0.110/0.099/0.140",
+      "configuration": "`table1`",
+      "original_outputs": "`outputs/table1/`",
+      "evidence": "`results/table1_long.csv`, methods random/centre/mean_map",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "Appendix A: blur widths 0.7-2.9 patches",
+      "configuration": "`diagnose_probe`",
+      "original_outputs": "`outputs/diagnose_probe/<model>/probe_accuracy.csv`",
+      "evidence": "`results/probe_accuracy.csv`, column sigma",
+      "command": "E, then R"
+    },
+    {
+      "paper_item": "Appendix A: selected register units; 92.75% reduction, 99.0% agreement; DeiT-B 44.9%",
+      "configuration": "`register`; selected units in `table1_register`",
+      "original_outputs": "Historical pilot summary, with provenance in `results/register/README.md`",
+      "evidence": "`results/register/pilot_gate.csv`",
+      "command": "E repeats the DeiT-S search; inspect n8/n32 columns of the supplied summary"
+    },
+    {
+      "paper_item": "Appendix A: formal register reduction 91.5%, accuracy 79.8%",
+      "configuration": "Historical formal register check",
+      "original_outputs": "Historical summary, same provenance guide",
+      "evidence": "`results/register/register_deit.csv`, R0 vs R2",
+      "command": "Inspect the supplied CSV; this historical full-validation check is not rebuilt by the current runner"
+    },
+    {
+      "paper_item": "Sample counts, splits, models, learning rate, epochs, seeds and bootstrap rules",
+      "configuration": "The named configs, `src/fastweight_vit/models/`, `src/fastweight_vit/stats.py`, `src/fastweight_vit/probes.py`",
+      "original_outputs": "Counts in per-image outputs and held-out lists",
+      "evidence": "`data/splits/*.json`; n columns in the result tables; `configs/*.yaml`",
+      "command": "P and the strict audit check lists/protocols; historical records preserve effective settings"
+    },
+    {
+      "paper_item": "Appendix E: received/contribution reading and relocation",
+      "configuration": "Implementations, no separate run",
+      "original_outputs": "Covered by main-result runs",
+      "evidence": "`src/fastweight_vit/readings.py` and `src/fastweight_vit/probes.py`",
+      "command": "P"
+    }
+  ],
+  "registered_outcomes": {
+    "R1": "P4a/P4b: 3/3 and 6/6 comparable",
+    "R2": "P3: 1/4 higher, partly holds",
+    "R3": "P6: 4/4 not higher"
+  },
+  "manual_tables": {
+    "Table 1": "paper/main.tex",
+    "Table A.1": "paper/appendix.tex",
+    "Table C.1": "paper/tables_own/relocation_explanations.tex"
+  },
+  "generated_tables": {
+    "Table 2": "paper/tables_own/main_results.tex",
+    "Table B.1": "paper/tables_own/diagnostics_per_layer.tex",
+    "Table B.2": "paper/tables_own/paired_differences.tex"
+  }
+}
