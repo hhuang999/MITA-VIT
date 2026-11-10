@@ -11,9 +11,11 @@
 \section{Experimental details}
 \label{app:setup}
 
-\paragraph{Models.} All models are frozen ViTs with $16{\times}16$ patches on $224{\times}224$ inputs, taken from timm~\citep{wightman2019}. \emph{DeiT-S and DeiT-B}~\citep{touvron2021}: \texttt{deit\_small\_patch16\_224.fb\_in1k} and \texttt{deit\_base\_patch16\_224.fb\_in1k} (resize to 248, centre crop 224). \emph{DINO ViT-S/16}~\citep{caron2021}: \texttt{vit\_small\_patch16\_224.dino} with the official DINO linear head (resize to 256, centre crop 224). \emph{DeiT-S with a test-time register}~\citep{jiang2025}: the activations of eight feed-forward units in layers 4 and 5 are moved to one added register token, which is left out of every map, like CLS. The units were selected on 500 ImageNet-S images, where they reduce the number of high-norm patch tokens (counted per layer) by 92.75\% and keep 99.0\% of the predictions; on the other 11,919 images the reduction is 91.5\%, and ImageNet accuracy stays at 79.8\%. For DeiT-B the same search found no such units (44.9\% reduction with 32 units), so we report the register for DeiT-S only. \emph{Top-$k$ training}: the DeiT-S checkpoint released with MiTA~\citep{wen2026mita} (25 summary slots, $k=25$), with its own preprocessing; its deletion score is undefined because its summary slots pool fixed regions of the full grid. Both model-side fixes are tested at size S only; in a preliminary comparison with an earlier protocol, top-$k$ training scored 0.011 lower in object enrichment than its baseline at size S but 0.037 higher at size Tiny, so the result should not be read beyond DeiT-S.
+\paragraph{Models.} All models are frozen ViTs with $16{\times}16$ patches on $224{\times}224$ inputs, taken from timm~\citep{wightman2019}. \emph{DeiT-S and DeiT-B}~\citep{touvron2021}: \texttt{deit\_small\_patch16\_224.fb\_in1k} and \texttt{deit\_base\_patch16\_224.fb\_in1k} (resize to 248, centre crop 224: a crop ratio of 0.9). \emph{DINO ViT-S/16}~\citep{caron2021}: \texttt{vit\_small\_patch16\_224.dino} with the official DINO linear head (resize to 256, centre crop 224: a crop ratio of 0.875). \emph{DeiT-S with a test-time register}~\citep{jiang2025}: the activations of eight feed-forward units in layers 4 and 5 are moved to one added register token, which is left out of every map, like CLS. The units were selected on 500 ImageNet-S images, where they reduce the number of high-norm patch tokens (counted per layer) by 92.75\% and keep 99.0\% of the predictions; on the other 11,919 images the reduction is 91.5\%, and ImageNet accuracy stays at 79.8\%. For DeiT-B the same search found no such units (44.9\% reduction with 32 units), so we report the register for DeiT-S only. \emph{Top-$k$ training}: the DeiT-S checkpoint released with MiTA~\citep{wen2026mita} (25 summary slots, $k=25$), with its own preprocessing (crop ratio 0.875). It differs from our DeiT-S in training and preprocessing, so its row in Table~\ref{tab:main} is not a controlled comparison; its deletion score is undefined because its summary slots pool fixed regions of the full grid. Both model-side fixes are tested at size S only; in a preliminary comparison with an earlier protocol, top-$k$ training scored 0.011 lower in object enrichment than its baseline at size S but 0.037 higher at size Tiny, so the result should not be read beyond DeiT-S.
 
 \paragraph{Data.} \emph{Execution test}: 5,000 randomly drawn ImageNet validation images~\citep{deng2009}. \emph{ImageNet-S}~\citep{gao2023}: all 12,419 validation images with segmentation masks; enrichment is defined for 12,150 of them (12,144 for DINO ViT-S), and deletion uses a random subset of 2,000. \emph{ClickMe}~\citep{linsley2019,fel2022}: 17,408 images with human importance maps, which we smooth with a Gaussian. \emph{Held-out set}: 4,000 ImageNet validation images that are not evaluated anywhere; 2,000 train the position probes, and the other 2,000 give the mean maps, the probe accuracies and the blur widths. While building this set we found that only 2 of 4,002 candidate validation images matched a ClickMe image, so the ClickMe images are very likely ImageNet training images, which all three models have seen.
+
+\paragraph{Diagnostics.} All three are computed per layer. \emph{Specificity}: with $\bar s$ the mean received-attention map of the held-out images and $\operatorname{Var}_j$ the variance over the 196 patches of one image, the share explained is $1-\sum_x\operatorname{Var}_j(s-\bar s)\,/\sum_x\operatorname{Var}_j(s)$, summed over the ImageNet-S images $x$. \emph{Location}: the top-1 accuracy of the linear position probe on the 196 patch tokens of each of 2,000 held-out images. \emph{Contribution}: the share of received attention on high-norm tokens, on the ImageNet-S images. The high-norm threshold (three times the median, defined below) is an operational definition fixed before the experiments; we did not test other thresholds. The correction itself uses no threshold.
 
 \paragraph{Corrections and matched controls.} All are applied per layer and then summed over layers 9--12; queries run over all 197 tokens and maps cover the 196 patches.
 \emph{Mean-map subtraction} subtracts the model's mean received-attention map over the 2,000 held-out images. Its control subtracts a centred isotropic Gaussian ($\sigma=3.5$ patches) scaled to the spatial standard deviation of that mean map; it is exactly radial.
@@ -25,7 +27,29 @@
 \emph{Image-specific ClickMe alignment.} The map is upsampled to $224{\times}224$ and correlated (Spearman, over pixels) with the image's own human map; we subtract its correlation with the human map of another image. A map that does not depend on the image scores exactly zero.
 \emph{Deletion faithfulness.} Patches are removed in the order of the map by dropping their tokens; at budgets of 0 to 147 patches we record whether the top-1 class is unchanged. The score is the symmetric relevance gain of \citet{bluecher2024}: the area under the least-important-first curve minus that under the most-important-first curve.
 \emph{Validity of the metrics.} A random map, a centred Gaussian and the mean map all score within 0.004 of zero on enrichment and on ClickMe alignment (the two image-independent maps score exactly zero on the latter); on deletion the centred Gaussian scores 0.110, 0.099 and 0.140 (DeiT-S, DeiT-B, DINO ViT-S), which is why every correction is compared with a matched control.
-\emph{Statistics.} One value per image; paired bootstrap over images (1,000 resamples, 95\% percentile intervals). A difference is \emph{higher} (\textit{h}) or \emph{lower} (\textit{l}) if its interval excludes zero and its size exceeds 0.02 (0.05 for deletion), and \emph{comparable} (\textit{c}) otherwise. Definitions, margins and the comparisons of Table~\ref{tab:main} were fixed before the experiments; later analyses are marked post hoc.
+\emph{Statistics.} One value per image; paired bootstrap over images (1,000 resamples, 95\% percentile intervals). A difference is \emph{higher} (\textit{h}) or \emph{lower} (\textit{l}) if its interval excludes zero and its size exceeds 0.02 (0.05 for deletion), and \emph{comparable} (\textit{c}) otherwise. Intervals are not adjusted for multiple comparisons; a verdict needs the margin as well.
+
+\paragraph{Registered predictions.} Before the formal runs we fixed the definitions above, the margins, the comparisons of Table~\ref{tab:main} and the predictions of Table~\ref{tab:app-registered}; the record is the file \texttt{docs/preregistration.md} of the repository. R2 was registered with three possible verdicts: holds (four of four cells), partly holds (one to three) and does not hold (none). For each correction against its control, the comparison was fixed without a direction. Earlier runs of the execution test and of the diagnostics had been seen, so the last two rows are replications. Other analyses are marked post hoc.
+
+\begin{table}[!htbp]
+\caption{Registered predictions and outcomes (centre-blind metrics: enrichment and ClickMe alignment).}
+\label{tab:app-registered}
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l>{\raggedright\arraybackslash}p{3.55in}>{\raggedright\arraybackslash}p{1.35in}@{}}
+\toprule
+ & Prediction & Outcome\\
+\midrule
+R1 & Contribution weighting is comparable to received attention in DINO ViT-S on all three metrics & holds (3 of 3 cells)\\
+R1 & Relocation at layers 1--4 is comparable to received attention on the centre-blind metrics in all models & holds (6 of 6 cells)\\
+R2 & All three corrections together are higher than received attention on the centre-blind metrics in DeiT-S and DeiT-B & partly holds (1 of 4 cells: DeiT-B, ClickMe)\\
+R3 & Neither model-side change is higher than DeiT-S received attention on the centre-blind metrics & holds (4 of 4 cells)\\
+\midrule
+-- & Execution agreement rises with $k$ and exceeds that of random sets at every $k$ & holds in all models\\
+-- & Probe accuracy falls with depth; the share of attention on high-norm tokens peaks in layers 6--12 of the supervised models and is below 1\% in every layer of DINO ViT-S & holds in all models\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \paragraph{Compute and code.} All experiments took about 19 GPU hours on NVIDIA L4 GPUs. Code and result tables: \url{https://github.com/hhuang999/vit-fastweight-lens}.
 
@@ -33,44 +57,44 @@
 \section{Additional results}
 \label{app:more}
 
-\noindent\begin{minipage}[t]{2.72in}
-\paragraph{Execution test.} The $14{\times}14$ grid is pooled into 16 overlapping regions. In every layer and head, each region's mean query is scored against all keys, and its $k$ highest-scoring keys form the region's reading set (the CLS query keeps its own top-$k$ set). The sets come from one pass of the unmodified model. We then rerun the model with every query restricted to its region's set, in all 12 layers at once, and record whether the top-1 class is unchanged. Figure~\ref{fig:app-ksweep} shows that top-$k$ sets beat random sets of the same size at every $k$ from 4 to 128 in all three models, and that agreement rises with $k$.
+\noindent\begin{minipage}[t]{3.15in}
+\paragraph{Execution test.} The $14{\times}14$ grid is pooled into 16 overlapping regions. In every layer and head, each region's mean query is scored against all keys, and its $k$ highest-scoring keys form the region's reading set (the CLS query keeps its own top-$k$ set). The sets come from one pass of the unmodified model. We then rerun the model with every query restricted to its region's set, in all 12 layers at once, and record whether the top-1 class is unchanged. Figure~\ref{fig:app-ksweep} shows that top-$k$ sets beat random sets of the same size at every $k$ from 4 to 128 in all three models, and that agreement rises with $k$. The dotted line alone was run with a crop ratio of 0.875 for all models (0.9 for DeiT-S and DeiT-B elsewhere).
 \end{minipage}\hfill
-\begin{minipage}[t]{2.66in}
+\begin{minipage}[t]{2.25in}
 \vspace{2pt}
 \centering
-\includegraphics[width=2.6in]{execution_k_sweep}
-\captionof{figure}{Top-1 agreement with the unmodified model on 5,000 ImageNet validation images when queries read only top-$k$ units (solid), random units (dashed), or nothing (dotted; all models evaluated with a 0.875 crop). 95\% intervals are at most $\pm1.5$ points.}
+\includegraphics[width=2.1in]{execution_k_sweep}
+\captionof{figure}{Top-1 agreement with the unmodified model when queries read only top-$k$ units (solid), random units (dashed) or nothing (dotted). 95\% intervals: at most $\pm1.5$ points.}
 \label{fig:app-ksweep}
 \end{minipage}
 
 \paragraph{Diagnostics per layer.} Table~\ref{tab:app-diag} lists the values plotted in Fig.~\ref{fig:diag}. Two numbers of the main text are not in the table. First, in layers 9--12, 82--98\% of the variance of the mean map is explained by the distance from the grid centre. Second, averaged over layers 9--12, the mean value-vector norm $\lVert v_j\rVert$ of high-norm tokens is 0.29 (DeiT-S) and 0.23 (DeiT-B) times the median of the other patches (measured on 11,919 ImageNet-S images).
 
-\begin{table}[!htbp]
-\caption{Diagnostics per layer (S = DeiT-S, B = DeiT-B, D = DINO ViT-S): share of the spatial variance of single-layer received attention explained by the held-out mean map; accuracy of the linear position probe (chance 0.5\%); share of received attention on high-norm tokens; image-specific ClickMe alignment of the single-layer map.}
+\paragraph{Recovery at the last layer.} In the supervised models, single-layer received attention is worse at layer 12 than at the best of layers 8--11 (Fig.~\ref{fig:diag}d). Applied to layer 12, contribution weighting recovers 62\% and 33\% of this drop on enrichment (DeiT-S, DeiT-B), 31\% and 45\% on ClickMe alignment, and 8\% and 29\% on deletion. The other two corrections make layer 12 worse.
+
+\begin{table}[!tbp]
+\caption{Diagnostics per layer, as plotted in Fig.~\ref{fig:diag} (S, B, D: DeiT-S, DeiT-B, DINO ViT-S; probe chance: 0.5\%).}
 \label{tab:app-diag}
 \centering
 \input{tables_own/diagnostics_per_layer.tex}
 \end{table}
 
-\paragraph{Differences behind Table~\ref{tab:main}.} Table~\ref{tab:app-paired} gives the paired differences with their intervals. The values in Table~\ref{tab:main} have 95\% intervals of at most $\pm0.005$ on enrichment and ClickMe alignment and $\pm0.012$ on deletion. The model-side differences from DeiT-S received attention are $+0.012$ [$0.011$, $0.013$] on enrichment, $+0.013$ [$0.012$, $0.013$] on ClickMe and $0.000$ [$-0.005$, $0.004$] on deletion for the test-time register, and $-0.040$ [$-0.042$, $-0.039$] and $-0.042$ [$-0.044$, $-0.040$] on the first two for top-$k$ training.
-
-\begin{table}[!htbp]
+\begin{table}[!tbp]
 \caption{Paired differences, layers 9--12: mean with 95\% paired-bootstrap interval and verdict (\textit{h} higher, \textit{c} comparable, \textit{l} lower). Top: against received attention. Bottom: each correction against its matched control.}
 \label{tab:app-paired}
 \centering
 \input{tables_own/paired_differences.tex}
 \end{table}
 
-\paragraph{Recovery at the last layer.} In the supervised models, single-layer received attention is worse at layer 12 than at the best of layers 8--11 (Fig.~\ref{fig:diag}d). Applied to layer 12, contribution weighting recovers 62\% and 33\% of this drop on enrichment (DeiT-S, DeiT-B), 31\% and 45\% on ClickMe alignment, and 8\% and 29\% on deletion. The other two corrections make layer 12 worse.
+\paragraph{Differences behind Table~\ref{tab:main}.} Table~\ref{tab:app-paired} gives the paired differences with their intervals. The values in Table~\ref{tab:main} have 95\% intervals of at most $\pm0.005$ on enrichment and ClickMe alignment and $\pm0.012$ on deletion. The model-side differences from DeiT-S received attention are $+0.012$ [$0.011$, $0.013$] on enrichment, $+0.013$ [$0.012$, $0.013$] on ClickMe and $0.000$ [$-0.005$, $0.004$] on deletion for the test-time register, and $-0.040$ [$-0.042$, $-0.039$] and $-0.042$ [$-0.044$, $-0.040$] on the first two for top-$k$ training.
 
-\paragraph{Tests of the contribution account.} Contribution weighting should work by down-weighting tokens that receive attention but contribute little. One consequence was predicted in advance, and two further tests were added post hoc. \emph{No gain without high-norm tokens (predicted).} In DINO ViT-S, where no attention falls on high-norm tokens, every difference from received attention is at most 0.004 in size (Table~\ref{tab:app-paired}). \emph{More high-norm attention, more gain (post hoc).} Across the images of a model, the gain grows with the share of received attention on high-norm tokens: Spearman $+0.075$ [$0.057$, $0.092$] and $+0.132$ [$0.113$, $0.150$] on enrichment (DeiT-S, DeiT-B), $+0.045$ [$0.032$, $0.060$] and $+0.158$ [$0.143$, $0.173$] on ClickMe. \emph{The weights must match the tokens (post hoc).} Against the same weights shuffled among the patches of each head, contribution weighting is higher in all four supervised cells: $+0.038$ [$0.037$, $0.040$] and $+0.073$ [$0.071$, $0.076$] on enrichment, $+0.035$ [$0.035$, $0.036$] and $+0.067$ [$0.065$, $0.068$] on ClickMe. Finally, also post hoc, weighting by $\lVert v_j^h\rVert$ instead of $\lVert W_O^h v_j^h\rVert$ is comparable in every cell (differences $-0.010$ to $0.000$): in practice the correction is the value-norm weighting of \citet{kobayashi2020} and \citet{zhu2024}.
+\paragraph{Tests of the contribution account.} Contribution weighting should work by down-weighting tokens that receive attention but contribute little. One consequence was registered (R1), and two further tests were added post hoc. \emph{No gain without high-norm tokens (R1).} In DINO ViT-S, where no attention falls on high-norm tokens, every difference from received attention is at most 0.004 in size (Table~\ref{tab:app-paired}). \emph{More high-norm attention, more gain (post hoc).} Across the images of a model, the gain grows with the share of received attention on high-norm tokens: Spearman $+0.075$ [$0.057$, $0.092$] and $+0.132$ [$0.113$, $0.150$] on enrichment (DeiT-S, DeiT-B), $+0.045$ [$0.032$, $0.060$] and $+0.158$ [$0.143$, $0.173$] on ClickMe. \emph{The weights must match the tokens (post hoc).} Against the same weights shuffled among the patches of each head, contribution weighting is higher in all four supervised cells: $+0.038$ [$0.037$, $0.040$] and $+0.073$ [$0.071$, $0.076$] on enrichment, $+0.035$ [$0.035$, $0.036$] and $+0.067$ [$0.065$, $0.068$] on ClickMe. Finally, also post hoc, weighting by $\lVert v_j^h\rVert$ instead of $\lVert W_O^h v_j^h\rVert$ is comparable in every cell (differences $-0.010$ to $0.000$): in practice the correction is the value-norm weighting of \citet{kobayashi2020} and \citet{zhu2024}.
 
 % =====================================================================================================
 \section{Why does probe relocation fail?}
 \label{app:reloc}
 
-Relocation lowers every deep-layer cell (Table~\ref{tab:main}). Two planned comparisons narrow the problem. Where the premise holds, relocation is harmless: at layers 1--4 it changes enrichment and ClickMe alignment by at most 0.004 in every model. And in DeiT-S and DINO ViT-S it is lower than a blur that moves the score equally far (Table~\ref{tab:app-paired}). The rest of this section is post hoc: Table~\ref{tab:app-reloc} lists four explanations that we tested after seeing this result; none is supported. In particular, the probe is not too weak, and its errors lie mostly next to the true patch; why it still harms the map is open.
+Relocation lowers every deep-layer cell (Table~\ref{tab:main}). Two planned comparisons narrow the problem. Where the probe is accurate, relocation is harmless (R1): at layers 1--4 it changes enrichment and ClickMe alignment by at most 0.004 in every model. And in DeiT-S and DINO ViT-S it is lower than a blur that moves the score equally far (Table~\ref{tab:app-paired}). The rest of this section is post hoc: Table~\ref{tab:app-reloc} lists four explanations that we tested after seeing this result; none is supported. In particular, the probe is not too weak, and its errors lie mostly next to the true patch. A fifth explanation, which we could not test, is that the probe measures whether a token's position can be decoded, not where its content comes from (Section~\ref{sec:exp}).
 
 \begin{table}[!htbp]
 \caption{Four explanations for the failure of probe relocation, and their tests (post hoc). Cells are the two centre-blind metrics in the three models.}
@@ -83,12 +107,12 @@ Relocation lowers every deep-layer cell (Table~\ref{tab:main}). Two planned comp
 \section{Example maps}
 \label{app:gallery}
 
-Figure~\ref{fig:app-gallery} shows DeiT-S maps for two ClickMe images that were drawn at random, not selected. Received attention and contribution weighting look much alike, while probe relocation spreads the score over many more patches. The gains in Table~\ref{tab:main} are averages of small changes in how each map ranks its patches, which single maps do not show.
+The stored gallery holds 24 ClickMe images drawn at random with a fixed seed. Fig.~\ref{fig:lens}b shows the two with the smallest ClickMe index, and Fig.~\ref{fig:app-gallery} the next four. Received attention and contribution weighting look much alike, while probe relocation spreads the score over many more patches. The gains in Table~\ref{tab:main} are averages of small changes in how each map ranks its patches, which single maps do not show.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=2.8in]{gallery_layers9_12}
-\caption{DeiT-S on two randomly drawn ClickMe images, layers 9--12; each map is min--max normalised.}
+\includegraphics[width=5.5in]{example_maps_more}
+\caption{DeiT-S on four further ClickMe images, layers 9--12; each map is min--max normalised.}
 \label{fig:app-gallery}
 \end{figure}
 

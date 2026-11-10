@@ -1,4 +1,4 @@
-"""Table 1 of the paper: every reading on the three metrics, with the verdict against received attention.
+"""Table 2 of paper v8: every reading on the three metrics, with the verdict against received attention.
 Reads results/table1_long.csv, results/correct_tests.csv and results/variants.csv; values are only rounded.
 Usage: python3 -I make_main_table.py <repo results dir> <output tex>"""
 import csv, sys
