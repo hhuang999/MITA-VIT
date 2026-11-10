@@ -1,11 +1,17 @@
 # Guide for continuing this project
 
+## Purpose
+
+This repository provides code and reproducible experiments for analyzing ViT attention through fast and slow
+weights. Public documentation explains the implementations, experiment identifiers and reproduction workflow.
+Report-writing materials are kept locally and ignored by Git.
+
 ## State
 
 - All experiments are finished. Their per-image outputs are in `outputs/`, their summary tables in `results/`, their figures in `figures/` and the LaTeX tables in `paper/tables/`.
 - `bash reproduce/from_outputs.sh` rebuilds `results/`, `figures/` and `paper/tables/` from `outputs/` byte for byte, on a CPU.
 - A full rerun from a fresh clone reproduced every table and every verdict (`docs/reproduce.md`).
-- The paper text is still to be written. Everything needed for it is in `paper/` (start with `paper/README.md`).
+- `paper/tables/` contains generated LaTeX exports; `paper/README.md` explains how to build and use them.
 
 ## Where things are
 
@@ -15,9 +21,7 @@
 | Which config produces which result, figure or table | `docs/reproduce.md` |
 | Pre-registered predictions, decision rules and outcomes | `docs/preregistration.md`, `results/predictions.csv` |
 | Every number with its interval and verdict | `results/*.csv` (built by `scripts/make_tables.py`) |
-| Checked headline numbers and the correct wording | `paper/key_facts.md` |
-| Names to use in the paper vs internal codes | `paper/naming.md` |
-| Complete factual record (definitions, caveats, deviations) | `paper/evidence_dossier.md` |
+| Descriptive experiment names vs internal codes | `paper/naming.md`; the three premises are specificity (M1), location (M2) and contribution (M3) |
 | The research history (decision log in Chinese, earlier runs, earlier drafts) | branch `study/v5`; not needed to continue |
 
 ## Commands
@@ -36,6 +40,7 @@ bash reproduce/full.sh                                    # rerun everything int
 
 - **Credentials.** `HF_TOKEN` is read only from `.env` or the environment; never print it.
 - **What stays out of Git.** Data, model weights, new reruns and smoke tests (`outputs/rerun/`, `outputs/smoke/`), `.env` and third-party files (for example the NeurIPS style file) are not committed. The per-image outputs of the original runs (`outputs/<config>/...`) are committed and must not be overwritten.
+- **Local writing materials.** `local-paper-materials/`, `paper/key_facts.md`, `paper/evidence_dossier.md` and `paper/references.bib` are ignored. Preserve local copies; keep public documentation focused on code, data and reproduction.
 - **Clean code before runs.** `scripts/run.py` refuses to run on uncommitted code changes, because every output records its git commit. Commit first.
 - **Verdicts.** Registered verdicts are not changed. A new analysis is exploratory: write its definition and decision rule down (commit) before running it, and label it as exploratory.
 - **Figures and tables.**

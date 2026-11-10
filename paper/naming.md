@@ -1,8 +1,11 @@
-# Naming used in figures, tables and text
+# Experiment names
 
-Use these names in the paper. Internal codes (R0, C1–C3, M1–M3, P1–P7, X1–X7, D2, A/, S/) must not appear in figures or tables. The evidence dossier and `results/` still use the internal codes, so this table is also the key for reading them.
+The code, configurations and result files use short identifiers. This table maps them to the descriptive labels
+used in generated figures and tables. Premise names describe the assumptions being tested; the M1–M3 diagnostics
+below specify their measurements. This file stays at its existing path so references from the generation scripts
+and figure index remain valid.
 
-| Internal code (in `results/` and the dossier) | Name in the paper |
+| Internal identifier | Descriptive label |
 | --- | --- |
 | R0 | received attention |
 | C3 | contribution weighting |
@@ -16,6 +19,7 @@ Use these names in the paper. Internal codes (R0, C1–C3, M1–M3, P1–P7, X1�
 | mita, MiTA, top-k training | top-k training (MiTA) |
 | R_all (C3 → C2 → C1, pre-registered) | all three corrections (order A) |
 | R_all_alt (C3 → C1 → C2) | all three corrections (order B) |
+| M1 / M2 / M3 (the premises themselves) | specificity / location / contribution |
 | M1 | share of variance explained by the mean map |
 | M2 | position-probe accuracy |
 | M3 | share of received attention on high-norm tokens |

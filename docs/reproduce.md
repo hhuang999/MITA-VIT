@@ -1,6 +1,7 @@
 # Reproduction map
 
-For every result of the paper: the config that produces it, the summary table it ends up in, the figure or LaTeX table built from it, and the GPU time of the original run. Names follow `paper/naming.md`.
+For each experiment: the config that produces it, the summary table it ends up in, the figure or LaTeX table built
+from it, and the GPU time of the original run. Identifier mappings are in [`paper/naming.md`](../paper/naming.md).
 
 ## How results are produced
 

@@ -5,6 +5,12 @@ env/
 .vscode/
 .idea/
 
+# Local report-writing materials (kept on this machine)
+/local-paper-materials/
+/paper/key_facts.md
+/paper/evidence_dossier.md
+/paper/references.bib
+
 # Python build and cache files
 __pycache__/
 *.py[cod]
