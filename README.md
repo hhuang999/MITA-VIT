@@ -2,6 +2,9 @@
 
 Tools and experiments for analyzing Vision Transformer attention maps through fast and slow weights.
 
+This README describes [`release/v1`](https://github.com/hhuang999/vit-fastweight-lens/tree/release/v1).
+Use that branch for the current code documentation and reproduction instructions.
+
 The analysis treats an attention head as a two-layer network: the learned slow weights produce keys and values
 for each image, which serve as the network's fast weights; tokens act as hidden units. The code uses this view to
 read attention maps, measure three premises of that reading, and evaluate corrections against matched controls.
@@ -38,7 +41,7 @@ images with the human map and three readings of DeiT-S (layers 9–12).*
 Python 3.12. Experiments need a CUDA GPU; tests and rebuilding tables and figures run on CPU.
 
 ```bash
-git clone https://github.com/hhuang999/vit-fastweight-lens.git
+git clone --branch release/v1 https://github.com/hhuang999/vit-fastweight-lens.git
 cd vit-fastweight-lens
 pip install -r requirements-torch.txt --index-url https://download.pytorch.org/whl/cu128
 pip install -r requirements.txt
