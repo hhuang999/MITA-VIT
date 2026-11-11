@@ -4,8 +4,8 @@
   python scripts/run.py --config configs/table1.yaml --model deit --dataset clickme
   python scripts/run.py --config configs/k_sweep.yaml --smoke 16 --output outputs/smoke
 
-Each run writes outputs/<config name>/[<dataset>/]<model>/ with the effective config, provenance (git commit,
-versions, GPU), log and result files. A run whose checks.json exists is complete and skipped; an interrupted run
+Each run writes outputs/rerun/<config name>/[<dataset>/]<model>/ with the effective config, provenance (git commit,
+versions, GPU), log and result files. Completed data are validated before a run is skipped; an interrupted run
 continues with --resume. The source tree must be committed: the git commit is stored with every result.
 --batch-size and --workers override the config (the saved config.yaml records the values used); the batch size
 changes how seeded random streams are split, so keep the config value for reproduction.
@@ -23,6 +23,7 @@ ROOT = configure_runtime()
 
 from fastweight_vit.experiments import common, load  # noqa: E402
 from fastweight_vit.io import load_config, source_commit  # noqa: E402
+from fastweight_vit.release import validate_completed_run  # noqa: E402
 
 DATASET_SECTION = {'correct': 'correct', 'supplementary': 'supplementary'}
 
@@ -65,13 +66,18 @@ def main():
     parser.add_argument('--config', type=Path, required=True)
     parser.add_argument('--model', help='run only this model of the config')
     parser.add_argument('--dataset', help='run only this dataset of the config')
-    parser.add_argument('--output', type=Path, default=Path('outputs'), help='root folder of the runs')
+    parser.add_argument('--output', type=Path, default=Path('outputs/rerun'), help='root folder of new runs')
     parser.add_argument('--batch-size', type=int)
     parser.add_argument('--workers', type=int)
     parser.add_argument('--device', default='cuda', choices=['cuda', 'cpu'])
     parser.add_argument('--smoke', type=int, default=0, help='run on the first N images only')
     parser.add_argument('--resume', action='store_true', help='continue interrupted runs in place')
     args = parser.parse_args()
+    target = (ROOT / args.output).resolve()
+    originals = (ROOT / 'outputs').resolve()
+    if target == originals or (originals in target.parents and target.relative_to(originals).parts[0]
+                                not in ('rerun', 'smoke')):
+        parser.error('Original outputs are immutable; use --output outputs/rerun (or outputs/smoke)')
     config = rooted(load_config(ROOT / args.config), args.output.as_posix().rstrip('/'))
     module = load(config['experiment'])
     stage = config.get('stage')
@@ -87,6 +93,7 @@ def main():
         output = ROOT / args.output / args.config.stem
         output = (output / dataset if dataset else output) / model
         if (output / 'checks.json').exists():
+            validate_completed_run(output, effective, args.smoke)
             print(f'complete, skipped: {output.relative_to(ROOT)}')
             continue
         common.prepare_output(output, effective, resume=args.resume, experiment=config['experiment'], stage=stage,

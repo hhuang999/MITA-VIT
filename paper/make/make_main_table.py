@@ -1,4 +1,4 @@
-"""Table 1 of the paper: every reading on the three metrics, with the verdict against received attention.
+"""Table 2 of paper v8: every reading on the three metrics, with the verdict against received attention.
 Reads results/table1_long.csv, results/correct_tests.csv and results/variants.csv; values are only rounded.
 Usage: python3 -I make_main_table.py <repo results dir> <output tex>"""
 import csv, sys
@@ -40,6 +40,7 @@ L = [r'\begin{tabular}{@{}l@{\hspace{4pt}}ccc@{\hspace{7pt}}ccc@{\hspace{7pt}}cc
      row('All three corrections', 'R_all'), r'\midrule',
      vrow('+ test-time register', 'register'), vrow('Top-$k$ training (MiTA)', 'mita'),
      row('GAE (reference)', 'gae', test=False), r'\bottomrule', r'\end{tabular}']
+# Preserve the author's legacy header for byte-identical reference checks; this is v8 Table 2.
 open(out, 'w').write('% Table 1: made by make/make_main_table.py from results/table1_long.csv, correct_tests.csv and variants.csv.\n'
                      + '\n'.join(L) + '\n')
 print('\n'.join(L[6:14] + L[15:18]))

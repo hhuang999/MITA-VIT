@@ -1,7 +1,10 @@
-"""Position probes: does token j still stand for patch j at layer l? (premise M2; correction C2)
+"""Position probes predict the original patch index from a token representation (diagnostic M2).
 
 A probe reads the tokens each attention layer reads (the block input after norm1, prefix tokens removed) and
-predicts the token's grid position (196 classes; chance 1/196). `collect` gathers those tokens; the linear probe
+predicts the original patch index (196 classes; chance 1/196). This measures linear decodability,
+not which input patches supplied the token's content. C2 experimentally relocates scores with
+the predicted distribution; lower accuracy does not establish that token content has moved.
+`collect` gathers those tokens; the linear probe
 is the one C2 uses; the two-layer MLP probe is the capacity check of the exploratory analysis.
 """
 

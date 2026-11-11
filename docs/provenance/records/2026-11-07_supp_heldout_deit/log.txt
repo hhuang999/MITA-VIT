@@ -1,0 +1,15 @@
+2026-11-07 11:08:50,217 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-11-07 11:08:50,219 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-07 11:09:14,971 layer 1: linear 1.000, MLP 1.000 (best validation epoch 1)
+2026-11-07 11:09:20,766 layer 2: linear 1.000, MLP 1.000 (best validation epoch 7)
+2026-11-07 11:09:26,589 layer 3: linear 0.999, MLP 1.000 (best validation epoch 27)
+2026-11-07 11:09:32,468 layer 4: linear 0.990, MLP 0.996 (best validation epoch 27)
+2026-11-07 11:09:55,940 layer 5: linear 0.975, MLP 0.990 (best validation epoch 27)
+2026-11-07 11:10:01,928 layer 6: linear 0.853, MLP 0.905 (best validation epoch 30)
+2026-11-07 11:10:20,488 layer 7: linear 0.650, MLP 0.702 (best validation epoch 23)
+2026-11-07 11:10:38,950 layer 8: linear 0.439, MLP 0.475 (best validation epoch 10)
+2026-11-07 11:11:15,442 layer 9: linear 0.310, MLP 0.334 (best validation epoch 14)
+2026-11-07 11:11:34,055 layer 10: linear 0.231, MLP 0.256 (best validation epoch 4)
+2026-11-07 11:11:52,780 layer 11: linear 0.194, MLP 0.215 (best validation epoch 5)
+2026-11-07 11:12:11,453 layer 12: linear 0.181, MLP 0.199 (best validation epoch 5)
+2026-11-07 11:12:24,921 Complete: supp heldout for deit

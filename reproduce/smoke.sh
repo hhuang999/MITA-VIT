@@ -10,5 +10,5 @@ for config in diagnose_probe diagnose_mean_maps k_sweep attention_off high_norm 
   "$PY" scripts/run.py --config "configs/$config.yaml" --output "$OUT" --smoke 16 --model deit
 done
 "$PY" scripts/run.py --config configs/table1_mita.yaml --output "$OUT" --smoke 16
-"$PY" scripts/make_tables.py --outputs "$OUT" --results results/smoke
+"$PY" scripts/make_tables.py --outputs "$OUT" --results build/smoke/results
 echo SMOKE_DONE

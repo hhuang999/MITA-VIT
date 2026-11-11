@@ -1,4 +1,6 @@
-"""ClickMe human feature-importance maps on ImageNet validation images (Linsley et al. 2019; Fel et al. 2022).
+"""ClickMe validation-split human maps (Linsley et al. 2019; Fel et al. 2022).
+
+The images are very likely from ImageNet training, not its validation split; see paper v8 Appendix A.
 
 The Harmonization validation set: 17 TFRecord shards of tf.train.Example records, each with a 256 x 256 JPEG
 image, a 256 x 256 JPEG heatmap (how often players revealed each pixel) and the ImageNet-1k label. We follow

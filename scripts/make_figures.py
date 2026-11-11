@@ -10,8 +10,10 @@ import matplotlib.font_manager as font_manager  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
+import json  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patches import Circle, FancyBboxPatch  # noqa: E402
+from fastweight_vit.gallery import SELECTED, load_gallery  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'figures'
@@ -44,7 +46,7 @@ KEY, VALUE, INK = '#6a3d9a', '#a50f15', '#262626'
 HEAT = plt.get_cmap('inferno')
 
 
-def check_and_save(fig, name):
+def check_and_save(fig, name, pdf_dpi=300):
     fig.canvas.draw()
     renderer = fig.canvas.get_renderer()
     texts = [t for t in fig.findobj(matplotlib.text.Text) if t.get_text().strip() and t.get_visible()]
@@ -56,7 +58,8 @@ def check_and_save(fig, name):
     if tight.x0 < -.01 or tight.y0 < -.01 or tight.x1 > w + .01 or tight.y1 > h + .01:
         raise ValueError(f'{name}: drawn content {tight} exceeds the figure ({w} x {h} in)')
     for suffix in ('pdf', 'png'):
-        fig.savefig(OUT / f'{name}.{suffix}', dpi=300, metadata={'CreationDate': None} if suffix == 'pdf' else None)
+        fig.savefig(OUT / f'{name}.{suffix}', dpi=pdf_dpi if suffix == 'pdf' else 300,
+                    metadata={'CreationDate': None} if suffix == 'pdf' else None)
     width, height = fig.get_size_inches()
     FILES.append((name, width, height))
     print(f'{name}: {width:.2f} x {height:.2f} in, smallest font {smallest:.1f} pt')
@@ -114,14 +117,8 @@ def execution_k_sweep(results):
 
 def gallery_arrays():
     """The two lowest indices of the seeded random ClickMe gallery of DeiT-S (rule fixed in advance)."""
-    paths = sorted((OUTPUTS / 'table1' / 'clickme' / 'deit').glob('gallery_*.npz'))
-    if not paths:
-        return None
-    data = [np.load(path) for path in paths]
-    index = np.concatenate([d['index'] for d in data])
-    pick = np.argsort(index)[:2]
-    keys = ['image', 'human', 'map_R0', 'map_C3', 'map_C2', 'map_R0_l12', 'map_C3_l12', 'map_C2_l12']
-    return {key: np.concatenate([d[key] for d in data])[pick] for key in keys}
+    data = load_gallery(OUTPUTS / 'table1' / 'clickme' / 'deit')
+    return {key: value[:2] for key, value in data.items()}
 
 
 def gallery(name, suffix):
@@ -190,18 +187,56 @@ def schematic_network():
     check_and_save(fig, 'schematic_fast_weight_network')
 
 
+def example_maps(data, name, picks, groups_per_row, cell, gap, group_gap):
+    """v8 layout: fixed index order, five map columns per example, no visual selection."""
+    columns = [('image', 'image'), ('human', 'human\n(ClickMe)'), ('map_R0', 'received\nattention'),
+               ('map_C3', 'contribution\nweighting'), ('map_C2', 'probe\nrelocation')]
+    rows = -(-len(picks) // groups_per_row)
+    group_w = 5 * cell + 4 * gap
+    width = groups_per_row * group_w + (groups_per_row - 1) * group_gap
+    height = .27 + rows * cell + (rows - 1) * gap
+    fig = plt.figure(figsize=(width, height))
+    for n, pick in enumerate(picks):
+        r, group = divmod(n, groups_per_row)
+        for col, (key, label) in enumerate(columns):
+            x = group * (group_w + group_gap) + col * (cell + gap)
+            y = height - .27 - (r + 1) * cell - r * gap
+            ax = fig.add_axes([x / width, y / height, cell / width, cell / height])
+            value = data[key][pick]
+            if key == 'image':
+                ax.imshow(value)
+            else:
+                value = value.reshape(14, 14) if value.size == 196 else value
+                value = (value - value.min()) / (value.max() - value.min() + 1e-12)
+                ax.imshow(value, cmap='inferno', vmin=0, vmax=1, interpolation='nearest')
+            ax.set_xticks([])
+            ax.set_yticks([])
+            for spine in ax.spines.values():
+                spine.set_visible(False)
+            if r == 0:
+                ax.text(.5, 1.06, label, transform=ax.transAxes, ha='center', va='bottom', linespacing=1.0)
+    # Match the author's v8 PDF rasterisation and embedded font type; PNG remains 300 dpi.
+    with plt.rc_context({'pdf.fonttype': 42, 'ps.fonttype': 42}):
+        check_and_save(fig, name, pdf_dpi=200)
+
+
 def main():
     global OUT, OUTPUTS
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--results', type=Path, default=ROOT / 'results')
     parser.add_argument('--outputs', type=Path, default=OUTPUTS)
-    parser.add_argument('--figures', type=Path, default=OUT)
+    parser.add_argument('--figures', type=Path, default=ROOT / 'build/rebuilt/figures')
     args = parser.parse_args()
     OUTPUTS, OUT = args.outputs, args.figures
     OUT.mkdir(parents=True, exist_ok=True)
     schematic_network()
     execution_k_sweep(args.results)
     gallery('gallery_layers9_12', '')
+    data = load_gallery(OUTPUTS / 'table1/clickme/deit')
+    example_maps(data, 'example_maps', [0, 1], 1, .6, .03, 0)
+    example_maps(data, 'example_maps_more', [2, 3, 4, 5], 2, .52, .025, .2)
+    (OUT / 'gallery_selection.json').write_text(
+        json.dumps({'all_indices': data['index'].tolist(), **SELECTED}, indent=2) + '\n', encoding='utf-8')
 
 
 if __name__ == '__main__':

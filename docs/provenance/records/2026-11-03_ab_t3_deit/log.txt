@@ -1,0 +1,22 @@
+2026-11-03 12:21:41,895 Loading pretrained weights from Hugging Face hub (timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365)
+2026-11-03 12:21:41,897 [timm/deit_small_patch16_224.fb_in1k@91327a9c99f98fe6b524cd4d397b7226b80e1365] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-03 12:22:59,862 budget_deit 640/11919 images; 76.9s
+2026-11-03 12:24:11,841 budget_deit 1280/11919 images; 148.9s
+2026-11-03 12:25:24,713 budget_deit 1920/11919 images; 221.8s
+2026-11-03 12:26:43,180 budget_deit 2560/11919 images; 300.3s
+2026-11-03 12:28:01,693 budget_deit 3200/11919 images; 378.8s
+2026-11-03 12:29:20,795 budget_deit 3840/11919 images; 457.9s
+2026-11-03 12:30:33,527 budget_deit 4480/11919 images; 530.6s
+2026-11-03 12:31:49,714 budget_deit 5120/11919 images; 606.8s
+2026-11-03 12:33:01,663 budget_deit 5760/11919 images; 678.7s
+2026-11-03 12:34:16,474 budget_deit 6400/11919 images; 753.6s
+2026-11-03 12:35:30,214 budget_deit 7040/11919 images; 827.3s
+2026-11-03 12:36:42,824 budget_deit 7680/11919 images; 899.9s
+2026-11-03 12:37:53,240 budget_deit 8320/11919 images; 970.3s
+2026-11-03 12:39:05,730 budget_deit 8960/11919 images; 1042.8s
+2026-11-03 12:40:18,446 budget_deit 9600/11919 images; 1115.5s
+2026-11-03 12:41:30,875 budget_deit 10240/11919 images; 1188.0s
+2026-11-03 12:42:45,049 budget_deit 10880/11919 images; 1262.1s
+2026-11-03 12:44:01,288 budget_deit 11520/11919 images; 1338.4s
+2026-11-03 12:44:48,888 budget_deit 11919/11919 images; 1386.0s
+2026-11-03 12:44:48,950 Complete: attention budget (formal) for deit

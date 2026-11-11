@@ -1,0 +1,2 @@
+# Optional MiTA Google Drive downloader; pip installs its declared dependencies normally.
+gdown==5.2.0

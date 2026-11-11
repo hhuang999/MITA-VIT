@@ -1,6 +1,8 @@
 """Correct (the main results table): the lens readings, their stand-ins and the references on one dataset.
 
-One run scores a list of maps on one dataset:
+C2 is an experimental redistribution by a probe's original-patch-index probabilities, not a
+demonstrated restoration of token locations. C3 weights projected output-vector magnitude,
+not causal effect on the final prediction. One run scores a list of maps on one dataset:
 - `imagenet_s`: plausibility.csv (same-distance-ring enrichment, with the other measures of
   fastweight_vit.enrichment) on every image, and faithfulness.csv (patches removed most- and least-important
   first, at every budget; SRG in scripts/make_tables.py) on a fixed random subset (`faithfulness_images`,
@@ -28,8 +30,8 @@ Maps listed in `no_srg` skip the faithfulness part (the early-layer negative con
 and ClickMe only; docs/reproduce.md).
 
 A seeded gallery of `gallery_images` images keeps every map, and for ClickMe the image and the human map, in
-gallery_<start>.npz (the ClickMe gallery figures, figures/gallery_*, show the two lowest-indexed of the 24 drawn
-images).
+gallery_<start>.npz. v8 Figure 1b uses the two lowest indices of the 24 drawn ClickMe images;
+Figure D.1 uses the next four, with no selection based on map quality.
 """
 
 import logging

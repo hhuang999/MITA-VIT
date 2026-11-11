@@ -7,7 +7,7 @@ authors:
   - family-names: Huang
     given-names: Hongbo
 license: MIT
-version: 0.1.0
+version: 0.2.0
 keywords: [vision transformer, attention, interpretability, fast weights]
 preferred-citation:
   type: report

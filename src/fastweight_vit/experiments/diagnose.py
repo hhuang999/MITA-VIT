@@ -1,5 +1,6 @@
 """Diagnose (the premises of the corrections, per layer): held-out images, position probes (M2), mean maps and the M1
-share, high-norm tokens (M3).
+share, high-norm tokens (M3). These are proxies: patch-index decodability does not identify the
+spatial origin of token information, and high-norm attention is not final-prediction attribution.
 
 Stage `probe`:
 - selects the held-out images (data.heldout; the same for every model): the first `probe_images` train the

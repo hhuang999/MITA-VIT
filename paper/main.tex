@@ -21,7 +21,6 @@
 \usepackage{pifont}
 \usepackage[font=small,labelfont=bf,skip=3pt]{caption}
 \usepackage[shortlabels]{enumitem}
-\usepackage{wrapfig}
 \usepackage{placeins}
 \usepackage{listings}
 \lstset{basicstyle=\ttfamily\scriptsize,columns=fullflexible,keepspaces=true,frame=tb,framesep=3pt,
@@ -36,8 +35,10 @@
 \newcommand{\xmark}{\ding{55}}
 \newcommand{\up}{$^{\uparrow}$}
 \newcommand{\dn}{$^{\downarrow}$}
-% Panel label set above a figure panel of the given width (the figure itself carries no letters).
+% Panel label set above a figure panel of the given width (the figures themselves carry no letters).
 \newcommand{\plabel}[3]{\makebox[#1][l]{\small\textbf{#2}~#3}}
+% Numbered run-in subsection heading (same look as \paragraph of the style file, with a number).
+\newcommand{\rsub}[1]{\refstepcounter{subsection}\paragraph{\thesubsection~~#1}}
 
 \title{Is It the Model or the Reading?\\A Fast-Weight View of ViT Attention Maps}
 
@@ -48,77 +49,91 @@
 \maketitle
 
 \begin{abstract}
-Deep-layer attention maps of vision transformers (ViTs) often look poor: scattered, with much of the score on a few background patches. The usual remedy changes the model. We ask how much of the problem lies in how the map is read. A long-standing view from the fast-weight literature treats an attention head as a two-layer network whose hidden units are the tokens. With it, we state three premises behind the common received-attention map, measure each per layer on DeiT-S, DeiT-B and DINO ViT-S, and test a correction for each against a matched control. Two premises fail in deep layers. The diagnosis predicts the outcome of the correction for two of the three premises: contribution weighting, in practice the value-norm weighting of Kobayashi et al.\ and Zhu et al., improves the maps exactly in the models where its premise fails (object enrichment $+0.038$ and $+0.065$). For the third it fails: relocating scores hurts everywhere. On DeiT-S, two model-side fixes do no better. Part of what makes deep maps look poor is how we read them.
+Deep-layer attention maps of vision transformers (ViTs) often look poor: scattered, with much score on a few background patches. The usual remedy changes the model; we ask how much of the problem lies in how the map is read. A long-standing fast-weight view treats an attention head as a two-layer network with the tokens as hidden units. We state three premises of reading these units, measure a diagnostic for each on DeiT-S, DeiT-B and DINO ViT-S, and test a correction against a matched control. Our pre-registered prediction that the three corrections together improve deep-layer maps holds in one of four cases. Singly, contribution weighting, in practice the value-norm weighting of Kobayashi et al.\ and Zhu et al., improves localisation and human alignment in the two models its diagnostic flags (object enrichment $+0.038$ and $+0.065$) and nothing in the third, while relocating scores with a position probe harms every map, so this diagnostic may not measure its premise. On DeiT-S, two model-side changes do not exceed our margin. Part of what makes deep maps look poor is how we read them.
 \end{abstract}
 
 % =====================================================================================================
 \section{Introduction}
 
-Attention maps are widely used to show what a vision transformer (ViT)~\citep{dosovitskiy2021} looks at~\citep{caron2021,abnar2020,chefer2021generic}. In deep layers they often look poor: the score is scattered, much of it on a few background patches~\citep{darcet2024}. The usual remedy changes the model: register tokens absorb the stray attention~\citep{darcet2024,jiang2025}. We ask instead: \emph{how much of the problem lies in how the map is read?}
+Attention maps are widely used to show what a vision transformer (ViT)~\citep{dosovitskiy2021} looks at~\citep{caron2021,abnar2020,chefer2021generic}. In deep layers they often look poor: the score is scattered, much of it on a few background patches~\citep{darcet2024} (Fig.~\ref{fig:lens}b). The usual remedy changes the model: register tokens absorb the stray attention~\citep{darcet2024,jiang2025}. We ask instead: \emph{how much of the problem lies in how the map is read?}
 
-\begin{wrapfigure}{r}{2.66in}
-\vspace{-14pt}
+\begin{figure}[!h]
 \centering
-\includegraphics[width=2.6in]{schematic_fast_weight_network}
-\caption{The lens. For one image, an attention head is a two-layer network: the slow weights $W_K, W_V$ write its weights (keys, values), and each token is a hidden unit.}
+\plabel{1.95in}{(a)}{The lens}\hspace{0.3in}\plabel{2.85in}{(b)}{Example maps (DeiT-S, layers 9--12)}\\[2pt]
+\raisebox{-0.5\height}{\includegraphics[width=1.95in]{schematic_fast_weight_network}}\hspace{0.3in}\raisebox{-0.5\height}{\includegraphics[width=2.85in]{example_maps}}
+\caption{(a) For one image, an attention head is a two-layer network: slow weights $W_K, W_V$ write its weights (keys, values); tokens are hidden units. (b) Two randomly drawn ClickMe images (min--max normalised).}
 \label{fig:lens}
-\vspace{-12pt}
-\end{wrapfigure}
-A map is a model plus a reading rule, and the rule is rarely examined. We view an attention head as a two-layer network that is written anew for each image and has the tokens as its hidden units (Fig.~\ref{fig:lens}), a long-standing view from the fast-weight literature (Section~\ref{sec:related}). The common \emph{received-attention} map then reads the hidden units of this network, and it rests on three premises that can be tested: activations are specific to the image, unit $j$ still stands for patch $j$, and a large activation is a large contribution (Section~\ref{sec:method}). On DeiT-S, DeiT-B~\citep{touvron2021} and DINO ViT-S~\citep{caron2021}, we check that the model uses the units that attention marks, measure each premise per layer, test a correction for it against a matched control, and ask whether the diagnosis predicts where the correction helps (Section~\ref{sec:exp}). Our contributions are:
+\end{figure}
+
+A map is a model plus a reading rule, and the rule is rarely examined. We view an attention head as a two-layer network that is written anew for each image and has the tokens as its hidden units (Fig.~\ref{fig:lens}a), a long-standing fast-weight view. The common \emph{received-attention} map then reads these hidden units, which rests on three premises: activations are specific to the image, unit $j$ still stands for patch $j$, and a large activation is a large contribution. On DeiT-S, DeiT-B~\citep{touvron2021} and DINO ViT-S~\citep{caron2021}, we measure a diagnostic for each premise per layer, test a correction against a matched control, and compare the outcomes with pre-registered predictions. Our contributions are:
 \begin{enumerate}[nosep,leftmargin=1.7em,label=(\arabic*)]
-\item \textbf{Premises.} We use the fast-weight view to state three testable premises of the attention-map reading; to our knowledge, it has not been used to test how attention maps are read.
-\item \textbf{Protocol.} For each premise: a diagnostic, a correction, a matched control and centre-blind metrics, so that the diagnosis predicts where the correction should and should not help.
-\item \textbf{Findings.} Two premises fail in deep layers. The prediction holds for two: value-norm weighting~\citep{kobayashi2020,zhu2024} helps where its premise fails. It fails for the third: relocation hurts everywhere.
+\item \textbf{Premises.} Three testable premises of the attention-map reading, each with a diagnostic.
+\item \textbf{A reading-side repair.} Value-norm weighting~\citep{kobayashi2020,zhu2024} improves localisation and human alignment in the two models that its diagnostic flags, and nothing in the third.
+\item \textbf{Negative results.} The registered prediction that the corrections add up holds in one of four cells, and probe relocation harms every map: the probe does not measure the location premise itself.
 \end{enumerate}
 
 % =====================================================================================================
 \section{Related work}
 \label{sec:related}
 
-\paragraph{How attention maps are read and scored.} Whether attention explains predictions is debated~\citep{jain2019,wiegreffe2019}. Later readings add layers (rollout~\citep{abnar2020}), gradients and the class (GAE~\citep{chefer2021generic}), vector norms~\citep{kobayashi2020,zhu2024} or statistical filtering~\citep{ayyar2025}. Scoring has traps: plausible maps need not depend on the model~\citep{adebayo2018}, deletion scores depend on the occlusion strategy~\citep{bluecher2024}, and a centre bias makes random saliency look trained~\citep{kuang2026}. These works compare readings by their \emph{results}; none tests their premises.
+\rsub{How attention maps are read and scored.} Whether attention explains predictions is debated~\citep{jain2019,wiegreffe2019}. Later readings add layers~\citep{abnar2020}, relevance propagation~\citep{chefer2021}, gradients~\citep{chefer2021generic}, vector norms~\citep{kobayashi2020,zhu2024} or statistical filtering~\citep{ayyar2025}. Scoring has traps: plausible maps can ignore the model~\citep{adebayo2018}, deletion depends on the occlusion strategy~\citep{bluecher2024}, and random CNNs give centred saliency~\citep{kuang2026} (largely absent in ViTs). Most compare readings by \emph{results}; \citet{kobayashi2020} question our third premise.
 
-\paragraph{Why deep ViT maps degrade.} Deep maps put much attention on high-norm tokens at uninformative background patches, which registers absorb~\citep{darcet2024,jiang2025}; such tokens resemble heads that learn to do nothing~\citep{bondarenko2023}. Tokens also mix with depth; in language models their identity is largely kept but fades gradually~\citep{brunner2020}. These effects are repaired in the model, not separated from flaws of the reading.
+\rsub{Why deep ViT maps degrade.} Deep maps put much attention on high-norm background tokens, which registers absorb~\citep{darcet2024,jiang2025}; such tokens resemble heads that learn to do nothing~\citep{bondarenko2023}, and supervision shapes attention~\citep{walmer2023}. Tokens also mix: in language models their identity is largely kept but fades~\citep{brunner2020}, and in CLS-trained ViTs last-layer tokens still resemble their own input patch~\citep{raghu2021}.
 
-\paragraph{Attention as a fast-weight network.} Fast weights are weights that one network writes for another~\citep{schmidhuber1992}; linear attention is such a fast-weight program~\citep{schlag2021}, and softmax attention is the update rule of a modern Hopfield memory~\citep{ramsauer2021}. This view of a head as a network is not ours and has mostly guided model design; MiTA~\citep{wen2026mita}, with the same view but another goal, makes attention efficient. To our knowledge, it has not been used to test how attention maps are read. We use this third thread to state the premises behind the first and to ask whether the second's problems lie in model or reading.
+\rsub{Attention as a fast-weight network.} Fast weights are weights that one network writes for another~\citep{schmidhuber1992}; linear attention is such a program~\citep{schlag2021}, and softmax attention is the update rule of a modern Hopfield memory~\citep{ramsauer2021}. This view is not ours and has mostly guided model design, as in MiTA~\citep{wen2026mita}; to our knowledge, it has not been used to test how attention maps are read.
 
 % =====================================================================================================
 \section{Method}
 \label{sec:method}
 
-\paragraph{The lens.} In layer $\ell$, the normalised tokens $x_1,\dots,x_{N+1}$ (CLS and $N{=}196$ patches) enter $H$ heads. Head $h$ forms $q_i^h{=}W_Q^h x_i$, $k_j^h{=}W_K^h x_j$ and $v_j^h{=}W_V^h x_j$, and the block adds to token $i$
+\rsub{The lens.} In layer $\ell$, the normalised tokens $x_1,\dots,x_{N+1}$ (CLS and $N{=}196$ patches) enter $H$ heads. Head $h$ forms $q_i^h{=}W_Q^h x_i$, $k_j^h{=}W_K^h x_j$ and $v_j^h{=}W_V^h x_j$, and the block adds to token $i$
 \begin{equation}
 o_i=\sum_{h} W_O^h \sum_{j} a_{ij}^h\, v_j^h,\qquad a_{ij}^h=\operatorname{softmax}_j\!\big(q_i^{h\top} k_j^h/\sqrt{d}\big).
 \label{eq:attn}
 \end{equation}
-For a fixed image this is a two-layer network applied to $q_i$: token $j$ is a hidden unit with input weights $k_j^h$, activation $a_{ij}^h$ and output weights $W_O^h v_j^h$. As the softmax makes units compete, the network is a guiding approximation, not an exact equivalence. \emph{Received attention} sums each unit's activation over queries and heads, $s_j=\sum_h\sum_i a_{ij}^h$, and draws it at patch $j$; token pruning ranks tokens by the same score~\citep{goyal2020}. As our question concerns deep layers, maps sum $s_j$ over layers 9--12 (the last third), a range set before the experiments (per-layer values: Fig.~\ref{fig:diag}, App.~\ref{app:more}).
+For a fixed image this is a two-layer network applied to $q_i$: token $j$ is a hidden unit with input weights $k_j^h$, activation $a_{ij}^h$ and output weights $W_O^h v_j^h$. As the softmax makes units compete, the network is a guiding approximation, not an exact equivalence. \emph{Received attention} sums each unit's activation over queries and heads, $s_j=\sum_h\sum_i a_{ij}^h$, and draws it at patch $j$. As our question concerns deep layers, maps sum $s_j$ over layers 9--12 (the last third), a range set before the experiments.
 
-\paragraph{From reading units to premises.} If a head is a network, an attention map \emph{reads its hidden units}, and three lessons about reading units each give a premise of the received-attention map, with a diagnostic, a correction and a matched control: an equally large change of the map without the premise's information. A correction counts only if it beats its control, and it should help where the premise fails and change little where it holds.
-\emph{Specificity.} What is there for every input, such as a centre bias~\citep{kuang2026}, says nothing about this input. Premise: activations are specific to the image. Diagnostic: the share of a map's spatial variance explained by the mean map $\bar s$ of held-out images. Correction: $s-\bar s$. Control: subtracting a centred Gaussian of the same spread.
-\emph{Location.} What a unit stands for must be measured, not read off its index~\citep{bau2017}. Premise: unit $j$ still stands for patch $j$. Diagnostic: the accuracy of a linear probe that predicts the patch index of token $x_j$. Correction: probe relocation, $r_p=\sum_j s_j P(p\mid x_j)$, moves each score to where the probe places its unit. Control: a Gaussian blur of equal mean displacement.
-\emph{Contribution.} A large activation is not a large effect: output weights count too, as in class activation maps~\citep{zhou2016}. Premise: a large activation is a large contribution. Diagnostic: the share of $s$ on high-norm tokens (block-input norm above three times the image median). Correction: $c_j=\sum_h\sum_i a_{ij}^h\lVert W_O^h v_j^h\rVert_2$, activation times output-weight norm; the norm-based weighting of \citet{kobayashi2020} applied to received attention. Control: zeroing them.
+\rsub{From reading units to premises.} If a head is a network, an attention map \emph{reads its hidden units}, and three lessons about reading units each give a premise (Table~\ref{tab:premises}): what is there for every input says nothing about this input; what a unit stands for must be measured, not read off its index~\citep{bau2017}; and a large activation is not a large effect, because output weights count too~\citep{zhou2016}. No single premise needs the lens (the third is the point of \citet{kobayashi2020}); it gives the list and adds the location premise, which the readings of Section~\ref{sec:related} all assume. Each premise gets a diagnostic, a correction and a matched control that changes the map alike without the premise's information. Diagnostics are proxies, not the premises themselves, and $c_j$ measures the size of a token's output, not its effect on the prediction: norms ignore cancellation between heads and all later layers. A correction counts only if it beats its control; it should help where its diagnostic flags a failure and change little elsewhere.
 
-\paragraph{Metrics.} A centre prior can inflate scores: it makes random saliency maps look trained~\citep{kuang2026}, and in our data a centred Gaussian that ignores the image has a Spearman correlation of 0.41 with human ClickMe maps. Our two main metrics are centre-blind. \emph{Same-ring object enrichment} compares the object rate (ImageNet-S masks~\citep{gao2023}) of the top-scoring patches with that of all patches equally far from the centre, so radial maps score zero. \emph{Image-specific ClickMe alignment}~\citep{linsley2019,fel2022} is the Spearman correlation with the image's own human map minus that with another image's, so image-independent maps score zero. The third metric, \emph{deletion faithfulness}~\citep{bluecher2024}, is not centre-blind (a centred Gaussian scores 0.099--0.140). A paired difference is \emph{higher} or \emph{lower} only if its 95\% bootstrap interval excludes zero and it exceeds a margin (0.02; 0.05 for deletion); else it is \emph{comparable}.
+\begin{table}[t]
+\caption{The premises, their tests, and the outcome in layers 9--12 on the centre-blind metrics (S, B, D: DeiT-S, DeiT-B, DINO ViT-S). $^\ast$One gain, equal to its control's. $^\dagger$On B ClickMe, not beyond its control.}
+\label{tab:premises}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.92}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.15in}>{\raggedright\arraybackslash}p{1.06in}>{\raggedright\arraybackslash}p{1.17in}>{\raggedright\arraybackslash}p{0.89in}>{\raggedright\arraybackslash}p{0.44in}>{\raggedright\arraybackslash}p{0.36in}@{}}
+\toprule
+Premise & Diagnostic (a proxy) & Correction & Matched control & Flagged & Helps\\
+\midrule
+\textbf{Specificity:} activations are image-specific & variance explained by the mean map $\bar s$ & mean-map subtraction, $s-\bar s$ & centred Gaussian subtraction & none & none$^\ast$\\[1.5pt]
+\textbf{Location:} unit $j$ still stands for patch $j$ & probe accuracy for the patch index of $x_j$ & probe relocation, $r_p{=}\sum_j s_j P(p\,|\,x_j)$ & blur of equal displacement & S, B, D & none\\[1.5pt]
+\textbf{Contribution:} large activation, large effect & share of $s$ on high-norm tokens & contribution weighting, $c_j{=}\sum_{h,i} a_{ij}^h\lVert W_O^h v_j^h\rVert$ & zero the high-norm tokens & S, B & S, B$^\dagger$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\rsub{Metrics.} A centre prior can inflate scores: in our data, a centred Gaussian has a Spearman correlation of 0.41 with human ClickMe maps. Two metrics are therefore centre-blind: \emph{same-ring object enrichment}, the object rate (ImageNet-S masks~\citep{gao2023}) of the top-scoring patches minus that of all patches equally far from the centre, and \emph{image-specific ClickMe alignment}~\citep{linsley2019,fel2022}, the Spearman correlation with the image's own human map minus that with another image's. \emph{Deletion faithfulness}~\citep{bluecher2024} is not centre-blind. A paired difference is \emph{higher} or \emph{lower} only if its 95\% bootstrap interval excludes zero and it exceeds a margin (0.02; 0.05 for deletion); else it is \emph{comparable}.
 
 % =====================================================================================================
 \section{Experiments}
 \label{sec:exp}
 
-\paragraph{Setup.} We use frozen DeiT-S and DeiT-B~\citep{touvron2021} (supervised) and DINO ViT-S/16~\citep{caron2021}; the model-side fixes are DeiT-S with a test-time register~\citep{jiang2025} and a DeiT-S trained with top-$k$ attention (MiTA~\citep{wen2026mita}). We evaluate on 5,000 ImageNet validation images~\citep{deng2009} (execution test), 12,419 ImageNet-S images~\citep{gao2023} (2,000 for deletion) and 17,408 ClickMe maps~\citep{linsley2019,fel2022}; 4,000 held-out images give probes, mean maps and blur widths (App.~\ref{app:setup}). The metrics, margins, comparisons with controls and the predictions of Table~\ref{tab:consistency} were fixed before the experiments; later analyses are marked \emph{post hoc}.
+\rsub{Setup and registered predictions.} We use frozen DeiT-S and DeiT-B~\citep{touvron2021} (supervised) and DINO ViT-S/16~\citep{caron2021}; the model-side changes are a test-time register~\citep{jiang2025} and the top-$k$-attention checkpoint of MiTA~\citep{wen2026mita}, both for DeiT-S. Data: 5,000 ImageNet~\citep{deng2009} and 12,419 ImageNet-S images, 17,408 ClickMe maps and 4,000 held-out images (App.~\ref{app:setup}). Before the experiments we fixed metrics, margins and comparisons and registered three predictions (App.~\ref{app:setup}). \textbf{R1:} where a diagnostic shows no failure, the correction leaves the map comparable (contribution weighting in DINO ViT-S; relocation at layers 1--4). \textbf{R2:} the three corrections together are higher than received attention in the four supervised centre-blind cells. \textbf{R3:} neither model-side change is higher than DeiT-S. For single corrections against their controls we fixed no direction. Other analyses are \emph{post hoc}.
 
 \begin{figure}[t]
 \centering
 \plabel{1.3975in}{(a)}{Specificity}\plabel{1.3975in}{(b)}{Location}\plabel{1.3975in}{(c)}{Contribution}\plabel{1.3075in}{(d)}{Map quality}\\[1pt]
 \includegraphics[width=5.5in]{diagnosis}
-\caption{Diagnosis per layer: (a)--(c) the three premises; (d) single-layer map quality. Bands: 95\% intervals.}
+\caption{Per layer: (a) map variance explained by the mean map; (b) position-probe accuracy; (c) attention on high-norm tokens; (d) image-specific ClickMe alignment of single-layer maps. Bands: 95\% intervals.}
 \label{fig:diag}
 \end{figure}
 
-\paragraph{Attention marks the units the model uses.} In every head and layer, each query reads only the $k$ units that its region's mean query scores highest (16 regions). With $k{=}16$ of 196 units, the models keep 72\%, 83\% and 61\% of their top-1 predictions (DeiT-S, DeiT-B, DINO ViT-S), against 9\%, 30\% and 4\% for random units of the same number; the gap holds for every $k$ from 4 to 128 (App.~\ref{app:more}).
+\rsub{Attention marks the units the model uses.} If, in every head and layer, each query reads only the $k{=}16$ units (of 196) that score highest for its region, the models keep 72\%, 83\% and 61\% of their top-1 predictions, against 9\%, 30\% and 4\% for random units, also for other $k$ (App.~\ref{app:more}).
 
-\paragraph{Two premises fail in deep layers.} \emph{Specificity largely holds} (Fig.~\ref{fig:diag}a): in layers 6--12 the mean map explains 3--6\% of a map's spatial variance in the supervised models and at most 17\% in DINO ViT-S, and in layers 9--12 it is 82--98\% radial: a centre bias. \emph{Location fails in all three models} (Fig.~\ref{fig:diag}b): probe accuracy falls from close to 100\% in layers 1--5 to 18\%, 32\% and 36\% at layer 12 (chance: 0.5\%). \emph{Contribution fails only in the supervised models} (Fig.~\ref{fig:diag}c): high-norm tokens get up to 44\% of the attention in DeiT-B and about 9\% in DeiT-S but none in DINO ViT-S, as in~\citep{darcet2024}, and their value vectors are only 0.29 and 0.23 times as long as those of other patches.
+\rsub{Two diagnostics flag deep layers (Fig.~\ref{fig:diag}).} \emph{Specificity} shows no failure: in layers 6--12 the mean map explains 3--6\% of a map's spatial variance in the supervised models and at most 17\% in DINO ViT-S, and in layers 9--12 it is 82--98\% radial. The \emph{location} diagnostic weakens in all models: probe accuracy falls from nearly 100\% in layers 1--5 to 18\%, 32\% and 36\% at layer 12 (chance: 0.5\%), although 45\%, 66\% and 81\% of its probability lies in the $3{\times}3$ neighbourhood of the true patch. The \emph{contribution} diagnostic flags only the supervised models: high-norm tokens (norm over three times the image median) get up to 44\% of the attention in DeiT-B and 9\% in DeiT-S but none in DINO ViT-S~\citep{darcet2024}, with value vectors 0.29 and 0.23 times as long as other patches'.
 
 \begin{table}[t]
-\caption{Readings over layers 9--12 (controls indented): same-ring object enrichment (Enr.), image-specific ClickMe alignment (Click.), deletion faithfulness (Del.). $^{\uparrow}$/$^{\downarrow}$: higher/lower than received attention (model-side rows: vs.\ DeiT-S). GAE, which also uses gradients and the class, is an untested reference. Intervals: App.~\ref{app:more}.}
+\caption{Layers 9--12, controls indented: enrichment (Enr.), ClickMe (Click.), deletion (Del.). $^{\uparrow}$/$^{\downarrow}$: higher/lower than received attention (model-side: than DeiT-S). GAE~\citep{chefer2021generic} also uses gradients; it has no significance test.}
 \label{tab:main}
 \centering\footnotesize
 \setlength{\tabcolsep}{2.6pt}
@@ -126,42 +141,25 @@ For a fixed image this is a two-layer network applied to $q_i$: token $j$ is a h
 \input{tables_own/main_results.tex}
 \end{table}
 
-\paragraph{Only contribution weighting improves the map (Table~\ref{tab:main}).} \emph{Contribution weighting} is higher than received attention on both centre-blind metrics in DeiT-S and DeiT-B and comparable on deletion. At layer 12, where map quality drops (Fig.~\ref{fig:diag}d), it recovers 31--62\% of the drop on both metrics. It beats its control on enrichment in both models and on ClickMe in DeiT-S. Weighting by $\lVert v_j\rVert$ alone does the same (post hoc; App.~\ref{app:more}), so in practice it is value-norm weighting~\citep{kobayashi2020,zhu2024}. \emph{Mean-map subtraction} gains only on DINO ViT-S ClickMe, where its control gains as much, and is lower in two other cells. \emph{Probe relocation} is lower in all nine cells; in DeiT-S and DINO ViT-S it is lower even than its matched blur on all three metrics (not in DeiT-B), which suggests the harm lies in where the score is sent, not how far. We expected the corrections to add up; together they inherit this harm instead (higher in one cell, lower in seven). Neither model-side change (DeiT-S only) is higher.
+\rsub{Only contribution weighting improves the map (Table~\ref{tab:main}).} \emph{R1 holds:} in DINO ViT-S, contribution weighting leaves all metrics comparable, and relocation at layers 1--4 changes the centre-blind metrics by at most 0.004. \emph{R2 holds in one of four cells} (DeiT-B ClickMe). \emph{Contribution weighting} is higher on both centre-blind metrics in DeiT-S and DeiT-B ($+0.033$ to $+0.065$), beating its control except on DeiT-B ClickMe, and comparable on deletion: localisation and human alignment improve, deletion faithfulness stays within the margin. In DeiT-B, zeroing the high-norm tokens gives $+0.040$ of the $+0.065$ on enrichment. Post hoc, it beats the same weights shuffled within each head in all four cells ($+0.035$ to $+0.073$), gains more on images with more attention on high-norm tokens, and is matched by weighting with $\lVert v_j\rVert$ alone (App.~\ref{app:more}): in practice it is value-norm weighting~\citep{kobayashi2020,zhu2024}. At layer 12 it recovers 31--62\% of the drop in map quality (Fig.~\ref{fig:diag}d). \emph{Mean-map subtraction} gains only on DINO ViT-S ClickMe, as much as its control. \emph{Probe relocation} is lower in all nine cells, and in DeiT-S and DINO ViT-S lower even than its matched blur. \emph{R3 holds:} the register gains $+0.012$ and $+0.013$, below the margin; the top-$k$ checkpoint is lower, but differs from DeiT-S in training and preprocessing, so the comparison is uncontrolled.
 
-\begin{table}[t]
-\caption{Does the diagnosis predict the correction? Centre-blind metrics. $^\ast$Only as much as its control.}
-\label{tab:consistency}
-\centering\footnotesize
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{0.9}
-\begin{tabular}{lllc}
-\toprule
-Premise (correction) & Premise fails in & Correction helps in & Predicted\\
-\midrule
-Specificity (mean-map subtraction) & none & none$^\ast$ & \cmark\\
-Location (probe relocation) & all three models & none (lower in all nine cells) & \xmark\\
-Contribution (contribution weighting) & DeiT-S, DeiT-B & DeiT-S, DeiT-B (not DINO ViT-S) & \cmark\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Does the diagnosis predict the correction?} Each prediction of Table~\ref{tab:consistency} could have failed. For \emph{contribution} it holds: the correction helps in the two models where the premise fails and changes nothing in DINO ViT-S, where it holds. Two post-hoc tests agree: within a model, images with more attention on high-norm tokens gain more, and shuffling the weights among each head's tokens removes the gain (App.~\ref{app:more}). For \emph{specificity}, a small and radial image-independent part predicts no gain beyond its control, as found. For \emph{location} the prediction fails: relocation is harmless in layers 1--4, where the premise holds, but harmful in deep layers. Post hoc, we found no support for four explanations (App.~\ref{app:reloc}): far probe errors, a fixed position preference, a weak probe (a stronger MLP probe gains 2--7 points and still harms), and harder-to-place global tokens. Why it harms is open.
+\rsub{Does the diagnosis tell where a correction helps (Table~\ref{tab:premises}, right)?} We registered no direction for single corrections, so this reading is post hoc. For \emph{contribution} it is consistent: the correction helps in the two flagged models and changes nothing in DINO ViT-S. For \emph{specificity} there was little to correct, and nothing is gained beyond the control. For \emph{location} it is not: the diagnostic weakens in every model, yet relocation harms every map. Four explanations, such as far probe errors or a weak probe, found no support (post hoc; App.~\ref{app:reloc}). A fifth, untested, concerns the diagnostic: the probe measures whether a token's patch index can be decoded, not where its content comes from. A token may lose its position code and still carry patch $j$ (cf.~\citep{raghu2021}); the index then stays the better guide. Diagnosis and correction agree for one premise in three models, which does not establish the idea.
 
 % =====================================================================================================
 \section{Discussion}
 \label{sec:discussion}
 
-\paragraph{Interpretation.} Two lessons carry over. \emph{Activation is not effect:} high-norm tokens draw attention but have short value vectors, like heads that do nothing~\citep{bondarenko2023}; weighting by output weights partly repairs the map without changing the model, and neither model-side change improves it. \emph{Index is not identity:} deep units no longer stand for their patch, yet moving scores back does not repair the map.
+\rsub{Interpretation.} \emph{Activation is not effect:} high-norm tokens draw attention but have short value vectors, like heads that do nothing~\citep{bondarenko2023}; weighting by output-weight norms partly repairs the map without changing the model. \emph{A weaker position code is not a moved token:} to test the location premise itself, one must measure which input patches a token depends on.
 
-\paragraph{Limitations.} We study three classifiers at S/B scale, each trained once, and only received attention: CLS-attention maps, larger models and models trained with registers are untested, and the model-side fixes were compared on DeiT-S only (App.~\ref{app:setup}). ClickMe images were very likely part of the models' training data. The gains are modest, hard to see in one image (App.~\ref{app:gallery}), and below GAE's.
+\rsub{Limitations.} We study three classifiers at S/B scale, each trained once, and only received attention; CLS attention, larger or register-trained models and model-side changes beyond DeiT-S are untested. Diagnostics are proxies, and the high-norm threshold was not varied. ClickMe images were very likely training data. Gains are modest, hard to see in one image (Fig.~\ref{fig:lens}b), and below GAE's.
 
-\paragraph{Ethical considerations.} We use public data and checkpoints; the images include people and known biases. An attention map, corrected or not, is only partial evidence about a model.
+\rsub{Ethical considerations.} We use public data and checkpoints; the images include people and known biases. An attention map, corrected or not, is only partial evidence about a model.
 
 % =====================================================================================================
 \section{Conclusion}
 \label{sec:conclusion}
 
-An explanation map is a model plus a reading rule. For ViT attention maps, the fast-weight view yields three premises: two fail in deep layers, and correcting the reading partly repairs one, where the diagnosis predicts. We tested only ViT attention maps; one can ask the same of any method that maps internal values to input positions. \emph{Future work:} larger and register-trained models, CLS attention, recovering location. \emph{Broader impact:} premise tests need no retraining and curb over-trust.
+For ViT attention maps, the fast-weight view gives three premises to check: correcting the contribution premise partly repairs deep maps in the models that its diagnostic flags, the location correction fails, and the corrections do not add up. We tested only ViT attention maps, but the same question applies to any method that maps internal values to input positions. Future work should test the location premise with token-to-input attribution and cover larger and register-trained models and CLS attention. As a broader impact, premise tests need no retraining and can keep users from over-trusting a map.
 
 {\small
 \bibliographystyle{plainnat}

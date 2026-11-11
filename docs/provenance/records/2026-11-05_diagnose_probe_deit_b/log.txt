@@ -1,0 +1,16 @@
+2026-11-05 15:57:43,314 Loading pretrained weights from Hugging Face hub (timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6)
+2026-11-05 15:57:43,316 [timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-05 15:58:25,968 held-out: 4000 rows; 2 ClickMe duplicates skipped; geometry crop
+2026-11-05 15:59:01,305 layer 1: accuracy 1.000, displacement 0.001, sigma 0.241
+2026-11-05 15:59:05,199 layer 2: accuracy 1.000, displacement 0.001, sigma 0.238
+2026-11-05 15:59:09,054 layer 3: accuracy 1.000, displacement 0.001, sigma 0.238
+2026-11-05 15:59:12,883 layer 4: accuracy 1.000, displacement 0.001, sigma 0.252
+2026-11-05 15:59:16,736 layer 5: accuracy 0.999, displacement 0.006, sigma 0.279
+2026-11-05 15:59:20,513 layer 6: accuracy 0.995, displacement 0.028, sigma 0.321
+2026-11-05 15:59:24,330 layer 7: accuracy 0.968, displacement 0.127, sigma 0.389
+2026-11-05 15:59:28,179 layer 8: accuracy 0.918, displacement 0.435, sigma 0.512
+2026-11-05 15:59:32,039 layer 9: accuracy 0.836, displacement 0.877, sigma 0.685
+2026-11-05 15:59:35,939 layer 10: accuracy 0.668, displacement 1.596, sigma 0.927
+2026-11-05 15:59:39,825 layer 11: accuracy 0.492, displacement 2.988, sigma 1.284
+2026-11-05 15:59:43,680 layer 12: accuracy 0.318, displacement 6.479, sigma 1.936
+2026-11-05 15:59:44,768 Complete: diagnose probe for deit_b
