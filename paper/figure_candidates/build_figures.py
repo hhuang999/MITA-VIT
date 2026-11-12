@@ -100,7 +100,10 @@ def export(fig, stem, out, require_matplotlib_panel_alignment, axes, row_groups,
               require_panel_labels=True, strict=True)
     # Preserve the exact physical canvas: no tight crop and no manuscript rescaling.
     fig.savefig(out / f"{stem}.pdf", metadata={"CreationDate": None, "ModDate": None})
-    fig.savefig(out / f"{stem}.svg")
+    svg_path = out / f"{stem}.svg"
+    fig.savefig(svg_path)
+    svg_path.write_text("\n".join(line.rstrip() for line in svg_path.read_text(encoding="utf-8").splitlines())
+                        + "\n", encoding="utf-8", newline="\n")
     fig.savefig(out / f"{stem}.png", dpi=300)
     plt.close(fig)
 
