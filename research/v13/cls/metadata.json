@@ -1,0 +1,25 @@
+{
+  "n_images": 128,
+  "n_source_patches": 196,
+  "batch_size": 4,
+  "selection_seed_string": "v13-cls-2026:",
+  "spatial_selection_sha256": "0cac9366fd0f1ce95535a89a099ccd61383c3ce00cc8083f00afcdcbbcc1f312",
+  "cls_selection_sha256": "dcdb7101dd92424579bb5243781e0f1043ca918c4c23f8edf60d217792b98ed1",
+  "protocol_sha256": "3d64df801c1ab7eadac505007423c1fdeddcd47354af912542be3f195a500b5b",
+  "script_sha256": "3fcd0b72d4e68ad163f13a031cc42eb1bf99eaad53b1bd134f17e2c872c99bec",
+  "spatial_loader_sha256": "671c5b27f1938cd835225f7ffdd3048034c54e1adda53584e23b186d9a34ca93",
+  "model_source_sha256": "3bf4cd6dc700471abb043c552d01d975e127e891b009c5a48802b92d48a19dc4",
+  "checkpoint": [
+    "deit_small_patch16_224.fb_in1k",
+    "91327a9c99f98fe6b524cd4d397b7226b80e1365"
+  ],
+  "model_eval": true,
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "torch": "2.6.0+cu124",
+  "max_baseline_logit_error": 4.76837158203125e-06,
+  "max_reference_logit_or_map_error": 0.00018310546875,
+  "full_forward_validations": 12,
+  "max_full_forward_logit_error": 2.384185791015625e-06,
+  "max_full_forward_margin_error": 1.9073486328125e-06,
+  "elapsed_seconds": 3.3085314999334514
+}
