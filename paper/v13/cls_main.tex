@@ -1,0 +1,5 @@
+\paragraph{Which readout tracks the classifier?} On 128 hash-selected pet images, we removed each of the 196 patch value terms from the last CLS query in turn, holding attention fixed. We recomputed the MLP and classifier and measured the absolute change in the original top-two logit margin. Restricting the sum of head magnitudes to the CLS query improved its mean within-image rank correlation with this CLS-path response by 0.041 [0.026, 0.057]. We then evaluated the same scores against the same images' masks. The query restriction lowered enrichment by 0.033 [0.023, 0.043] and AUROC by 0.091 [0.074, 0.110] (Table~\ref{tab:cls}).
+\begin{center}\begin{minipage}{\linewidth}
+\captionof{table}{Classification sensitivity and localisation on the same 128 images. All scores use layer 12 only. Margin Spearman ranks the 196 source patches by their measured influence on the fixed class margin. The matched mask comparison was added after the margin analysis.}
+\label{tab:cls}\centering\small\input{cls_table}
+\end{minipage}\end{center}

@@ -20,8 +20,6 @@ import pandas as pd
 
 HERE = Path(__file__).resolve().parent
 SKILL_SCRIPTS = Path(os.environ.get("NATURE_FIGURE_SCRIPTS", Path.home() / ".codex/skills/nature-figure/scripts"))
-sys.path.insert(0, str(SKILL_SCRIPTS))
-from audit_panel_alignment import require_matplotlib_panel_alignment  # noqa: E402
 
 
 INPUT = HERE / "budget_differences.csv"
@@ -65,8 +63,8 @@ def plot() -> None:
     fig, axes = plt.subplots(1, 2, figsize=(5.5, 2.55), dpi=300)
     fig.subplots_adjust(left=0.105, right=0.985, bottom=0.205, top=0.765, wspace=0.35)
     specs = (
-        ("p_target", "Original top-1 probability", "Δ probability", (-0.007, 0.034)),
-        ("kl", "KL from original output", "Δ KL (nats)", (-0.058, 0.185)),
+        ("p_target", "Original top-1 probability", "螖 probability", (-0.007, 0.034)),
+        ("kl", "KL from original output", "螖 KL (nats)", (-0.058, 0.185)),
     )
     for ax, (metric, title, ylabel, ylim), letter in zip(axes, specs, "ab"):
         ax.axhline(0, color="#777777", lw=0.65, zorder=0)
@@ -99,11 +97,15 @@ def plot() -> None:
     fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.56, 0.96),
                ncol=3, handlelength=1.5, columnspacing=1.9)
     fig.text(0.545, 0.065, "Removed patches", ha="center", va="center", fontsize=7)
-    require_matplotlib_panel_alignment(
-        fig, json_out=HERE / "deletion_curves.alignment.json",
-        tolerance_pt=1.5, gutter_tolerance_pt=1.5,
-        require_panel_labels=True, strict=True,
-    )
+    if (SKILL_SCRIPTS / "audit_panel_alignment.py").is_file():
+        sys.path.insert(0, str(SKILL_SCRIPTS))
+        from audit_panel_alignment import require_matplotlib_panel_alignment
+
+        require_matplotlib_panel_alignment(
+            fig, json_out=HERE / "deletion_curves.alignment.json",
+            tolerance_pt=1.5, gutter_tolerance_pt=1.5,
+            require_panel_labels=True, strict=True,
+        )
     fig.savefig(OUTPUT, metadata={"Title": "C3 versus no-high control: deletion-budget contrasts",
                                   "Creator": "research/v13/endpoints/plot_curves.py"})
     fig.savefig(HERE / "deletion_curves.svg")

@@ -1,0 +1,89 @@
+\documentclass{article}
+\PassOptionsToPackage{numbers,compress,sort}{natbib}
+\usepackage[preprint]{neurips_2025}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref,url,booktabs,amsfonts,amsmath,amssymb,microtype}
+\usepackage{xcolor,graphicx,array,pifont,makecell}
+\usepackage[font=small,labelfont=bf,skip=3pt]{caption}
+\usepackage[shortlabels]{enumitem}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\scriptsize,columns=fullflexible,keepspaces=true,frame=tb,
+  framesep=3pt,showstringspaces=false,upquote=true,aboveskip=6pt,belowskip=4pt}
+\graphicspath{{../v12/figures/}{../../figures/}{../figures_own/}}
+\hypersetup{pdftitle={What Do Value Norms Add to ViT Attention Maps? A Fast-Weight Analysis},pdfauthor={Hongbo Huang},colorlinks=true,linkcolor=black,citecolor=blue!50!black,urlcolor=blue!50!black}
+\newcommand{\up}{$^{\uparrow}$}
+\newcommand{\dn}{$^{\downarrow}$}
+\newcommand{\rsub}[1]{\refstepcounter{subsection}\paragraph{\thesubsection~~#1}}
+\newcommand{\plabel}[3]{\makebox[#1][l]{\small\textbf{#2}~#3}}
+\title{What Do Value Norms Add to ViT Attention Maps?\\A Fast-Weight Analysis}
+\author{Hongbo Huang\\Student ID: 50026755}
+\begin{document}
+\raggedbottom
+\maketitle
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\section{Introduction}
+A patch can attract attention even when it contributes a small vector to a head's output. This distinction matters when a vision transformer's attention map is used to locate image evidence~\citep{dosovitskiy2021,caron2021,chefer2021}. High-norm background tokens provide a concrete example of the difficulty of interpreting token locations~\citep{darcet2024,jiang2025}. We ask when weighting received attention by value magnitude improves a spatial reading, and which properties of the weighting account for the change.
+
+\begin{figure}[!h]\centering
+\begin{minipage}[c]{0.35\linewidth}
+\plabel{\linewidth}{(a)}{Fast-weight representation}\\[2pt]
+\includegraphics[width=\linewidth]{fast_weight_lens}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.62\linewidth}\plabel{\linewidth}{(b)}{Value weighting by object size}\\[2pt]\includegraphics[width=\linewidth]{geometry_effects}\end{minipage}
+\caption{(a) Each source token supplies a key and a transformed value. (b) Norm weighting (C3) minus received attention (R0) on ImageNet-S, by increasing foreground area. Points are mean paired differences with 95\% image-bootstrap intervals. Axes differ. For both plotted DeiTs, enrichment uses 12,150 images. AUROC ranks across radii on the 11,909 with both classes.}\label{fig:lens}
+\end{figure}
+
+The fast-weight representation treats a head as a two-layer network written by the image~\citep{wen2026mita}. We use it to separate three properties of a map, namely its dependence on the image, the spatial correspondence of its tokens and their output magnitudes. We test all three on frozen classifiers, then examine value weighting on pet images by reassigning lengths across positions and measuring how scores relate to classification.
+\clearpage
+
+\section{Related work}
+Fast-weight memory uses one network to write another's temporary weights~\citep{schmidhuber1992}. Linear attention admits a fast-weight interpretation~\citep{schlag2021}, softmax attention connects to Hopfield memory~\citep{ramsauer2021}, and MiTA uses a two-layer representation to design efficient attention~\citep{wen2026mita}. Here that representation motivates a test of map construction on a frozen backbone.
+
+Attention's explanatory role depends on the quantity to be explained~\citep{jain2019,wiegreffe2019}. Rollout~\citep{abnar2020}, relevance propagation~\citep{chefer2021}, gradient weighting~\citep{chefer2021generic} and filtering~\citep{ayyar2025} construct different maps. Norm analyses incorporate the transformed values~\citep{kobayashi2020,zhu2024}. GlobEnc and ALTI also model other encoder components and aggregate across layers~\citep{modarressi2022,ferrando2022}. In vision, TokenTM tracks changes in token length and direction~\citep{wu2024tokentm}. We isolate the spatial assignment and aggregation of value lengths within the same readout. Its scores are class-agnostic, whereas CAM weights features for a specified class~\citep{zhou2016}.
+
+Token identity can survive context mixing in language models~\citep{brunner2020}, and ViTs can retain spatial information~\citep{raghu2021}. Decoding a slot therefore poses a different question from tracing its content back to the input. Registers change a model's computation~\citep{darcet2024,jiang2025}, and no-op heads offer one account of outliers~\citep{bondarenko2023}. Our comparisons hold the model fixed. Value zeroing measures contextual mixing in language encoders~\citep{mohebbi2023}. Our final-block intervention traces value removal to a class margin. Learned-parameter sensitivity~\citep{adebayo2018}, supervision~\citep{walmer2023} and occlusion choice~\citep{bluecher2024} all matter to evaluation. Architectural centre bias reported for CNN saliency was weak in the ViTs tested by \citet{kuang2026}. We control spatial priors empirically.
+
+\section{Reading a frozen attention head}
+\label{sec:method}
+For query $i$, source token $j$ and head $h$, let $z^h_j=W^h_Ov^h_j$. Before residual addition, the attention output and its received-attention map are
+\begin{equation}
+o_i=b_O+\sum_{h,j}a^h_{ij}z^h_j,\quad
+a^h_{ij}=\mathrm{softmax}_j(q_i^{h\top} k_j^h/\sqrt{d}),\quad s_j=\sum_{h,i}a^h_{ij}.
+\label{eq:attn}
+\end{equation}
+The keys divided by $\sqrt d$ and the transformed values act as the input and output weights of the image-conditioned network in $q_i^h$. Softmax couples its hidden units. Each map sums over all queries, including CLS, and reports scores on the 196 patch slots. We sum maps across layers 9--12.
+
+\paragraph{Three controlled readings.} Inspired by quantitative tests of unit interpretation~\citep{bau2017}, we define a proxy for each assumption. For \emph{image specificity}, we measure variance explained by a held-out mean map and subtract that map (C1), with scaled Gaussian subtraction as control. For \emph{spatial correspondence}, we measure the accuracy of a linear slot-index probe and redistribute $s_j$ using its position probabilities (C2), with a blur matched in average squared token displacement. For \emph{output contribution}, we measure attention on patches whose pre-normalisation token norm exceeds three times the image median. C3 weights each activation by the length of its transformed value. Its control sets received attention to zero at high-norm patches.
+
+\paragraph{Aggregation across heads.} For one source--query pair define
+\[
+ u_{ij}=\sum_h a^h_{ij}\|z^h_j\|_2,\qquad
+ n_{ij}=\Big\|\sum_h a^h_{ij}z^h_j\Big\|_2\leq u_{ij}.
+\]
+C3 sums $u_{ij}$ over queries. Summing $n_{ij}$ instead retains directional cancellation across heads~\citep{kobayashi2020,modarressi2022}. Both describe local output terms. Class logits also depend on residuals, MLPs and subsequent token mixing.
+
+\paragraph{Samples and uncertainty.} ImageNet-S supplies 12,419 images with masks, of which 12,150 have finite archived enrichment for DeiT (12,144 for DINO). ClickMe supplies 17,408 human maps. Another 4,000 images are split equally between probe training and calibration. The original comparisons use 1,000 paired image-bootstrap resamples. The follow-up analyses are exploratory. They reuse the original model outputs for geometry and deletion and introduce separate controls for the spatial assignment of value lengths.
+\clearpage
+
+\section{Experiments and results}
+\label{sec:exp}
+\begin{figure}[!h]\centering\includegraphics{diagnosis_correction_bridge}
+\caption{Each column pairs a diagnostic (a--c) with a reading change (d--f). Top curves show per-layer means and 95\% intervals on ImageNet-S (a,c) or 2,000 held-out images (b). Shading marks layers 9--12. Bottom points are paired differences versus R0 (circles) or the matched control (diamonds). Bars show unadjusted 95\% image-bootstrap intervals. Filled points pass both the interval and practical-margin rules. Grey bands span $\pm0.02$. Pairing the panels is a post-hoc interpretation.}\label{fig:diag}
+\end{figure}
+
+\paragraph{Registered study.} We use frozen DeiT-S/B~\citep{touvron2021} and DINO ViT-S/16~\citep{caron2021}. Enrichment compares foreground rates at matched radii on ImageNet-S~\citep{gao2023}. ClickMe alignment is own-image minus other-image Spearman correlation with human maps~\citep{linsley2019,fel2022}. Deletion integrates least- minus most-important-first top-1 retention over 2,000 images. A difference is higher or lower if its paired 95\% interval excludes zero and its magnitude reaches 0.02 (0.05 for deletion). Other tested differences are termed comparable. Appendix~\ref{app:setup} documents prior observations and ImageNet sampling~\citep{deng2009}.
+
+\paragraph{Outcomes.} C3 improves enrichment by 0.038/0.065 and ClickMe alignment by 0.033/0.058 over R0 in DeiT-S/B. Three gains also clear the zero-high-norm control. The DeiT-B ClickMe advantage over that control is 0.017. R1 predicted comparable scores for DINO C3 on all three deep-layer metrics and for early C2 (layers 1--4) on both alignment metrics in all models. All nine comparisons are comparable. Deep C2 lowers all nine model--metric scores. C1's only gain over R0, DINO ClickMe, is comparable to Gaussian subtraction. R2 predicted that the combination would improve all four supervised alignment scores. One is higher, one comparable and two lower, giving the registered outcome \emph{partly holds}. Neither size-S model-side reference beats DeiT-S on alignment (R3, Table~\ref{tab:main}). MiTA also differs in training and preprocessing. Combination--R0 and correction--control were primary contrasts. Individual correction--R0 contrasts were descriptive apart from R1.
+\input{endpoint_main}
+\clearpage
+\input{followup_main}
+\label{main:end}
+\clearpage
+{\small\bibliographystyle{plainnat}\bibliography{references}}
+\clearpage\appendix
+\input{appendix}
+\end{document}

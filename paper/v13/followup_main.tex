@@ -1,0 +1,14 @@
+\section{What the spatial weights encode}
+We ran an exploratory transfer test on Oxford-IIIT Pet~\citep{parkhi2012pets} with the same frozen DeiT-S. We selected 384 test images by a fixed hash of their filenames. For 383 crops, both foreground and background patches were available. To test whether the image's own assignment matters, we paired images and placed each recipient's sorted value lengths at positions ranked by its donor, independently for each layer and head. A second control shuffled lengths within rings of equal distance to the image centre. Both keep the lengths available to each head. A norm-only reading keeps each head's total attention to patches and spreads it uniformly before weighting by length.
+
+\begin{center}\begin{minipage}{\linewidth}
+\captionof{table}{Spatial readouts on Oxford-IIIT Pet (DeiT-S, layers 9--12). All rows score the same 383 masks. The paired differences and image-bootstrap intervals refer to same-ring enrichment. AUROC compares the scores of foreground and background patches.}
+\label{tab:pets}\centering\small\setlength{\tabcolsep}{5pt}
+\input{spatial_table}
+\end{minipage}\end{center}
+
+Reassigning lengths across images or within rings lowers enrichment by 0.022 and 0.021 relative to C3 (Table~\ref{tab:pets}). The donor-pair bootstrap gives an interval of [0.019, 0.026] for the former difference. Norm-only scoring also loses 0.040. Thus both the spatial variation in attention and the assignment of lengths within the image contribute to the observed alignment. Using the unprojected lengths gives a slightly higher score. Summing vectors across heads before taking their norm lowers enrichment by 0.003. Both alternative length measures preserve most of the improvement over R0.
+
+\input{cls_main}
+\section{Discussion and conclusion}
+Keeping the image-specific patch positions of value lengths within each head improves the spatial readout. The observed advantage depends on the checkpoint, object geometry and the endpoint used to measure model behaviour. The pet experiment covers one supervised checkpoint and a narrow image domain. Within the original study, supervision, classifier head and preprocessing differ across checkpoints. The input deletion experiment changes the context at every later layer, and ClickMe images may overlap model training data. Public image and human-map datasets also reflect the choices of their photographers and annotators. These limits favour reporting localisation and behavioural sensitivity together when interpreting an attention map.
