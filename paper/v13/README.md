@@ -1,6 +1,6 @@
-# What Do Value Norms Add to ViT Attention Maps? A Fast-Weight Analysis
+# How Should We Read ViT Attention Maps? A Fast-Weight Perspective
 
-[Submission PDF](../../output/pdf/attention_fast_weights_paper_v13.pdf) 路 [Experiment source and results](../../research/v13/) 路 [Original registration](../../docs/preregistration.md) 路 [Reviewed baseline](https://github.com/hhuang999/vit-fastweight-lens/tree/35323aa6d4959d465c47044057a0296374374ec7).
+[Submission PDF](../../output/pdf/attention_fast_weights_paper_v13.pdf) | [Experiment source and results](../../research/v13/) | [Original registration](../../docs/preregistration.md) | [Reviewed baseline](https://github.com/hhuang999/vit-fastweight-lens/tree/35323aa6d4959d465c47044057a0296374374ec7).
 
 The compiled paper uses the v12 schematic, diagnostics figure, original scores and interval tables directly. Each new study has a protocol, analysis code and numeric output under `research/v13/`. The spatial experiment and CLS intervention use the released supervised DeiT-S checkpoint and the public Oxford-IIIT Pet data. The full images, archives, pretrained model and local Python overlay are external to the source package. For the companion source ZIP, extract its contents over a checkout of the linked baseline.
 
@@ -17,11 +17,11 @@ Use the original official NeurIPS 2025 style. Place a local copy of `neurips_202
 
 ```powershell
 python paper/v13/make_tables.py
-python paper/v13/plot_geometry.py
 New-Item -ItemType Directory -Force build/paper-v13 | Out-Null
 tectonic -X compile paper/v13/main.tex --outdir build/paper-v13 --keep-logs --keep-intermediates
 if ($LASTEXITCODE -ne 0) { throw 'Compilation failed' }
 Copy-Item build/paper-v13/main.pdf output/pdf/attention_fast_weights_paper_v13.pdf
+$env:PYTHONPATH = 'build/paper-v9/python-deps;src'
 python scripts/validate_release.py --strict --report build/paper-v13/baseline-audit.json
 python paper/v13/verify_build.py
 ```

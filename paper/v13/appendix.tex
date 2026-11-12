@@ -204,3 +204,12 @@ donor_map = (received * borrowed).sum(dim=1)
 net_map = sum(torch.einsum('bhij,bhjd->bijd', chunk, z).norm(dim=-1).sum(1)
               for chunk in a.split(32, dim=2))
 \end{lstlisting}
+
+For the final-block intervention we hold the attention matrix fixed. This excerpt from the full-forward check removes one patch's term from the CLS query. The output projection retains its bias and the rest of the model runs normally.
+\begin{lstlisting}[language=Python]
+# p: [batch, head, query, source]; v: [batch, head, source, head_dim]
+head_out = p @ v
+head_out[:, :, 0, :] -= p[:, :, 0, source_patch + 1, None] * v[:, :, source_patch + 1, :]
+full = head_out.transpose(1, 2).reshape(batch, tokens, -1)
+return attn.proj_drop(attn.proj(attn.norm(full)))
+\end{lstlisting}
