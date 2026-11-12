@@ -41,6 +41,6 @@ L = [r'\begin{tabular}{@{}l@{\hspace{4pt}}ccc@{\hspace{7pt}}ccc@{\hspace{7pt}}cc
      vrow('+ test-time register', 'register'), vrow('Top-$k$ training (MiTA)', 'mita'),
      row('GAE (reference)', 'gae', test=False), r'\bottomrule', r'\end{tabular}']
 # Preserve the author's legacy header for byte-identical reference checks; this is v8 Table 2.
-open(out, 'w').write('% Table 1: made by make/make_main_table.py from results/table1_long.csv, correct_tests.csv and variants.csv.\n'
+open(out, 'w', encoding='utf-8', newline='\n').write('% Table 1: made by make/make_main_table.py from results/table1_long.csv, correct_tests.csv and variants.csv.\n'
                      + '\n'.join(L) + '\n')
 print('\n'.join(L[6:14] + L[15:18]))

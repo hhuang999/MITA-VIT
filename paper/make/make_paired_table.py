@@ -29,7 +29,7 @@ for k, bl in enumerate(B):
     elif k: T.append(r'\addlinespace[2pt]')
     T += [reorder(l) for l in bl]
 T += [r'\bottomrule', r'\end{tabular}']
-out.write_text('\n'.join(T) + '\n')
+out.write_text('\n'.join(T) + '\n', encoding='utf-8', newline='\n')
 num = re.compile(r'\d+\.\d+')
 srcnums = set(num.findall('\n'.join(p)))
 body = '\n'.join(l for l in T if not l.startswith('%') and 'arraystretch' not in l)

@@ -275,7 +275,7 @@ def main():
     args = parser.parse_args()
     target = args.out / 'appendix' / 'paired_differences.tex'
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(t_paired_differences(Results(str(args.results))), encoding='utf-8')
+    target.write_text(t_paired_differences(Results(str(args.results))), encoding='utf-8', newline='\n')
     print('written to', target)
 
 

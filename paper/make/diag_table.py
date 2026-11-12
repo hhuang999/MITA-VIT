@@ -49,5 +49,5 @@ for layer in range(1, 13):
     lines.append(" & ".join(cells) + " \\\\")
 lines.append("\\bottomrule")
 lines.append("\\end{tabular}")
-open(out, "w").write("\n".join(lines) + "\n")
+open(out, "w", encoding="utf-8", newline="\n").write("\n".join(lines) + "\n")
 print("\n".join(lines))
