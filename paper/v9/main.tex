@@ -1,0 +1,140 @@
+\documentclass{article}
+\PassOptionsToPackage{numbers,compress,sort}{natbib}
+\usepackage[preprint]{neurips_2025}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref,url,booktabs,amsfonts,amsmath,amssymb,microtype}
+\usepackage{xcolor,graphicx,array,pifont,makecell}
+\usepackage[font=small,labelfont=bf,skip=3pt]{caption}
+\usepackage[shortlabels]{enumitem}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\scriptsize,columns=fullflexible,keepspaces=true,frame=tb,
+  framesep=3pt,showstringspaces=false,upquote=true,aboveskip=6pt,belowskip=4pt}
+\graphicspath{{figures/}{../../figures/}{../figures_own/}}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=blue!50!black,urlcolor=blue!50!black}
+\newcommand{\up}{$^{\uparrow}$}
+\newcommand{\dn}{$^{\downarrow}$}
+\newcommand{\rsub}[1]{\refstepcounter{subsection}\paragraph{\thesubsection~~#1}}
+\newcommand{\plabel}[3]{\makebox[#1][l]{\small\textbf{#2}~#3}}
+
+\title{Is It the Model or the Reading?\\A Fast-Weight View of ViT Attention Maps}
+\author{Hongbo Huang\\Student ID: 50026755}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Deep-layer ViT attention maps can emphasise background patches. We test how much changing the reading rule improves these maps with the model fixed. The established fast-weight view motivates three assumptions---image specificity, spatial location and output contribution---each tested with a diagnostic proxy, correction and matched control. On DeiT-S/B, existing norm weighting raises object enrichment by $0.038/0.065$ and human alignment by $0.033/0.058$; three of four gains exceed the matched control. This reading yields no improvement exceeding our practical margin for deletion faithfulness or in DINO ViT-S. Probe relocation lowers all nine deep-layer model--metric scores relative to received attention, and combining corrections improves only one of four pre-registered comparisons. These results identify an effective alignment adjustment and an unsuccessful use of index decoding for relocation; general diagnostic prediction and the cause of relocation failure remain open.
+\end{abstract}
+
+\section{Introduction}
+Attention maps are widely used to visualise what a vision transformer (ViT)~\citep{dosovitskiy2021} attends to~\citep{caron2021,abnar2020,chefer2021generic}. Deep-layer maps can allocate substantial attention to high-norm background tokens; registers address this by changing the model~\citep{darcet2024,jiang2025}. We ask how much map quality can improve by changing only the \emph{reading rule}.
+
+
+\begin{figure}[!h]
+\centering
+\begin{minipage}[c]{0.35\linewidth}
+\plabel{\linewidth}{(a)}{Fast-weight representation}\\[2pt]
+\includegraphics[width=\linewidth]{fast_weight_lens}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.62\linewidth}
+\includegraphics[width=\linewidth]{contribution_effects}
+\end{minipage}
+\caption{(a) Keys and values form image-conditioned weights; tokens are hidden units. (b) Contribution weighting (C3) minus received attention (R0) or its matched control (zero high-norm tokens), layers 9--12. Points: paired mean differences; bars: 95\% intervals. The dashed line is the registered $0.02$ practical margin.}
+\label{fig:lens}
+\end{figure}
+
+\emph{Received attention} sums attention arriving at each patch token. Interpreting it links activations to image-specific information, token indices to input locations, and activation magnitudes to output contributions. The established fast-weight view represents these tokens as hidden units (Fig.~\ref{fig:lens}a). We organise tests of these links on frozen DeiT-S/B~\citep{touvron2021} and DINO ViT-S~\citep{caron2021}.
+\begin{enumerate}[nosep,leftmargin=1.7em,label=(\arabic*)]
+\item \textbf{A controlled diagnostic framework} linking three reading assumptions to explicit proxies, corrections and controls.
+\item \textbf{Conditions and limits of existing norm weighting:} localisation and human-alignment gains in DeiT-S/B, without a deletion-margin improvement or meaningful DINO gain.
+\item \textbf{A failed proxy-guided correction:} patch-index decoding does not yield effective score relocation, and combining corrections improves only one of four registered cells.
+\end{enumerate}
+
+
+
+\section{Related work}
+\label{sec:related}
+\rsub{Reading attention and evaluating maps.} Whether attention explains predictions is debated~\citep{jain2019,wiegreffe2019}. Readings incorporate layers~\citep{abnar2020}, relevance propagation~\citep{chefer2021}, gradients~\citep{chefer2021generic}, norms~\citep{kobayashi2020,zhu2024} or statistical filtering~\citep{ayyar2025}. Kobayashi et al.\ already establish that activation alone omits the transformed value magnitude. We use this existing reading to test when that omission matters. Plausible maps can ignore model parameters~\citep{adebayo2018}, deletion depends on occlusion~\citep{bluecher2024}, and CNN centre priors can confound evaluation~\citep{kuang2026}; our matched controls address specific alternative explanations.
+
+\rsub{Deep tokens and fast weights.} Registers absorb high-norm background tokens~\citep{darcet2024,jiang2025}, which resemble attention heads that learn to do nothing~\citep{bondarenko2023}; supervision also shapes ViT attention~\citep{walmer2023}. Language-model token identity can fade~\citep{brunner2020}, yet deep CLS-trained ViT tokens retain similarity to their input patches~\citep{raghu2021}. Fast weights are written by another network~\citep{schmidhuber1992}; this perspective connects linear attention to fast-weight programming~\citep{schlag2021}, softmax attention to Hopfield memory~\citep{ramsauer2021}, and motivates efficient attention such as MiTA~\citep{wen2026mita}. We use it to organise an empirical study of reading assumptions, rather than propose a new attention mechanism.
+
+\section{Method}
+\label{sec:method}
+\rsub{An exact representation, an interpretive framework.} In layer $\ell$, normalised tokens $x_1,\dots,x_{N+1}$ (CLS and $N=196$ patches) enter $H$ heads. Head $h$ forms $q_i^h=W_Q^h x_i$, $k_j^h=W_K^h x_j$ and $v_j^h=W_V^h x_j$; its attention update is
+\begin{equation}
+o_i=\sum_h W_O^h\sum_j a_{ij}^h v_j^h,\qquad
+a_{ij}^h=\operatorname{softmax}_j\!\big(q_i^{h\top}k_j^h/\sqrt d\big).
+\label{eq:attn}
+\end{equation}
+For a fixed image, each head is exactly a two-layer network in $q_i^h$: hidden unit $j$ has input weights $k_j^h$, activation $a_{ij}^h$ and output weights $W_O^h v_j^h$. The softmax couples hidden activations through normalisation. This algebraic representation is exact; the reading assumptions derived from it require empirical tests. Received attention is $s_j=\sum_{h,i}a_{ij}^h$, placed at patch $j$. Queries include CLS and all patches; maps exclude CLS and sum layers 9--12, fixed before the formal runs.
+
+\rsub{Assumptions, proxies and controls.} Table~\ref{tab:premises} links three assumptions to tests: shared structure may obscure image-specific information; unit meaning requires measurement~\citep{bau2017}; and activation omits output weights~\citep{zhou2016,kobayashi2020}. These are interpretive assumptions; diagnostics remain proxies. Each correction must improve over received attention \emph{and} exceed its matched control to support an assumption-specific benefit. Contribution weighting measures output-vector magnitudes, omitting cancellation and later computation. Probe relocation uses $P(p\mid x_j)$ trained to decode token index $p$, not input-content provenance.
+
+\begin{table}[t]
+\caption{Reading assumptions, diagnostic proxies and tests. Outcomes concern layers 9--12 on enrichment and ClickMe (S/B/D: DeiT-S/B, DINO). ``Signal'' summarises observed proxy patterns, not a validated failure classifier. $^\dagger$B ClickMe does not exceed its control.}
+\label{tab:premises}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.02}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.82in}>{\raggedright\arraybackslash}p{1.02in}>{\raggedright\arraybackslash}p{1.48in}>{\raggedright\arraybackslash}p{1.00in}>{\raggedright\arraybackslash}p{0.73in}@{}}
+\toprule
+Assumption & Diagnostic proxy & Correction & Matched control & Signal / benefit\\
+\midrule
+Specificity & mean-map variance share & subtract mean map, $s-\bar s$ & subtract centre Gaussian & small / none\\[2pt]
+Location & patch-index probe accuracy & relocate, $r_p=\sum_j s_jP(p\mid x_j)$ & equal-displacement blur & S,B,D / none\\[2pt]
+Contribution & attention on high-norm tokens & weight, $c_j=\sum_{h,i}a_{ij}^h\lVert W_O^hv_j^h\rVert$ & zero high-norm tokens & S,B / S,B$^\dagger$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\rsub{Metrics and decision rules.} A centred Gaussian correlates $0.41$ with raw ClickMe maps. Two \emph{centre-controlled} metrics address this prior: \emph{same-ring enrichment}, the object rate of top-scoring patches minus the rate at the same radius (ImageNet-S masks~\citep{gao2023}); and \emph{image-specific ClickMe alignment}, Spearman correlation with the image's human map minus that with another image's~\citep{linsley2019,fel2022}. These controls target specific prior effects. \emph{Deletion faithfulness} compares least- and most-important-first token-removal curves~\citep{bluecher2024}. With 1,000 paired image-bootstrap resamples, a difference is \emph{higher/lower} if its 95\% interval excludes zero and its magnitude exceeds $0.02$ ($0.05$ for deletion); otherwise it is \emph{comparable}, a registered category rather than formal equivalence.
+
+\section{Experiments}
+\label{sec:exp}
+\rsub{Setup and registered predictions.} We evaluate frozen supervised DeiT-S/B and DINO ViT-S/16. Model-side comparisons use a test-time register~\citep{jiang2025} and the released MiTA top-$k$ checkpoint~\citep{wen2026mita}, both at size S. Data comprise 5,000 ImageNet images~\citep{deng2009}, 12,419 ImageNet-S images, 17,408 ClickMe maps and 4,000 held-out images (2,000 probe-train; 2,000 calibration/test). Metrics, margins and comparisons were fixed before formal runs (App.~\ref{app:setup}). \textbf{R1:} contribution weighting in DINO and relocation at layers 1--4 remain comparable. \textbf{R2:} all three corrections improve all four supervised centre-controlled cells. \textbf{R3:} neither model-side variant is higher than DeiT-S. Single-correction/control comparisons had no registered direction; their diagnosis--benefit interpretation is post hoc.
+
+\begin{figure}[t]
+\centering
+\plabel{1.3975in}{(a)}{Specificity}\plabel{1.3975in}{(b)}{Location}\plabel{1.3975in}{(c)}{Contribution}\plabel{1.3075in}{(d)}{Map quality}\\[1pt]
+\includegraphics[width=\linewidth]{diagnosis}
+\caption{Per-layer diagnostic proxies and uncorrected map quality: (a) mean-map variance share; (b) patch-index probe accuracy; (c) attention on high-norm tokens; (d) image-specific ClickMe alignment. Bands: 95\% intervals; shading: layers 9--12.}
+\label{fig:diag}
+\end{figure}
+
+\rsub{Execution and sanity checks.} Restricting attention to $k=16$ region-selected units preserves $72/83/61\%$ of predictions in DeiT-S/B/DINO, versus $9/30/4\%$ for random units (App.~\ref{app:more}). Existing parameter-randomisation checks pass for all five readings under their registered criterion (App.~\ref{app:sanity}).
+
+\rsub{Diagnostic patterns (Fig.~\ref{fig:diag}).} The mean map explains only $3$--$6\%$ of spatial variance in supervised layers 6--12, at most $17\%$ in DINO; in layers 9--12 its structure is $82$--$98\%$ radial. Index-probe accuracy declines from nearly $100\%$ in early layers to $18/32/36\%$ at layer 12 (chance: $0.5\%$). High-norm tokens (block-input norm $>3$ times the image median) receive up to $9/44\%$ of attention in DeiT-S/B and none in DINO. Their value norms average $0.29/0.23$ times the other patches' median in deep layers (App.~\ref{app:more}). These proxies motivate tests; they do not themselves establish misreading.
+
+\begin{table}[t]
+\caption{Layers 9--12; all metrics $\uparrow$. Arrows: higher/lower versus received attention under the registered rule (model-side rows: DeiT-S). $\diamond$: higher than the matched control. \textbf{Bold}: higher than both. Controls are indented. GAE~\citep{chefer2021generic} uses gradients and is a descriptive reference. Enr.: enrichment; Click.: ClickMe; Del.: deletion.}
+\label{tab:main}
+\centering\footnotesize
+\setlength{\tabcolsep}{2.6pt}\renewcommand{\arraystretch}{1.0}
+\input{tables/main_results.tex}
+\end{table}
+
+\rsub{Corrections and registered outcomes (Table~\ref{tab:main}).}
+\textbf{Contribution weighting improves alignment, with limits.} Enrichment rises by $0.038/0.065$ and ClickMe by $0.033/0.058$ in DeiT-S/B. Gains exceed the zero-high-norm control in three of these four cells; DeiT-B ClickMe does not. Deletion gains ($0.017/0.029$) are below the $0.05$ margin. DINO differences are at most $0.004$ in magnitude, satisfying the contribution part of R1. Post hoc, correctly assigned weights outperform shuffled weights in all four supervised cells; value-only weighting is comparable (App.~\ref{app:more}). Thus the useful correction is an existing norm-based reading~\citep{kobayashi2020,zhu2024}.
+
+\begin{samepage}
+\smallskip\noindent\textbf{Other corrections do not yield consistent benefits.} Mean subtraction's only R0 gain (DINO ClickMe) matches its control. Relocation lowers all nine deep-layer cells and underperforms matched blur in DeiT-S and DINO. Early relocation remains comparable (R1). The combination improves only DeiT-B ClickMe: R2 \emph{partly holds} (1/4), without consistent benefit.
+\par
+\end{samepage}
+
+\smallskip\noindent\textbf{Model-side results have a narrower scope.} The register gains $0.012/0.013$ on enrichment and ClickMe, below the $0.02$ margin. MiTA scores lower, but differs in training and preprocessing. R3 holds under the registered comparisons; these results do not establish a general advantage over model-side interventions.
+
+\rsub{Does diagnosis predict correction benefit?} The post-hoc correspondence holds for contribution weighting, not relocation. Token-specific weights matter, but dose--gain associations are weak (Spearman $0.045$--$0.158$; App.~\ref{app:more}). Local errors and the tested MLP probe narrow relocation explanations (App.~\ref{app:reloc}); probe/calibration limitations remain possible. Index decodability differs from content provenance: local content may persist after position codes weaken~\citep{raghu2021}. Whether that mismatch causes relocation failure remains untested.
+
+\section{Discussion}
+\rsub{Interpretation and limitations.} Reading changes can improve localisation and human alignment without improving deletion beyond the chosen margin. A declining diagnostic is therefore insufficient grounds for a correction. Evidence covers three frozen S/B classifiers and received attention only; CLS attention, larger/register-trained models and repeated training seeds are untested. The high-norm threshold was not varied. ClickMe images likely overlap model training data. Gains are modest, visually subtle (App.~\ref{app:gallery}) and below GAE's; diagnostic prediction beyond these checkpoints remains open.
+
+\rsub{Ethical considerations.} Public images and checkpoints contain people and known biases. Improved map alignment remains partial evidence about model behaviour.
+
+\section{Conclusion}
+Existing norm weighting improves deep-layer localisation/alignment in DeiT-S/B; probe relocation fails and the registered combination lacks consistent gains. The fast-weight view organises these controlled tests. Validating diagnostic-guided correction requires token-to-input attribution and broader model coverage. Reading changes should be compared with matched controls, while separating alignment from prediction faithfulness.
+
+\label{main:end}
+\clearpage
+{\small\bibliographystyle{plainnat}\bibliography{../references}}
+\clearpage\appendix
+\input{appendix}
+\end{document}

@@ -4,6 +4,9 @@
 
 [Paper](paper/main.pdf) · [Paper-to-code map](docs/reproduce.md) · [Pre-registration](docs/preregistration.md) · [Provenance](docs/provenance/README.md)
 
+The [v9 editorial revision](paper/v9/README.md) revises the manuscript and its figures/tables using the same
+experiments and registered rules. The original v8 source/PDF and its reproduction workflow remain preserved.
+
 Deep-layer ViT attention maps often look poor. How much comes from the model, and how much from the rule
 used to read its attention? This project uses the established fast-weight view of attention to test three
 premises: specificity, location and contribution. The contribution is a diagnostic framework and controlled

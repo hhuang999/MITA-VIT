@@ -26,3 +26,9 @@ pdflatex -interaction=nonstopmode -halt-on-error main.tex
 Expect 11 pages and resolved citations/references. The supplied PDF is usable without compiling it.
 The repository does not change scientific definitions to remove wording differences: the two proposed Appendix A
 precision fixes are recorded for the author in `docs/reproduce.md`.
+
+## Editorial revision v9
+
+The author-requested revision is under [v9/](v9/README.md), with separate source, presentation builders and
+claim/evidence notes. It incorporates the Appendix A wording fixes while retaining the original scientific
+definitions and results. The v8 files and the rebuild checks above continue to describe the supplied v8 package.
