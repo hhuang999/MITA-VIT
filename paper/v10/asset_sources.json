@@ -1,0 +1,24 @@
+{
+  "adopted_figure": "output/figure_candidates/02_diagnosis_correction_bridge.pdf",
+  "figure_source": "paper/figure_candidates/build_figures.py",
+  "figure_source_data": [
+    "output/figure_candidates/02_diagnosis_correction_bridge.diagnostics.csv",
+    "output/figure_candidates/02_diagnosis_correction_bridge.effects.csv"
+  ],
+  "inherited_assets": "paper/v9/asset_sources.json",
+  "sha256": {
+    "paper/v10/figures/contribution_effects.pdf": "8de80653337c360829c970dd71747f4832235083221668960a8fe40d6ca3e413",
+    "paper/v10/figures/diagnosis_correction_bridge.pdf": "f647fc51e984bb178da3b7c3695dc482df67d426dd83e5e0455049fdffdb3652",
+    "paper/v10/figures/fast_weight_lens.pdf": "2dfc5966ec5c61f1795f8f9e0155a967564975d43f38864ea2b5d011250ba681",
+    "paper/v10/tables/main_results.tex": "5f6a2e9ab66314c70422802a868ea4774034ed8fbc7ef12335f0b2f62cd47e30",
+    "paper/v10/tables/sanity_check.tex": "adaeaa4992e9e6fb6f3de92989061cf43934a04018979313d8d19c472c7d9a00",
+    "paper/v10/evidence/sanity.csv": "87d72799e193c66b9d2911d0dba451496ccf38a6fcc4c2191efc4c333f1a4839",
+    "docs/preregistration.md": "46b7c9bccda4e2209b8612b4a9782cb55c711eaf3a9cead1aad0c44fc54fcc75",
+    "paper/references.bib": "d6deba6c4db8194ef5fed5e59167a33b1af605fa347eff1cc9d27ae3cdb25fc7",
+    "paper/tables_own/diagnostics_per_layer.tex": "d3af0c59761caac28556bbd64c3e535283e62735606af6994929158cf3b6411f",
+    "paper/tables_own/main_results.tex": "2efd6c969e36290a1824fb770d40dc0e853eb3fbd7bd890d9881800cafaffd1e",
+    "paper/tables_own/paired_differences.tex": "25e455c6e7669ee43d4349b3bc10eb1e92926e1bf90840f1329c22c844730630",
+    "paper/tables_own/relocation_explanations.tex": "ee89a671b371f3dd0b88b795707c54cb451f1ff1a3acfe1e9b7946002942b899"
+  },
+  "text_hash_convention": "LaTeX source hashes normalise CRLF to LF, matching .gitattributes; binary assets use raw bytes."
+}

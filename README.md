@@ -4,8 +4,10 @@
 
 [Paper](paper/main.pdf) · [Paper-to-code map](docs/reproduce.md) · [Pre-registration](docs/preregistration.md) · [Provenance](docs/provenance/README.md)
 
-The [v9 editorial revision](paper/v9/README.md) revises the manuscript and its figures/tables using the same
-experiments and registered rules. The original v8 source/PDF and its reproduction workflow remain preserved.
+The [submission manuscript v10](paper/v10/README.md) integrates the approved diagnostic/correction figure
+and provides a [complete PDF](output/pdf/attention_fast_weights_paper_v10.pdf): four main pages plus references
+and appendices. Experiments and registered rules are unchanged. The [v9 revision](paper/v9/README.md),
+original v8 source/PDF and v8 reproduction workflow remain preserved.
 
 Deep-layer ViT attention maps often look poor. How much comes from the model, and how much from the rule
 used to read its attention? This project uses the established fast-weight view of attention to test three

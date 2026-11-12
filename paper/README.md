@@ -32,3 +32,10 @@ precision fixes are recorded for the author in `docs/reproduce.md`.
 The author-requested revision is under [v9/](v9/README.md), with separate source, presentation builders and
 claim/evidence notes. It incorporates the Appendix A wording fixes while retaining the original scientific
 definitions and results. The v8 files and the rebuild checks above continue to describe the supplied v8 package.
+
+## Submission manuscript v10
+
+The [v10 source and build notes](v10/README.md) integrate the author-approved diagnostic/correction figure,
+preserve the homepage fast-weight schematic, and update all affected definitions, captions and references.
+The [complete submission PDF](../output/pdf/attention_fast_weights_paper_v10.pdf) has four main pages,
+two reference pages and six appendix pages. Original experiments and registered decision rules are unchanged.
