@@ -46,8 +46,15 @@ def fetch_archive(url, sha256, archive, destination, members=None):
     digest = file_digest(archive, 'sha256').hex()
     if digest != sha256:
         raise ValueError(f'{archive} has SHA-256 {digest}, expected {sha256}')
+    destination = destination.resolve()
     with zipfile.ZipFile(archive) as bundle:
-        bundle.extractall(destination, members(bundle) if members else None)
+        selected = members(bundle) if members else bundle.infolist()
+        for member in selected:
+            name = member.filename if isinstance(member, zipfile.ZipInfo) else member
+            path = destination / name
+            if path.resolve() != destination and destination not in path.resolve().parents:
+                raise ValueError(f'Archive member escapes dataset folder: {name}')
+        bundle.extractall(destination, selected)
     archive.unlink()
 
 

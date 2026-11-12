@@ -22,6 +22,6 @@ The historical summary procedure is preserved in
 [analyze_budget.py](https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/scripts/analyze_budget.py):
 `python scripts/analyze_budget.py formal --prefix experiments/2026-11-03_ab_`.
 It requires the historical study layout and full saved T3-T6 evidence, so use a separate temporary checkout
-of that exact revision. This historical command was not executed during the release audit; it is not an
-active-release reproduction claim. The original register implementation is
+of that exact revision. This historical command was not executed during the present CPU artifact audit.
+The original register implementation is
 [experiments/budget.py](https://github.com/hhuang999/vit-fastweight-lens/blob/1d66c0f7b39119e3ee7777ad7d086df68769d427/src/mita_probe/experiments/budget.py).

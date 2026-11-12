@@ -30,7 +30,7 @@ def load_gallery(folder):
     order = np.argsort(indices, kind='stable')
     data = {key: value[order] for key, value in data.items()}
     if data['index'][:6].tolist() != SELECTED['figure_1b'] + SELECTED['figure_D1']:
-        raise ValueError('Gallery indices differ from the fixed v8 selection')
+        raise ValueError('Gallery indices differ from the fixed selection')
     for key in ('map_R0', 'map_C3', 'map_C2'):
         if data[key].shape != (24, 196):
             raise ValueError(f'Expected 24 x 196 patch scores: {key} {data[key].shape}')

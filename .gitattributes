@@ -9,5 +9,4 @@
 *.txt text eol=lf
 *.pdf binary
 
-/archive export-ignore
 /.git_archival.txt export-subst

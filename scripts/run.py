@@ -23,7 +23,7 @@ ROOT = configure_runtime()
 
 from fastweight_vit.experiments import common, load  # noqa: E402
 from fastweight_vit.io import load_config, source_commit  # noqa: E402
-from fastweight_vit.release import validate_completed_run  # noqa: E402
+from fastweight_vit.evidence import validate_completed_run  # noqa: E402
 
 DATASET_SECTION = {'correct': 'correct', 'supplementary': 'supplementary'}
 

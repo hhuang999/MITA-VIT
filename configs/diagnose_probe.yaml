@@ -1,4 +1,4 @@
-# Premise of C2 (paper/figures_own/diagnosis.pdf): held-out images (4,000 ImageNet validation images that are neither
+# Premise of C2: held-out images (4,000 ImageNet validation images that are neither
 # ImageNet-S nor near-duplicates of ClickMe images; data/splits/heldout_4000.json lists them), one linear position
 # probe per layer trained on the first 2,000, tested on the other 2,000; C2's displacement and the matched blur
 # width.

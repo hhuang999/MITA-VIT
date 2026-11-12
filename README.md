@@ -1,151 +1,91 @@
-# Is It the Model or the Reading? A Fast-Weight View of ViT Attention Maps
+# How Should We Read ViT Attention Maps? A Fast-Weight Perspective
 
-**Hongbo Huang** · DSAA 2012 Deep Learning · paper v8 · software 0.2.0
+**Hongbo Huang** 路 DSAA 2012 Deep Learning 路 HKUST(GZ)
 
-[Paper](paper/main.pdf) · [Paper-to-code map](docs/reproduce.md) · [Pre-registration](docs/preregistration.md) · [Provenance](docs/provenance/README.md)
+[Read the paper (PDF)](paper/fast-weight-attention-maps.pdf) 路 [LaTeX source](paper/main.tex) 路 [Original registration](docs/preregistration.md) 路 [Experiments](experiments/README.md)
 
-The [framework-focused submission manuscript v12](paper/v12/README.md), titled
-*Interpreting ViT Attention Maps Through a Fast-Weight Lens*, provides a
-[complete PDF](output/pdf/attention_fast_weights_paper_v12.pdf): four main pages, two reference pages
-and nine appendix pages. It uses a 113-word abstract, compares three related-work themes, places
-parameter randomisation in Additional results and ends with key code. Experiments, registration,
-homepage/Figure 2 assets and the v11 bibliography are unchanged. The [v11 review revision](paper/v11/README.md),
-[v10 manuscript](paper/v10/README.md), [v9 revision](paper/v9/README.md), original v8 source/PDF
-and v8 reproduction workflow remain preserved.
+What does a bright patch in a vision transformer's attention map explain? For a fixed image, a head can be read as a two-layer network whose keys and transformed values supply its temporary weights. We use this representation to separate three choices in plotting attention: how much structure recurs across images, where a contextualised token's score is placed, and how its activation contributes to a receiving query. Each proposed change is compared with a matched control on frozen models.
 
-Deep-layer ViT attention maps often look poor. How much comes from the model, and how much from the rule
-used to read its attention? This project uses the established fast-weight view of attention to test three
-premises: specificity, location and contribution. The contribution is a diagnostic framework and controlled
-evaluation of readings; contribution weighting is the existing value-norm technique, not a new attribution method.
+- Redistributing received attention using a position probe lowered all nine deep-layer model鈥搈etric scores. A token's decodable grid index gives limited guidance for tracing its input evidence.
+- In supervised DeiT-S/B, weighting attention by transformed-value length improved foreground enrichment and ClickMe alignment over received attention. Three of four comparisons also cleared the high-norm control. Top-1 deletion gains fell below the registered margin.
+- In an exploratory test on 128 Oxford-IIIT Pet images, using only the final CLS query increased rank agreement with the measured class-margin response by **0.041**, while foreground enrichment and patch AUROC fell by **0.033** and **0.091**. These are paired differences on one checkpoint and layer.
 
-## Findings and registration
+## Set up
 
-Registered R1 negative controls hold. Registered R2, that all corrections together improve the four supervised
-centre-blind cells, partly holds: **1/4**, DeiT-B ClickMe. Registered R3 model-side comparisons are not higher
-than DeiT-S beyond the practical margin. Prior execution and diagnostic results are registered replications.
-The [original registration](docs/preregistration.md) preserves its dates and P1-P7 labels and maps them to R1-R3.
-
-Contribution weighting improves enrichment by **+0.038 / +0.065** and ClickMe alignment by **+0.033 / +0.058**
-in DeiT-S / DeiT-B; DINO ViT-S is comparable. Deletion faithfulness stays within the pre-specified improvement
-margin. Probe relocation is lower in all nine deep metric/model cells. Declining probe accuracy measures
-linear decodability of the original patch index, not the spatial origin of token content. The correspondence
-between diagnostics and individual correction outcomes is **post hoc**. MiTA differs in training and preprocessing;
-it is not a fully controlled model-side comparison.
-
-## Supplied experiments and methods
-
-Fourteen configs cover execution top-k/random reading sets, layerwise diagnostics, R0 received attention,
-C1 mean-map subtraction, C2 probe relocation, C3 output-contribution magnitude weighting, R_all and matched
-controls, GAE references, register/MiTA comparisons and post-hoc mechanism checks. Metrics are same-ring
-enrichment, image-specific ClickMe alignment and deletion faithfulness. Original per-image outputs are supplied.
-
-![Two fixed-seed examples, v8 Figure 1b](figures/example_maps.png)
-
-`src/` holds implementations, `configs/` protocols, `outputs/` immutable observations, `results/` reference
-summaries, `figures/` drawings, `paper/` the supplied v8 PDF/source, and `tests/` CPU checks. Historical experiments
-outside v8 stay in `archive/` and are excluded from course ZIPs. Essential historical evidence is active under `docs/`.
-
-## Install and run CPU checks
-
-Use Python **3.12**. No dataset, model download, GPU or ImageNet credential is needed for these commands.
+Clone the paper branch. The saved-results workflow uses Python 3.12, CPU PyTorch and no external dataset. Start the following commands at the repository root:
 
 ```bash
-git clone --branch paperv8 https://github.com/hhuang999/vit-fastweight-lens.git
+git clone --branch research/v13-fast-weight https://github.com/hhuang999/vit-fastweight-lens.git
 cd vit-fastweight-lens
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements-torch.txt --index-url https://download.pytorch.org/whl/cpu
 python -m pip install -r requirements.txt
 python -m pip install -e . --no-deps
-python -m pip check
+```
+
+On Windows activate with `.venv\Scripts\Activate.ps1`. For GPU inference use a separate environment, installing the compatible CUDA wheels for the torch/torchvision pair before the remaining requirements. Model revisions, transforms and download locations live in [the model loaders](src/fastweight_vit/models/) and [dataset loaders](src/fastweight_vit/data/).
+
+**Minimal example.** Recover the central Table 2 contrast from per-image scores, before bootstrapping or rounding:
+
+```bash
+python -c "import pandas as pd; t=pd.read_csv('experiments/cls/three_endpoint_per_image.csv').set_index(['method','image']); print((t.loc['cls_sum_head']-t.loc['all_c3']).mean().round(3))"
+```
+
+Expected values are `0.041` for margin Spearman, `-0.033` for same-ring enrichment and `-0.091` for AUROC.
+
+## Rebuild the paper from saved results
+
+```bash
 python -m pytest -q
-python scripts/validate_release.py --strict
+python scripts/validate_research.py --strict
+python scripts/rebuild_results.py --destination build/rebuilt
+python scripts/display/build.py
+python paper/build.py
 ```
 
-On Windows activate with `.venv\Scripts\Activate.ps1`; run Bash workflows through WSL or Git Bash.
-The `paperv8` branch is the review candidate for `release/v1`. The exported ZIP records its immutable commit
-in `.git_archival.txt`. CPU CI uses Ubuntu 24.04 and Python 3.12 with the same pinned dependencies.
+The numerical rebuild starts from the preserved per-image and per-layer exports in [outputs](outputs/) and compares regenerated summaries with [results](results/). Use a fresh destination for each numerical rebuild. The display builder uses the released evidence to regenerate the figures and tables included by LaTeX. The final command needs [Tectonic](https://tectonic-typesetting.github.io/en-US/) on PATH. It fetches and verifies the official NeurIPS preprint style and writes `build/paper/fast-weight-attention-maps.pdf`. For an offline build, supply the same style with `--style path/to/neurips_2025.sty` and use a populated Tectonic cache.
 
-## Rebuild from supplied original outputs
+| Paper item | Source evidence or implementation | Rebuilt output |
+| --- | --- | --- |
+| Fig. 1, head as a fast-weight network | Schematic in the display scripts | `paper/figures/fast_weight_lens.pdf` |
+| Fig. 2, three diagnostic/readout comparisons | `results/diagnose.csv`, `results/correct_tests.csv` | `paper/figures/diagnosis_correction_bridge.pdf` |
+| Table 1, spatial assignment | `experiments/spatial/summary.json` | `paper/tables/spatial.tex` |
+| Table 2, CLS and masks | `experiments/cls/three_endpoint_{summary,contrasts}.csv` | `paper/tables/cls.tex` |
+| Table A.1, registered predictions | Registration and R1鈥揜3 verdicts in `results/`, checked by `validate_research.py` | Author-written interpretation in `paper/appendix.tex` |
+| Fig. B.1, execution agreement | `results/k_sweep.csv` | `paper/figures/execution_k_sweep.pdf` |
+| Tables B.1鈥揃.4, scores, diagnostics, contrasts and sanity check | Registered summaries, paired differences and parameter-randomisation results | `paper/tables/{registered_main,diagnostics_per_layer,registered_paired,registered_sanity}.tex` |
+| Table C.1, probe-relocation alternatives | `results/c2_analysis/` and `results/supplementary/` | `paper/tables/relocation_explanations.tex` |
+| Figs. D.1鈥揇.2, fixed example maps | Gallery tensors in `outputs/table1/clickme/deit/`, [fixed indices](data/splits/gallery_selection.json) | `paper/figures/example_maps{,_more}.pdf` |
+| Tables E.1鈥揈.2 and Fig. E.1, endpoint and geometry checks | `experiments/endpoints/`, `experiments/geometry/` | `paper/tables/{endpoint,geometry}.tex`, `paper/figures/deletion_curves.pdf` |
 
-```bash
-bash reproduce/from_outputs.sh
-# Or verify in a temporary directory and save a dated comparison report:
-python scripts/validate_release.py --strict --rebuild --archive-check --report build/verification.json
-```
+Run `python scripts/display/build.py` for the generated items in the table and `python paper/build.py` to typeset them, including the registration table and key code. The [registered experiment guide](docs/reproduce.md) traces the numerical results to their producing configurations. The [exploratory guide](experiments/README.md) gives the commands for regenerating Oxford readouts, geometry, deletion endpoints and paired uncertainty estimates.
 
-The shell command writes to a **fresh `build/rebuilt/`**, preserving original outputs, summaries and author
-paper assets. To repeat, give a new destination, e.g. `bash reproduce/from_outputs.sh outputs build/second`.
-All 19 generated CSV summaries, all numeric columns, labels, counts, confidence intervals and verdicts are compared.
-The two authentic historical register CSVs are preserved and checked by hash. Absolute numeric tolerance is
-**1e-12**, relative tolerance zero; verdicts and identifiers match exactly. Generated paper tables match byte for
-byte. Figure inputs and example indices match exactly; fonts and rasterisation can differ across systems.
-The strict audit checks hashes, schemas, unique observations, methods, model/dataset coverage, original protocols
-and scientific implementation fingerprints. Missing, duplicate, changed or corrupt artifacts fail with nonzero exit.
+## Run from images and model weights
 
-## Optional full GPU pathway
+Use a CUDA environment for model inference. The original study uses supervised DeiT-S/B and DINO ViT-S/16 (with the authors' linear head). Evaluation uses 224-pixel inputs and 16-pixel patches. DeiT resizes the short side to 248 and takes a centre crop; DINO uses 256. ClickMe follows the released heatmap geometry and resizes the image without cropping. Keep the fixed splits and ClickMe batch size of 64: the other-image control pairs each human map with the preceding image inside its batch.
 
-Experiments are complete. GPU reruns are an optional future pathway, **not release acceptance**. This release
-preparation does not run experiments or retrain models/probes. For future work, use a separate CUDA environment,
-install the PyTorch requirements from `https://download.pytorch.org/whl/cu128`, then the remaining requirements.
+1. For ImageNet-1k, obtain access to the pinned Hugging Face dataset and make a read token available as `HF_TOKEN`. ImageNet-S masks and ClickMe validation shards are downloaded by the dataset preparation script. Fetch weights with the model downloader; MiTA uses the authors' released checkpoint.
+2. From the repository root, run:
 
-```bash
-python scripts/prepare_data.py imagenet imagenet_s clickme
-python scripts/prepare_data.py --check
-python -m pip install -r requirements-download.txt
-python scripts/download_models.py
-python scripts/run.py --config configs/k_sweep.yaml --output outputs/rerun
-bash reproduce/smoke.sh                     # optional GPU smoke, not a CPU check
-bash reproduce/full.sh outputs/rerun build/gpu-rerun
-```
+   ```bash
+   python -m pip install -r requirements-download.txt
+   python scripts/prepare_data.py imagenet imagenet_s clickme
+   python scripts/prepare_data.py --check
+   python scripts/download_models.py
+   python scripts/run.py --config configs/k_sweep.yaml --output outputs/rerun
+   ```
 
-Keep original batch sizes, method order, image lists, seeds and preprocessing. ClickMe's other-image control pairs
-with the **previous image within each batch** (`roll(1)`), so changing batch size changes the protocol.
-New runs default to `outputs/rerun/`; the runner refuses writes to original run folders and validates data before
-skipping completed new runs. Inference requires committed source. The Colab notebook is an optional GPU workflow.
+   For the complete sequence of configurations, including calibration and probe fitting, run `bash reproduce/full.sh outputs/rerun build/gpu-results` (Bash, Git Bash or WSL). Each new run writes separate outputs. The historical run ID `table1` identifies the registered readout comparison in the archive and configurations. Its scores feed Figure 2 and Appendix B. The original numerical thresholds and directional predictions are recorded in [the registration](docs/preregistration.md).
+3. For the Oxford cases, follow the [Oxford download and setup commands](experiments/README.md). These cases need only the public pet images and trimaps and the pinned DeiT-S weights. After setup:
 
-## Reproducibility limits
+   ```bash
+   python -m experiments.spatial.run_spatial --output-dir outputs/rerun/spatial
+   python -m experiments.spatial.audit_results --input-dir outputs/rerun/spatial --output-dir outputs/rerun/spatial
+   python -m experiments.cls.run_cls --output-dir outputs/rerun/cls
+   python -m experiments.cls.analyze_endpoints --input-dir outputs/rerun/cls --output-dir outputs/rerun/cls
+   ```
 
-Authentic recovered configs, metadata and logs describe historical executions; missing fields remain unknown.
-The [2026-11-08 GPU verification records](docs/provenance/README.md#historical-verification) concern earlier code
-revisions, not a new full reproduction of this release. No new GPU reproduction is claimed.
-The historical register full-validation accuracy/reduction check is not regenerated by the active pipeline;
-its [source CSVs and revision](results/register/README.md) are supplied. The preliminary Small/Tiny top-k comparison
-has an exact historical link in the reproduction map. Manual interpretation tables are validated against their
-numeric evidence rather than represented as inference outputs.
+The Oxford studies are exploratory. The protocol records which comparisons were specified before scoring and which mask analysis followed inspection of the CLS margin results. Source-image IDs and historical literal hash prefixes are preserved so renaming a study directory cannot change its sample.
 
-## Map results to paper v8
-
-See [docs/reproduce.md](docs/reproduce.md) and the machine-readable [evidence map](docs/evidence.json).
-Figure 1a is the schematic; Figure 1b the first two seeded examples; Figure D.1 the next four. Table 1 is the
-premise/diagnostic/control interpretation, **Table 2** the numerical comparison, and Table A.1 registered outcomes.
-The exact example indices are recorded in [gallery_selection.json](figures/gallery_selection.json).
-The supplied paper is v8 (11 pages); [paper/README.md](paper/README.md) describes its source and build.
-
-## Export the course submission
-
-Commit the verified changes, then:
-
-```bash
-python scripts/export_release.py --output dist/course_code.zip
-# Equivalent raw Git export (without checksum/inventory sidecars):
-git archive --format=zip -o course_code.zip HEAD
-```
-
-The full bundle includes source, tests, configs, splits, all required original per-image outputs, reference results,
-paper, figures, pre-registration and provenance. It is self-contained for CPU reconstruction. The export helper
-validates a real extracted archive and writes a per-file SHA-256 inventory and ZIP checksum. `archive/`, credentials,
-external datasets, checkpoints and local writing materials are excluded. A source commit identifies the candidate;
-an official tag can be assigned after review and merge.
-
-## Licences, data and models
-
-Code is under the [MIT licence](LICENSE). ImageNet requires accepting its access terms; use `HF_TOKEN` in the
-environment or local `.env` for its pinned Hugging Face revision. Data are external: ImageNet-S919 validation masks
-and ClickMe validation shards are fetched and checked by `scripts/prepare_data.py`. Dataset/model sources, pinned
-revisions and checksums are beside their loaders. Their original permissions and licences apply independently
-of this repository's code licence; checkpoint downloads are not included in the bundle.
-MiTA uses its authors' released DeiT-S checkpoint; the optional downloader is pinned in `requirements-download.txt`.
-The established fast-weight lens and existing value-norm weighting sources are credited in the supplied paper.
-ClickMe images likely overlap ImageNet training data; conclusions cover three frozen S/B classifiers and these readings.
-An attention map is partial evidence about a model. See the paper's limitations and ethical considerations.
+Code is distributed under the [MIT license](LICENSE). External images, human maps, pretrained weights and the conference template retain their original terms. Citation information is in [CITATION.cff](CITATION.cff).

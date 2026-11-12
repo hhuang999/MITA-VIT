@@ -1,8 +1,7 @@
 {
   "schema_version": 1,
-  "paper_version": 8,
   "base_revision": "7477ad5da9ab4d46f646ba2c0d2c3fe0316d9722",
-  "reference_note": "Original reference fingerprints captured before release edits; original outputs are immutable. v8 paper imported from author source package.",
+  "reference_note": "Original research-output fingerprints from the preserved study; later exploratory evidence is documented separately. Historical source revision: 7477ad5da9ab4d46f646ba2c0d2c3fe0316d9722.",
   "configs": {
     "attention_off": "7d953f08ac555e33364d1836b48085c9ab263acf60a0564c6de9ef906db6bdeb",
     "c2_analysis": "d24bfbb13f20a644336f9103da318e2768253cc07c3b9649f99f5e9f637c1b01",
@@ -17,7 +16,8 @@
     "table1": "802d801b5e860a39964a1716ae70df93f170596b69c2aeee0a832a161f556d03",
     "table1_mita": "e7466d02e4239081c84b21d76b6c5a03e53d4ad8b018405cdd221175f871b72c",
     "table1_register": "f9fd21f2c6394c4d2fd463b314958dc4acc6b9e39a53fe84e010945ff605ae2b",
-    "value_norm": "e353291fdbf4d06901e24c95b0a06a967fc9e32475501c08aae239c33e86e7b0"
+    "value_norm": "e353291fdbf4d06901e24c95b0a06a967fc9e32475501c08aae239c33e86e7b0",
+    "sanity": "1601160036864e85a5aa8554c98365af5a7db9dedcc3220e6690dabdcddd1478"
   },
   "scientific_ast": {
     "src/fastweight_vit/__init__.py": "3543b4693a36a1098850b8bc928887694ed59a6deb7d3dfd0339de01f55a77b6",
@@ -34,7 +34,7 @@
     "src/fastweight_vit/execution/execute.py": "43772c77a9bbc8d359f05a56e71018fd3ea520941f4bcc1e33edb7872a080f54",
     "src/fastweight_vit/execution/pattern.py": "9305120c1d009f49dc3061025a8d2b74f308d5cf90105413064732bd5692e49f",
     "src/fastweight_vit/execution/specs.py": "eaeddf83c3f3dfd4710adde68c89096578b2ae5d2299a04435284bb16f407a01",
-    "src/fastweight_vit/experiments/__init__.py": "dd503bef80a4f744312c284ffea7f4e8bb41061daf7952ac56d824610720bbd3",
+    "src/fastweight_vit/experiments/__init__.py": "4225b04c61d49d19758db277c9d2e1c84f72fbf91a8e9975dff777754f2d6154",
     "src/fastweight_vit/experiments/c2_analysis.py": "ce7cb7e6fd045b935ba893c771aa8978b016e10dbba1b89f19ed4fee1c6d4075",
     "src/fastweight_vit/experiments/common.py": "312b65c19aecc595ba6bdbb778900c47c5e6fa8484ee2e39d7bda5aefa7b6a42",
     "src/fastweight_vit/experiments/correct.py": "6303fa535a29c8eb0e56ab5c6b33f305b35af46c3f321dc61f187b5359bccb46",
@@ -56,29 +56,23 @@
     "src/fastweight_vit/registers.py": "c6ec119fc6057f4d19d73a97d73ef7e062664706b97588cf96405898ab7290b8",
     "src/fastweight_vit/runtime.py": "71a2b1fedd17dd9f71e02e55588c4d24a7fc91494a0d0639da3ef405fa300702",
     "src/fastweight_vit/stats.py": "db3dac2bdf300fa5b88348583bc5cf43ec082875d480f617c9f5659cb9fa73ef",
-    "src/fastweight_vit/tokens.py": "fbebc1a3bfd294aac8b86768ca5270c3ccf53f77266623ca3b7ccf1a2e4c0cf3"
+    "src/fastweight_vit/tokens.py": "fbebc1a3bfd294aac8b86768ca5270c3ccf53f77266623ca3b7ccf1a2e4c0cf3",
+    "src/fastweight_vit/experiments/sanity.py": "a0850eed9d309aced3e4bf3aa7ba88dad9149c2b8c60c145599d7256e2baf00b"
   },
   "required_documents": [
     "docs/preregistration.md",
     "docs/provenance/README.md",
     "docs/provenance/runs.json",
-    "docs/evidence.json",
     "docs/reproduce.md",
-    "paper/main.pdf",
-    "paper/main.tex",
-    "paper/appendix.tex",
-    "paper/figures_own/example_maps.pdf",
-    "paper/figures_own/example_maps_more.pdf",
-    "figures/gallery_selection.json",
-    "figures/example_maps.png",
-    "figures/example_maps_more.png",
-    "CITATION.cff",
     "LICENSE",
-    "docs/verification/README.md",
-    "docs/verification/changed-files.txt",
-    "docs/verification/verification.json"
+    "CITATION.cff"
   ],
   "artifacts": [
+    {
+      "path": "data/splits/gallery_selection.json",
+      "sha256": "97c2c41c50f1af0f8f3affe106c401b9a4e2cc0558aaee47662e665654d927d4",
+      "kind": "fixed_sample_selection"
+    },
     {
       "path": "data/splits/heldout_4000.json",
       "sha256": "4ccd6f0d039b7239e2b1b957b3babb4adee9acb9d450912e7c2906422d863cad",
@@ -1842,6 +1836,186 @@
         }
       },
       "csv_sha256": "702c3609ebd9fd7018dec218c522a53f35d8867cebf3f8fc5fb2bb89dbbd85de"
+    },
+    {
+      "path": "outputs/sanity/deit/checks.json",
+      "sha256": "18cd07317befbf298cc270a7ac5017b29b83208523467f3c0f05b8c746aa50cd",
+      "kind": "original_imported_observations"
+    },
+    {
+      "path": "outputs/sanity/deit/sanity.csv",
+      "sha256": "e66f76e928bce94658505db173ea39a307ab6914d7a0c6a8729fcfe2189e49e9",
+      "kind": "original_imported_observations",
+      "csv": {
+        "rows": 84000,
+        "columns": [
+          "model",
+          "index",
+          "level",
+          "method",
+          "spearman",
+          "top1_kept"
+        ],
+        "keys": [
+          "index",
+          "model",
+          "method",
+          "level"
+        ],
+        "duplicate_keys": 0,
+        "unique_indices": 1000,
+        "indices_sha256": "15f745513196f33ae5fa9d0dca1261a50550f28580cbfdeeadbd588143032cd3",
+        "labels": {
+          "model": [
+            "deit"
+          ],
+          "method": [
+            "C1",
+            "C2",
+            "C3",
+            "R0",
+            "R_all",
+            "centre"
+          ],
+          "level": [
+            "block1",
+            "block10",
+            "block11",
+            "block12",
+            "block2",
+            "block3",
+            "block4",
+            "block5",
+            "block6",
+            "block7",
+            "block8",
+            "block9",
+            "embed",
+            "head"
+          ]
+        }
+      },
+      "csv_sha256": "e66f76e928bce94658505db173ea39a307ab6914d7a0c6a8729fcfe2189e49e9"
+    },
+    {
+      "path": "outputs/sanity/deit_b/checks.json",
+      "sha256": "18cd07317befbf298cc270a7ac5017b29b83208523467f3c0f05b8c746aa50cd",
+      "kind": "original_imported_observations"
+    },
+    {
+      "path": "outputs/sanity/deit_b/sanity.csv",
+      "sha256": "49007b8b4cd929e6932300cdea1e2718f97a8b4d95125dff4e042f70fe2ac800",
+      "kind": "original_imported_observations",
+      "csv": {
+        "rows": 84000,
+        "columns": [
+          "model",
+          "index",
+          "level",
+          "method",
+          "spearman",
+          "top1_kept"
+        ],
+        "keys": [
+          "index",
+          "model",
+          "method",
+          "level"
+        ],
+        "duplicate_keys": 0,
+        "unique_indices": 1000,
+        "indices_sha256": "15f745513196f33ae5fa9d0dca1261a50550f28580cbfdeeadbd588143032cd3",
+        "labels": {
+          "model": [
+            "deit_b"
+          ],
+          "method": [
+            "C1",
+            "C2",
+            "C3",
+            "R0",
+            "R_all",
+            "centre"
+          ],
+          "level": [
+            "block1",
+            "block10",
+            "block11",
+            "block12",
+            "block2",
+            "block3",
+            "block4",
+            "block5",
+            "block6",
+            "block7",
+            "block8",
+            "block9",
+            "embed",
+            "head"
+          ]
+        }
+      },
+      "csv_sha256": "49007b8b4cd929e6932300cdea1e2718f97a8b4d95125dff4e042f70fe2ac800"
+    },
+    {
+      "path": "outputs/sanity/dino/checks.json",
+      "sha256": "18cd07317befbf298cc270a7ac5017b29b83208523467f3c0f05b8c746aa50cd",
+      "kind": "original_imported_observations"
+    },
+    {
+      "path": "outputs/sanity/dino/sanity.csv",
+      "sha256": "1ac9bc9ba9884ef1f0290978a8ae1fe1f13cd72249607abde7c58362deb8d99a",
+      "kind": "original_imported_observations",
+      "csv": {
+        "rows": 84000,
+        "columns": [
+          "model",
+          "index",
+          "level",
+          "method",
+          "spearman",
+          "top1_kept"
+        ],
+        "keys": [
+          "index",
+          "model",
+          "method",
+          "level"
+        ],
+        "duplicate_keys": 0,
+        "unique_indices": 1000,
+        "indices_sha256": "15f745513196f33ae5fa9d0dca1261a50550f28580cbfdeeadbd588143032cd3",
+        "labels": {
+          "model": [
+            "dino"
+          ],
+          "method": [
+            "C1",
+            "C2",
+            "C3",
+            "R0",
+            "R_all",
+            "centre"
+          ],
+          "level": [
+            "block1",
+            "block10",
+            "block11",
+            "block12",
+            "block2",
+            "block3",
+            "block4",
+            "block5",
+            "block6",
+            "block7",
+            "block8",
+            "block9",
+            "embed",
+            "head"
+          ]
+        }
+      },
+      "csv_sha256": "1ac9bc9ba9884ef1f0290978a8ae1fe1f13cd72249607abde7c58362deb8d99a"
     },
     {
       "path": "outputs/supplementary_eval/clickme/deit/alignment.csv.gz",
@@ -4704,6 +4878,59 @@
       "csv_sha256": "6aa483ec9e9c30153c642b7a9eb5ae4d8dd159c82d4b2be501b88b3664d3ea7b"
     },
     {
+      "path": "results/sanity.csv",
+      "sha256": "87d72799e193c66b9d2911d0dba451496ccf38a6fcc4c2191efc4c333f1a4839",
+      "kind": "generated_reference_summary",
+      "csv": {
+        "rows": 252,
+        "columns": [
+          "model",
+          "level",
+          "method",
+          "median",
+          "passes"
+        ],
+        "keys": [
+          "model",
+          "method",
+          "level"
+        ],
+        "duplicate_keys": 0,
+        "labels": {
+          "model": [
+            "deit",
+            "deit_b",
+            "dino"
+          ],
+          "method": [
+            "C1",
+            "C2",
+            "C3",
+            "R0",
+            "R_all",
+            "centre"
+          ],
+          "level": [
+            "block1",
+            "block10",
+            "block11",
+            "block12",
+            "block2",
+            "block3",
+            "block4",
+            "block5",
+            "block6",
+            "block7",
+            "block8",
+            "block9",
+            "embed",
+            "head"
+          ]
+        }
+      },
+      "csv_sha256": "87d72799e193c66b9d2911d0dba451496ccf38a6fcc4c2191efc4c333f1a4839"
+    },
+    {
       "path": "results/supplementary/c2_variants.csv",
       "sha256": "753ab38dcaeda689c4a79b831a94bfbbee60b74affe1c36957cc019cba2249ae",
       "kind": "generated_reference_summary",
@@ -5125,121 +5352,6 @@
         }
       },
       "csv_sha256": "a3037234c87d3a057c16623bd3e129691cc0a1703a50a74df51bee1530ab9ef3"
-    },
-    {
-      "path": "paper/appendix.tex",
-      "sha256": "c4d928eaf376be2f9dbc948c6e93e2f5db4e2f5f96553478181a9f28c5d1f339",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "paper/figures_own/diagnosis.pdf",
-      "sha256": "ebebb50e09d662e49e996f2b0dee7be1e690ca5cd7b72599c8a4d560e4624651",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "paper/figures_own/example_maps.pdf",
-      "sha256": "f03f7cd0bc61a0c05124c5307afeb06e7e3c0d42548e10a4768ad843103f921e",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "paper/figures_own/example_maps_more.pdf",
-      "sha256": "730511e933bad508f7ba07dee84ac375e33e670ad48c235dd522a96a24a7c565",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "paper/main.pdf",
-      "sha256": "0043af900f2e852c317ae166ee626f6b431dd491ebce17c5b0d20a732187ebe1",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "paper/main.tex",
-      "sha256": "e701007c9d31bc7502517d06070358f0dd0462e05573e8f6ed3f4c5448690bd6",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "paper/references.bib",
-      "sha256": "d6deba6c4db8194ef5fed5e59167a33b1af605fa347eff1cc9d27ae3cdb25fc7",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "paper/tables/appendix/paired_differences.tex",
-      "sha256": "7f82b611a48d83c74fc3d5f457e5ddba5acc6dee858747d18e176ca20e898398",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "paper/tables_own/diagnostics_per_layer.tex",
-      "sha256": "d3af0c59761caac28556bbd64c3e535283e62735606af6994929158cf3b6411f",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "paper/tables_own/main_results.tex",
-      "sha256": "2efd6c969e36290a1824fb770d40dc0e853eb3fbd7bd890d9881800cafaffd1e",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "paper/tables_own/paired_differences.tex",
-      "sha256": "25e455c6e7669ee43d4349b3bc10eb1e92926e1bf90840f1329c22c844730630",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "paper/tables_own/relocation_explanations.tex",
-      "sha256": "ee89a671b371f3dd0b88b795707c54cb451f1ff1a3acfe1e9b7946002942b899",
-      "kind": "author_supplied_v8_paper"
-    },
-    {
-      "path": "figures/execution_k_sweep.pdf",
-      "sha256": "ae44389e0573416e560fff608d2780dc08d170fd0b35d195dfb106c90b436698",
-      "kind": "original_figure"
-    },
-    {
-      "path": "figures/execution_k_sweep.png",
-      "sha256": "0e7ef0d9489d515bcb8a2a93835a3ed516dd5b763432ec2e161e36e6cce75cc8",
-      "kind": "original_figure"
-    },
-    {
-      "path": "figures/gallery_layers9_12.pdf",
-      "sha256": "e5903f4014a2b92b4f140424b13e5ee785c5e5c3cf53c2ded0467836b20b9b8c",
-      "kind": "original_figure"
-    },
-    {
-      "path": "figures/gallery_layers9_12.png",
-      "sha256": "7c8bad3e2db98777e24baaf528aa1e1709099fbfd6b1605fd1fd6d65f49e752d",
-      "kind": "original_figure"
-    },
-    {
-      "path": "figures/schematic_fast_weight_network.pdf",
-      "sha256": "f1cbd8e8543177827d9973fc85b496f07683600c6daf5179c376ce2474b1d658",
-      "kind": "original_figure"
-    },
-    {
-      "path": "figures/schematic_fast_weight_network.png",
-      "sha256": "bc0e2c063320ee9c2b013f84975bff55532bdbd56653dd306d71bb36219128ee",
-      "kind": "original_figure"
-    },
-    {
-      "path": "figures/example_maps.png",
-      "sha256": "7703e630250eb06ff39e65241bb0092756b05f9dde8a5f09ccb6ca279308a62b",
-      "kind": "v8_qualitative_render_from_original_arrays"
-    },
-    {
-      "path": "figures/example_maps_more.png",
-      "sha256": "b40452d037662569cd47d0578522de3071f75bd83d419082bd8f983e464a4654",
-      "kind": "v8_qualitative_render_from_original_arrays"
-    },
-    {
-      "path": "docs/verification/README.md",
-      "sha256": "9957142610333a810a446eaacd9834aab5a7dda64d7f4f47dc8fe4a1ee4172ea",
-      "kind": "release_verification_record"
-    },
-    {
-      "path": "docs/verification/changed-files.txt",
-      "sha256": "b0e74412a5fb043621b30f14f5d849ff44985f4227cec7dbab33cf155c962ed4",
-      "kind": "release_verification_record"
-    },
-    {
-      "path": "docs/verification/verification.json",
-      "sha256": "637dd5fd81c1484d0cef6d68afb8421d43bd8ec8c6eff63b07393e4ecf30eef7",
-      "kind": "release_verification_record"
     }
   ]
 }

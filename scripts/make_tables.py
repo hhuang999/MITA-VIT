@@ -487,6 +487,21 @@ def supplementary(runs, out):
         write(frame, folder / 'globalisation.csv')
 
 
+def sanity(runs, out):
+    """Summarise the preserved parameter-randomisation observations."""
+    rows = []
+    for model in MODELS:
+        table = read(runs.get('sanity', model), 'sanity.csv')
+        if table is None:
+            continue
+        for (level, method), part in table.groupby(['level', 'method'], sort=False):
+            median = part.spearman.median()
+            rows.append(dict(model=model, level=level, method=method, median=median,
+                             passes=median < 0.5 if level == 'embed' else None))
+    if rows:
+        write(rows, out / 'sanity.csv')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--outputs', type=Path, default=ROOT / 'outputs')
@@ -501,6 +516,7 @@ def main():
     numbers(runs, out)
     c2_analysis(runs, out)
     supplementary(runs, out)
+    sanity(runs, out)
     print('written to', out)
 
 

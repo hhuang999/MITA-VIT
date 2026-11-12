@@ -5,4 +5,4 @@ cd "$(dirname "$0")/.."
 PY=${PYTHON:-python}
 OUT=${1:-outputs}
 DEST=${2:-build/rebuilt}
-"$PY" scripts/rebuild_release.py --outputs "$OUT" --destination "$DEST"
+"$PY" scripts/rebuild_results.py --outputs "$OUT" --destination "$DEST"

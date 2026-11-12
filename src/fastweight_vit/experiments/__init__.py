@@ -6,7 +6,7 @@ Only the configurations in configs/ are part of the paper workflow.
 
 import importlib
 
-EXPERIMENTS = ('execution', 'diagnose', 'correct', 'register_search', 'c2_analysis', 'supplementary')
+EXPERIMENTS = ('execution', 'diagnose', 'correct', 'register_search', 'c2_analysis', 'supplementary', 'sanity')
 
 
 def load(name):

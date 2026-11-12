@@ -1,4 +1,4 @@
-# Per-layer ClickMe alignment of received attention (paper/figures_own/diagnosis.pdf): R0 of each single layer
+# Per-layer ClickMe alignment of received attention: R0 of each single layer
 # against the ClickMe human maps (image-specific Spearman). The batch sizes are those of the original runs: the
 # image-specific control pairs each image with the previous one in its batch, so the batch size decides the pairs.
 experiment: correct

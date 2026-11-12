@@ -1,4 +1,4 @@
-"""Every experiment end to end on CPU, from the release configs, with random weights and fake data."""
+"""Core experiments on CPU with random weights and fake data."""
 
 import importlib.util
 import json

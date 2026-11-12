@@ -1,58 +1,28 @@
-# Research-artifact provenance
+# Provenance of the original observations
 
-This release preparation is a CPU artifact audit. Experiments are complete; it performs no GPU reruns,
-no model/probe retraining and no original inference-output regeneration. Original `outputs/` remain immutable.
+The published `outputs/` are preserved observations from the original frozen-model study. No new inference run is substituted for them. The repository also includes the configurations, fixed samples, original protocol and historical run records needed to interpret the results.
 
-## Records and source revisions
+## Main study records
 
-[`runs.json`](runs.json) maps all 42 distributed model/dataset run combinations to their release config,
-authentic historical source directory, execution revision and recovered records. Records in `records/` are
-byte-for-byte copies from `study/v5` commit `1d66c0f7b39119e3ee7777ad7d086df68769d427`; their old names/settings
-describe original executions. They are not invented metadata for the release revision. Missing fields remain
-JSON null (unknown), including launch command, driver version, complete environment freeze and execution-time checkpoint digest. Multiple sources are recorded when probe-error fixes and mean predictions came from different runs.
-All 232 recovered run records (including 16 additional register records) are checked by the strict release audit. No original `checks.json` is rewritten.
+[`runs.json`](runs.json) maps the 42 model/dataset combinations of the original study to their active config, authentic source directory, execution revision and recovered records. Its 232 records, including register-search records, are byte-for-byte copies from `study/v5` commit `1d66c0f7b39119e3ee7777ad7d086df68769d427`. Original names and settings describe those executions. Some fields remain unknown rather than being reconstructed after the fact, including launch command, driver version, complete environment freeze and execution-time checkpoint digest. Multiple sources are listed when probe-error fixes and mean predictions came from different runs.
 
-The outputs were imported into release layout before the audited base
-`7477ad5da9ab4d46f646ba2c0d2c3fe0316d9722`. The authentic import script is
-[`historical/import_study_outputs.py`](historical/import_study_outputs.py), preserved as evidence, not a release command.
-It documents the transformations: `blur/no_high/centre_sub` became matched-control names; probe `identity*` files
-became `probe_accuracy*`; attention-family layer readings and layerwise ClickMe methods were selected/renamed;
-value-norm sums were aggregated per batch/layer from original head records. Numeric observations were not newly inferred.
-The k-sweep config was subsequently renamed from `fig2a_k_sweep` to `k_sweep`; plotting names do not alter its data.
+[`historical/import_study_outputs.py`](historical/import_study_outputs.py) is the original import program, preserved as evidence of how historical study files became the active `outputs/` layout. It records renaming of matched controls, selection of layer-specific readings, and aggregation of value-norm sums. Numeric observations were not newly inferred. The `k_sweep` configuration was once named `fig2a_k_sweep`; the data and sampled images did not change.
 
-[`artifacts.json`](artifacts.json) holds SHA-256 fingerprints and CSV schemas, unique image sets, key dimensions,
-row counts, labels and original config/implementation fingerprints. CSV content hashes refer to decompressed bytes;
-the original byte hash separately identifies each gzip artifact. Exactly one CSV representation is accepted.
-These fingerprints are reference evidence, not generated expectations learned from an audit run.
+[`artifacts.json`](artifacts.json) holds SHA-256 hashes of original observations, summary CSVs and fixed splits, plus CSV schemas, row counts and identifier-set digests. It also records semantic hashes of experiment configurations and abstract-syntax fingerprints of the core scientific code. CSV content hashes use decompressed bytes; the byte hash additionally distinguishes the exact gzip representation. The hashes were captured from the preserved observations, not learned from a new run.
 
-## Artifact types
+The parameter-randomisation check in the appendix comes from the earlier study's `archive/outputs/sanity/` files at commit `7477ad5da9ab4d46f646ba2c0d2c3fe0316d9722`. The six copied run files now live under `outputs/sanity/`; `configs/sanity.yaml` and `src/fastweight_vit/experiments/sanity.py` preserve the original protocol and implementation. `results/sanity.csv` has SHA-256 `87d72799e193c66b9d2911d0dba451496ccf38a6fcc4c2191efc4c333f1a4839`, identical to the original summary. These observations are checked by `validate_research.py` and rebuilt by `make_tables.py`. Their original imported `checks.json` markers do not stand in for complete execution metadata.
 
-| Type | Location | Verification |
+## What is and is not regenerated
+
+| Material | Location | Verification |
 | --- | --- | --- |
-| Original imported observations / probes / arrays | `outputs/` | Immutable content hashes, CSV grids and identifiers |
-| Authentic historical run records | `docs/provenance/records/` | Exact source revision/path and byte hash |
-| Generated reference summaries | `results/`, except register | CPU rebuild and comparison, absolute tolerance 1e-12 |
-| Historical register evidence | `results/register/` | Original source CSVs and exact eight units |
-| Generated paper tables | Tables 2, B.1, B.2 | Byte-identical rebuilt LaTeX |
-| Authored interpretation tables | Tables 1, A.1, C.1 | Original v8 text preserved; source CSV claims checked |
-| New experiment runs | Optional future `outputs/rerun/` | Not executed for release acceptance |
+| Original per-image observations, probes and arrays | `outputs/` | Immutable hashes, schemas, image identifiers and original records |
+| Original main-study run records | `docs/provenance/records/` | Source revision and exact file hash |
+| Fixed image and gallery selections | `data/splits/` | Exact file hashes and sample rules |
+| Generated numerical summaries | `results/` except `results/register/` | Rebuild from saved observations and compare at absolute tolerance `1e-12` |
+| Historical register pilot and formal summaries | `results/register/` | Exact CSV hashes and source links in its README |
+| Figure and table displays | `paper/`, `scripts/display/` | Rebuild from the verified numerical summaries and saved gallery arrays |
 
-Original inference records are not replaced by synthetic metadata. Historical register full-validation accuracy
-and reduction are not regenerated by the active pipeline. See [`results/register/README.md`](../../results/register/README.md).
-The preliminary Small/Tiny comparison stays linked to its exact earlier report in the paper-to-code map.
+The historical full-validation register accuracy and reduction, and the earlier Small/Tiny top-k contrast, use earlier protocols. [The register evidence guide](../../results/register/README.md) links their original program and records. [The registration record](../preregistration.md) distinguishes registered outcomes from analyses designed after seeing the main results.
 
-## Historical verification
-
-[`historical/report.md`](historical/report.md), `layer1.csv`, `layer2.csv` and comparison scripts are restored
-byte-for-byte from commit `863ec0c`. The 2026-11-08 fresh-cloud-GPU verification concerned code **9bbee6f**,
-with the ClickMe layerwise batch fix rerun at **0d47c04**. The original summary reports NVIDIA L4 and 31 tables;
-`rerun_2026-11-08.csv` is also preserved. These are historical records, not a claim of a new run of paperv8.
-Statements about paths and pending publication in the original report describe its historical context.
-
-## Paper/source distinctions
-
-v8 files come from the author's `paper_draft_v8.zip`; its PDF equals the supplied v8 PDF.
-The third-party NeurIPS style is excluded; obtain it under its original terms for optional LaTeX compilation.
-The author's text and interpretation tables are preserved. Builder comments and documentation are updated for v8.
-Proposed precision fixes (non-ignored pixel denominator; value-norm crop 0.875) are listed in the reproduction map
-for the author. Algorithms and original settings are unchanged.
+Historical GPU verification files in [`historical/`](historical/) refer to code revisions `9bbee6f` and `0d47c04` and the NVIDIA L4 runs available at that time. They are retained as historical evidence; statements about paths or pending publication in those records describe their original context.

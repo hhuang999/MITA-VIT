@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 PY=${PYTHON:-python}
 OUT=outputs/smoke
 for config in diagnose_probe diagnose_mean_maps k_sweep attention_off high_norm clickme_layers \
-              table1 register table1_register value_norm c2_analysis supplementary_heldout supplementary_eval; do
+              table1 register table1_register value_norm sanity c2_analysis supplementary_heldout supplementary_eval; do
   "$PY" scripts/run.py --config "configs/$config.yaml" --output "$OUT" --smoke 16 --model deit
 done
 "$PY" scripts/run.py --config configs/table1_mita.yaml --output "$OUT" --smoke 16
