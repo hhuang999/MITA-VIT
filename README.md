@@ -4,10 +4,14 @@
 
 [Paper](paper/main.pdf) · [Paper-to-code map](docs/reproduce.md) · [Pre-registration](docs/preregistration.md) · [Provenance](docs/provenance/README.md)
 
-The [revised submission manuscript v11](paper/v11/README.md) implements the full editorial review
-and provides a [complete PDF](output/pdf/attention_fast_weights_paper_v11.pdf): four main pages plus references
-and appendices. Experiments and registered rules are unchanged. The [v10 manuscript](paper/v10/README.md),
-[v9 revision](paper/v9/README.md), original v8 source/PDF and v8 reproduction workflow remain preserved.
+The [framework-focused submission manuscript v12](paper/v12/README.md), titled
+*Interpreting ViT Attention Maps Through a Fast-Weight Lens*, provides a
+[complete PDF](output/pdf/attention_fast_weights_paper_v12.pdf): four main pages, two reference pages
+and nine appendix pages. It uses a 113-word abstract, compares three related-work themes, places
+parameter randomisation in Additional results and ends with key code. Experiments, registration,
+homepage/Figure 2 assets and the v11 bibliography are unchanged. The [v11 review revision](paper/v11/README.md),
+[v10 manuscript](paper/v10/README.md), [v9 revision](paper/v9/README.md), original v8 source/PDF
+and v8 reproduction workflow remain preserved.
 
 Deep-layer ViT attention maps often look poor. How much comes from the model, and how much from the rule
 used to read its attention? This project uses the established fast-weight view of attention to test three

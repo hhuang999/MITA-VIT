@@ -1,0 +1,123 @@
+\documentclass{article}
+\PassOptionsToPackage{numbers,compress,sort}{natbib}
+\usepackage[preprint]{neurips_2025}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref,url,booktabs,amsfonts,amsmath,amssymb,microtype}
+\usepackage{xcolor,graphicx,array,pifont,makecell}
+\usepackage[font=small,labelfont=bf,skip=3pt]{caption}
+\usepackage[shortlabels]{enumitem}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\scriptsize,columns=fullflexible,keepspaces=true,frame=tb,
+  framesep=3pt,showstringspaces=false,upquote=true,aboveskip=6pt,belowskip=4pt}
+\graphicspath{{figures/}{../../figures/}{../figures_own/}}
+\hypersetup{pdftitle={Interpreting ViT Attention Maps Through a Fast-Weight Lens},pdfauthor={Hongbo Huang},colorlinks=true,linkcolor=black,citecolor=blue!50!black,urlcolor=blue!50!black}
+\newcommand{\up}{$^{\uparrow}$}
+\newcommand{\dn}{$^{\downarrow}$}
+\newcommand{\rsub}[1]{\refstepcounter{subsection}\paragraph{\thesubsection~~#1}}
+\newcommand{\plabel}[3]{\makebox[#1][l]{\small\textbf{#2}~#3}}
+
+\title{Interpreting ViT Attention Maps\\Through a Fast-Weight Lens}
+\author{Hongbo Huang\\Student ID: 50026755}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Attention maps are often read as input importance, yet attention weights describe interactions between internal tokens. We develop an analytical framework based on the established fast-weight view, representing each attention head as an image-conditioned two-layer network. The framework separates three reading assumptions: image specificity, spatial correspondence and output contribution. Each is examined through a diagnostic proxy, a correction and a matched control, with the backbone fixed. On DeiT and DINO, norm weighting improves localisation and human alignment in supervised DeiT, whereas index-based relocation degrades map quality. Norm weighting's deletion-score gains remain below the registered practical margin. The contribution is a structured way to examine how internal attention computations are translated into spatial explanations.
+\end{abstract}
+
+\section{Introduction}
+Attention maps are read as input importance in vision transformers (ViTs)~\citep{dosovitskiy2021,caron2021,chefer2021}, yet their coefficients describe interactions between contextualised tokens. Translating those interactions into image evidence requires additional assumptions. High-norm background artefacts~\citep{darcet2024,jiang2025} highlight this interpretive gap.
+
+\begin{figure}[!h]
+\centering
+\begin{minipage}[c]{0.35\linewidth}
+\plabel{\linewidth}{(a)}{Fast-weight representation}\\[2pt]
+\includegraphics[width=\linewidth]{fast_weight_lens}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.62\linewidth}
+\includegraphics[width=\linewidth]{contribution_effects}
+\end{minipage}
+\caption{(a) Keys and transformed values are image-conditioned weights; tokens are softmax-coupled units. (b) Norm weighting (C3) minus received attention (R0) or zero-high-norm control, layers 9--12 (DeiT-S/B, DINO). Points/bars: paired means/95\% image-bootstrap intervals. Dashed: registered $0.02$ margin.}
+\label{fig:lens}
+\end{figure}
+
+We analyse \emph{received attention} (summed over queries/heads at each patch) through the fast-weight lens in Fig.~\ref{fig:lens}a.
+
+\begin{enumerate}[nosep,leftmargin=1.7em,label=(\arabic*),beginpenalty=0,midpenalty=10000]
+\item \textbf{An analytical framework} separating three assumptions behind the translation from internal attention to spatial importance.
+\item \textbf{Controlled tests} linking each assumption to a diagnostic proxy, a correction and a matched control on frozen DeiT-S/B and DINO ViT-S.
+\item \textbf{Bounded empirical insights:} useful alignment gains from norm weighting, failed index-based relocation, and limited benefit from combining corrections.
+\end{enumerate}
+
+\section{Related work}
+\label{sec:related}
+\rsub{Fast-weight foundations.} Fast-weight memories use one network to write another's temporary weights~\citep{schmidhuber1992}. Linear attention admits a fast-weight-programming interpretation~\citep{schlag2021}, and softmax attention connects to modern Hopfield memory~\citep{ramsauer2021}. MiTA treats attention as an input-conditioned two-layer network to organise efficient attention~\citep{wen2026mita}. We build on this representation for a different purpose: making attention-map reading assumptions explicit, then examining their proposed corrections.
+
+\rsub{Attention readings and token correspondence.} Attention's explanatory role remains debated~\citep{jain2019,wiegreffe2019}. Rollout~\citep{abnar2020}, relevance propagation~\citep{chefer2021}, gradients~\citep{chefer2021generic} and filtering~\citep{ayyar2025} change map construction. Norm-based analysis~\citep{kobayashi2020,zhu2024}, like CAM's output weighting~\citep{zhou2016}, distinguishes activation from contribution. GlobEnc/ALTI include further components and cross-layer aggregation~\citep{modarressi2022,ferrando2022}; our score isolates local attention terms. Contextual mixing need not erase token-identity or input-location information~\citep{brunner2020,raghu2021}; slot decodability does not establish content provenance. Registers alter the model~\citep{darcet2024,jiang2025}, with no-op heads providing a functional analogy~\citep{bondarenko2023}; we fix the backbone.
+
+\rsub{Evaluating explanations.} Visually plausible maps may ignore learned parameters~\citep{adebayo2018}, supervision changes ViT maps~\citep{walmer2023}, and deletion depends on occlusion~\citep{bluecher2024}. CNN centre-bias findings~\citep{kuang2026} motivate spatial controls without establishing the same mechanism in ViTs. We therefore separate localisation/human alignment from deletion behaviour, and compare each correction with a control for a specific alternative explanation.
+
+\section{Methodology: A Fast-Weight Analysis Framework}
+\label{sec:method}
+\rsub{From internal computation to a spatial map.} Normalised tokens $x_1,\dots,x_{N+1}$ (CLS and $N=196$ patches) enter $H$ attention heads. Affine projections form $d$-dimensional queries/keys and values (App.~\ref{app:setup}); before residual addition,
+\begin{equation}
+o_i=b_O+\sum_{h,j}a_{ij}^h W_O^h v_j^h,\qquad
+a_{ij}^h=\operatorname{softmax}_j\!\big(q_i^{h\top}k_j^h/\sqrt d\big).
+\label{eq:attn}
+\end{equation}
+For a fixed image, each head is a two-layer network in $q_i^h$, with input weights $k_j^h/\sqrt d$, coupled softmax activations $a_{ij}^h$ and output weights $W_O^hv_j^h$. Dropout is inactive at evaluation. This exact representation separates unit activation from output contribution; it does not locate a unit's input evidence. Received attention $s_j=\sum_{h,i}a_{ij}^h$ places activation at patch $j$. Queries include all tokens; maps exclude CLS and sum layers 9--12, fixed before formal runs.
+
+\rsub{Three assumptions and their controlled tests.} Unit meaning requires measurement~\citep{bau2017}. We operationalise three questions through proxies (Fig.~\ref{fig:diag}a--c) and corresponding corrections (d--f).
+\par\noindent\emph{Image specificity:} does the map reflect this image rather than shared structure? We measure mean-map variance share and subtract the held-out mean (C1: $s-\bar s$), against centred-Gaussian subtraction.
+\par\noindent\emph{Spatial correspondence:} does a token slot identify its input evidence? We measure index decodability and test $r_p=\sum_j s_jP(p\mid x_j)$ (C2), against blur matched in mean squared token displacement. The probe decodes indices, not provenance.
+\par\noindent\emph{Output contribution:} does activation alone explain a token's output term? We measure high-norm attention and test $c_j=\sum_{h,i}a_{ij}^h\lVert W_O^hv_j^h\rVert_2$ (C3) against zeroing high-norm patches. This norm-weighted component~\citep{kobayashi2020,zhu2024} omits cancellation and later computation. Benefit requires gains over R0 \emph{and} control; calibration: App.~\ref{app:setup}.
+
+\rsub{Evaluation and decision rules.} A centred Gaussian correlates $0.41$ with raw ClickMe maps. Our \emph{centre-controlled} metrics are \emph{same-ring enrichment}, selected-patch object rate minus the rate at the same radius, using ImageNet-S masks~\citep{gao2023}; and \emph{image-specific alignment}, own-image minus other-image Spearman correlation with ClickMe maps~\citep{linsley2019,fel2022}. The \emph{deletion score} adapts LIF--MIF area difference~\citep{bluecher2024} to top-1 preservation under token removal. With 1,000 paired image-bootstrap resamples, a difference is \emph{higher/lower} if its 95\% interval excludes zero and its magnitude reaches $0.02$ ($0.05$ for deletion); otherwise it is \emph{comparable}, a registered category, not equivalence.
+
+\section{Experiments}
+\label{sec:exp}
+\rsub{Setup and registered predictions.} Frozen DeiT-S/B~\citep{touvron2021} and DINO ViT-S/16~\citep{caron2021} are tested on ImageNet~\citep{deng2009}, ImageNet-S (12,419 images) and ClickMe (17,408). A separate 4,000-image set splits equally into probe training and calibration/test. Size-S references use a register~\citep{jiang2025} and released MiTA checkpoint~\citep{wen2026mita}. \textbf{R1:} DINO norm weighting and relocation at layers 1--4 remain comparable. \textbf{R2:} the combination improves all four supervised alignment comparisons. \textbf{R3:} neither model-side variant is higher than DeiT-S. Combination--R0 and correction--control contrasts are primary; other correction--R0 contrasts are descriptive except R1. Diagnosis--benefit interpretation is post hoc. Registration and prior observations: App.~\ref{app:setup}.
+
+\begin{figure}[t]
+\centering
+\includegraphics{diagnosis_correction_bridge}
+\caption{Diagnostic proxies (a--c) and correction effects (d--f), paired by column. Top: per-layer means/95\% intervals; grey: layers 9--12. Bottom: correction minus comparator, layers 9--12 (Enr.: enrichment). Circles: R0; diamonds: centred-Gaussian subtraction (d), displacement-matched blur (e), zero-high-norm control (f). Bars: 95\% paired image-bootstrap intervals, unadjusted. Filled/open: higher or lower/comparable. Grey bands: $\pm0.02$ margin, not equivalence. Diagnosis--benefit interpretation is post hoc; samples: App.~\ref{app:setup}.}
+\label{fig:diag}
+\end{figure}
+
+\rsub{What the diagnostics show (Fig.~\ref{fig:diag}a--c).} Shared mean-map structure is largely radial but accounts for limited variance; patch-index accuracy declines with depth; high-norm attention concentrates in supervised models and is negligible in DINO. These are different properties of internal computation, not interchangeable indicators of map quality. Per-layer values, execution tests and parameter sensitivity appear in App.~\ref{app:more}.
+
+\begin{table}[t]
+\caption{Layers 9--12; higher is better. Arrows: higher/lower versus R0 (DeiT-S for model-side rows); unmarked tested cells: comparable. $\diamond$: higher than control; \textbf{bold}: both comparisons. Indented rows: controls. GAE~\citep{chefer2021generic}: descriptive, gradients, all 12 layers. Enr./Click./Del.: enrichment/ClickMe/deletion. Paired intervals: Table~\ref{tab:app-paired}; tests use unrounded data.}
+\label{tab:main}
+\centering\footnotesize
+\setlength{\tabcolsep}{2.6pt}\renewcommand{\arraystretch}{1.0}
+\input{tables/main_results.tex}
+\end{table}
+
+\rsub{Which corrections help (Table~\ref{tab:main}; Fig.~\ref{fig:diag}d--f).}
+\textbf{Contribution magnitudes improve alignment in a limited setting.} C3 raises enrichment by $0.038/0.065$ and ClickMe by $0.033/0.058$ in DeiT-S/B. Three comparisons also beat its control; DeiT-B ClickMe is comparable. Deletion gains ($0.017/0.029$) stay below $0.05$, and DINO changes are at most $0.004$ (R1). These results support a useful norm-based reading within the tested settings.
+
+\begin{samepage}
+\smallskip\noindent\textbf{Other proxy-guided changes lack consistent benefits.} Mean subtraction's only R0 gain (DINO ClickMe) is comparable to its control. Relocation lowers all nine deep-layer comparisons and underperforms matched blur in DeiT-S/DINO. Early relocation remains comparable (R1). R2 \emph{partly holds}: one supervised comparison is higher, one comparable and two lower.
+\par\end{samepage}
+
+\smallskip\noindent\textbf{Model-side references have narrower scope.} Register gains ($0.012/0.013$) stay below $0.02$; MiTA scores lower but differs in training/preprocessing. R3 holds within these comparisons, without establishing general superiority of reading changes.
+
+\rsub{What the tests establish.} Assigned weights outperform shuffled weights, but weak dose--gain associations (Spearman $0.045$--$0.158$; App.~\ref{app:more}) do not establish diagnostic prediction. Failed relocation cautions against treating index decodability as content provenance; its cause remains unresolved after local-error/MLP checks (App.~\ref{app:reloc}). Useful correction and validated interpretation remain separate claims.
+
+\section{Discussion}
+\rsub{Scope and limitations.} The framework separates correction benefit from interpretation validity. Evidence covers three frozen S/B classifiers and received attention; CLS maps, larger/register-trained models, repeated training seeds and threshold sensitivity are untested. ClickMe may overlap model training data. Improvements are visually subtle (App.~\ref{app:gallery}) and below GAE's descriptive scores. Bootstrap intervals condition on fixed checkpoints, probes and pairing. General diagnostic prediction remains open, requiring stronger token-to-input attribution and broader model coverage.
+
+\rsub{Ethical considerations.} Public images and checkpoints contain people and known biases. Better alignment offers partial evidence about model behaviour; these maps should not be treated as complete explanations.
+
+\section{Conclusion}
+Our fast-weight framework connects reading assumptions to controlled comparisons. Norm weighting benefits DeiT alignment, index-based relocation fails, and the registered combination lacks consistent gains. Alignment and deletion behaviour require separate evaluation.
+
+\label{main:end}
+\clearpage
+{\small\bibliographystyle{plainnat}\bibliography{references}}
+\clearpage\appendix
+\input{appendix}
+\end{document}

@@ -46,3 +46,14 @@ The [v11 source and build notes](v11/README.md) implement the confirmed [v10 rev
 with unchanged homepage/Figure 2 vector assets, clarified methods and reproduction details, and an isolated
 bibliography. Unconfirmed reference entries remain unchanged. The [complete PDF](../output/pdf/attention_fast_weights_paper_v11.pdf)
 contains four main pages, two reference pages and eight appendix pages. All original results and registered rules are preserved.
+
+## Framework-focused submission manuscript v12
+
+The [v12 source and build notes](v12/README.md) describe the author-approved rewrite:
+*Interpreting ViT Attention Maps Through a Fast-Weight Lens*. A 113-word abstract and
+three related-work themes support the analytical framework of reading assumptions,
+diagnostic proxies, corrections and matched controls. Parameter randomisation is in
+Additional results (B.1/Table B.3); Key parts of the code (E) ends the paper. The
+[complete PDF](../output/pdf/attention_fast_weights_paper_v12.pdf) contains four main
+pages, two reference pages and nine appendix pages. Original experiments, registration,
+homepage/Figure 2 vector assets and the entire v11 bibliography are unchanged.
