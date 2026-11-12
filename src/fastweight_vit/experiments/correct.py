@@ -30,8 +30,8 @@ Maps listed in `no_srg` skip the faithfulness part (the early-layer negative con
 and ClickMe only; docs/reproduce.md).
 
 A seeded gallery of `gallery_images` images keeps every map, and for ClickMe the image and the human map, in
-gallery_<start>.npz. v8 Figure 1b uses the two lowest indices of the 24 drawn ClickMe images;
-Figure D.1 uses the next four, with no selection based on map quality.
+gallery_<start>.npz. The paper shows the six lowest indices of the 24 drawn ClickMe images,
+with no selection based on map quality.
 """
 
 import logging

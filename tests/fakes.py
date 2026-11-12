@@ -30,7 +30,7 @@ def small_mita():
 
 
 def config_for(name, **overrides):
-    """A release config with the models / datasets lists removed, small batches and no worker processes."""
+    """A paper config with the models / datasets lists removed, small batches and no workers."""
     config = load_config(ROOT / 'configs' / f'{name}.yaml')
     config.pop('models', None)
     config.pop('datasets', None)

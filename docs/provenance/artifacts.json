@@ -57,7 +57,8 @@
     "src/fastweight_vit/runtime.py": "71a2b1fedd17dd9f71e02e55588c4d24a7fc91494a0d0639da3ef405fa300702",
     "src/fastweight_vit/stats.py": "db3dac2bdf300fa5b88348583bc5cf43ec082875d480f617c9f5659cb9fa73ef",
     "src/fastweight_vit/tokens.py": "fbebc1a3bfd294aac8b86768ca5270c3ccf53f77266623ca3b7ccf1a2e4c0cf3",
-    "src/fastweight_vit/experiments/sanity.py": "a0850eed9d309aced3e4bf3aa7ba88dad9149c2b8c60c145599d7256e2baf00b"
+    "src/fastweight_vit/experiments/sanity.py": "a0850eed9d309aced3e4bf3aa7ba88dad9149c2b8c60c145599d7256e2baf00b",
+    "src/fastweight_vit/gallery.py": "e7f21f2be19d57de30ff62da3b5b2994055863088b54b60a92edc3ee85438e69"
   },
   "required_documents": [
     "docs/preregistration.md",
