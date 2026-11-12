@@ -39,3 +39,10 @@ The [v10 source and build notes](v10/README.md) integrate the author-approved di
 preserve the homepage fast-weight schematic, and update all affected definitions, captions and references.
 The [complete submission PDF](../output/pdf/attention_fast_weights_paper_v10.pdf) has four main pages,
 two reference pages and six appendix pages. Original experiments and registered decision rules are unchanged.
+
+## Reviewed submission manuscript v11
+
+The [v11 source and build notes](v11/README.md) implement the confirmed [v10 review](reviews/v10_submission_review.md),
+with unchanged homepage/Figure 2 vector assets, clarified methods and reproduction details, and an isolated
+bibliography. Unconfirmed reference entries remain unchanged. The [complete PDF](../output/pdf/attention_fast_weights_paper_v11.pdf)
+contains four main pages, two reference pages and eight appendix pages. All original results and registered rules are preserved.

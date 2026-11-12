@@ -1,0 +1,40 @@
+{
+  "text_hash_convention": "TeX/BibTeX CRLF normalised to LF; binary and CSV hashes use raw bytes.",
+  "scientific_protocol": "unchanged; original strict integrity audit required",
+  "figure_sources": "Byte-identical vector assets from paper/v10/figures; execution plot from figures/; fixed-seed gallery from paper/figures_own/.",
+  "paired_table_source": "paper/tables_own/paired_differences.tex; typography and metric heading only.",
+  "bibliography_review": "paper/reviews/v10_submission_review.md",
+  "deferred_unchanged_entries": [
+    "ramsauer2021",
+    "wen2026mita"
+  ],
+  "sha256": {
+    "docs/preregistration.md": "46b7c9bccda4e2209b8612b4a9782cb55c711eaf3a9cead1aad0c44fc54fcc75",
+    "figures/execution_k_sweep.pdf": "ae44389e0573416e560fff608d2780dc08d170fd0b35d195dfb106c90b436698",
+    "paper/figures_own/example_maps.pdf": "f03f7cd0bc61a0c05124c5307afeb06e7e3c0d42548e10a4768ad843103f921e",
+    "paper/figures_own/example_maps_more.pdf": "730511e933bad508f7ba07dee84ac375e33e670ad48c235dd522a96a24a7c565",
+    "paper/references.bib": "d6deba6c4db8194ef5fed5e59167a33b1af605fa347eff1cc9d27ae3cdb25fc7",
+    "paper/tables_own/diagnostics_per_layer.tex": "d3af0c59761caac28556bbd64c3e535283e62735606af6994929158cf3b6411f",
+    "paper/tables_own/relocation_explanations.tex": "ee89a671b371f3dd0b88b795707c54cb451f1ff1a3acfe1e9b7946002942b899",
+    "paper/v11/evidence/sanity.csv": "87d72799e193c66b9d2911d0dba451496ccf38a6fcc4c2191efc4c333f1a4839",
+    "paper/v11/figures/contribution_effects.pdf": "8de80653337c360829c970dd71747f4832235083221668960a8fe40d6ca3e413",
+    "paper/v11/figures/diagnosis_correction_bridge.pdf": "f647fc51e984bb178da3b7c3695dc482df67d426dd83e5e0455049fdffdb3652",
+    "paper/v11/figures/fast_weight_lens.pdf": "2dfc5966ec5c61f1795f8f9e0155a967564975d43f38864ea2b5d011250ba681",
+    "paper/v11/references.bib": "7d95d251e3dbc7e519aa8d0dcbd713a7a0e55447754e10f482e3675f774a4eb1",
+    "paper/v11/tables/main_results.tex": "5f6a2e9ab66314c70422802a868ea4774034ed8fbc7ef12335f0b2f62cd47e30",
+    "paper/v11/tables/paired_differences.tex": "034a811ac09482eeb13e32b5ff73b567849c7f171602884e28d68b50556c9414",
+    "paper/v11/tables/sanity_check.tex": "adaeaa4992e9e6fb6f3de92989061cf43934a04018979313d8d19c472c7d9a00",
+    "results/correct_tests.csv": "287e523e9e604c95c5ed8f06c9cae3ff73bda7b130a46910b51e1592d06c0a9f",
+    "results/diagnose.csv": "eff0c6cf8701785f7712081b443a5e1a09798f497fa50e66d90591cd08e4e74d",
+    "results/k_sweep.csv": "cc0b19e817d1733bd8713941aa876e5413a08e76b3eaa09e17d2f323017388d4",
+    "results/k_sweep_tests.csv": "9e76b6619b4e3f3ec355681058f1d2262384b2277fdda82352cffc9005a2000d",
+    "results/last_layer.csv": "9dec5e7535826eca71ee5f8f3a59604c23594436b32335f73e6370e83a6a1531",
+    "results/negative_controls.csv": "0bf06f931807491ac424ddb5306bffa718547d02fe039e8a952ee09f4af81f6c",
+    "results/numbers.csv": "18574a1282bc3383508fd47ac89a548053a051d69ce71993ee2afc6a7cfa3195",
+    "results/probe_accuracy.csv": "98e8308923bc8a1cd52351877a7e4633586e74e37bb4c0f5122503e4b7bc11db",
+    "results/radial.csv": "289a342178e27eb32c26fb11ece7639ad8f29ecfd3c7ff7c1ea621bf717b083e",
+    "results/table1_long.csv": "92a898a4e1e968bd754a20b7583e25ad22d05a8930d02100e1e6a1c492749d3d",
+    "results/value_norm.csv": "7930743902ce4516dfd75f5a07d1a4224235384dfbb661750328d01f3e1daa3e",
+    "results/variants.csv": "a3037234c87d3a057c16623bd3e129691cc0a1703a50a74df51bee1530ab9ef3"
+  }
+}
