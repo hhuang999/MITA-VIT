@@ -1,0 +1,23 @@
+{
+  "status": "Candidates awaiting author selection; v9 unchanged",
+  "inputs": {
+    "results/diagnose.csv": "eff0c6cf8701785f7712081b443a5e1a09798f497fa50e66d90591cd08e4e74d",
+    "results/correct_tests.csv": "287e523e9e604c95c5ed8f06c9cae3ff73bda7b130a46910b51e1592d06c0a9f"
+  },
+  "source_counts": {
+    "diagnostics": 252,
+    "contrasts": 99
+  },
+  "figure_1": {
+    "source_rows": 15,
+    "width_in": 5.5,
+    "height_in": 1.85
+  },
+  "figure_2": {
+    "diagnostic_rows": 108,
+    "paired_rows": 36,
+    "width_in": 5.5,
+    "height_in": 2.85
+  },
+  "statistics": "Original paired image-bootstrap means, 95% intervals and registered verdicts; no recalculation"
+}

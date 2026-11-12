@@ -1,0 +1,14 @@
+{
+  "status": "Candidates awaiting author selection; accepted v9 unchanged",
+  "main_content_pages": 4,
+  "all_source_rows_match": true,
+  "all_intervals_fully_visible": true,
+  "original_v9_preserved": true,
+  "rendered_checks": "Alignment PASS (1.5 pt); minimum font 7/6.4 pt; zero collision FAIL/WARN",
+  "manual_review": "Both colour and monochrome figures; all six bridge panels; full-size manuscript placement",
+  "pdf_sha256": {
+    "01_repair_benefits_limits.pdf": "f823548a73356846544ed86ef73346942e32c114231f5fcdfd19b9004cc6d171",
+    "02_diagnosis_correction_bridge.pdf": "f647fc51e984bb178da3b7c3695dc482df67d426dd83e5e0455049fdffdb3652",
+    "03_four_page_placement_preview.pdf": "1dd5969805765e95ca1d221a2afa013f209a49a14f11ece2de9d3ed7c54da2b9"
+  }
+}
