@@ -160,7 +160,7 @@ def diagnostics_per_layer():
              r" >{\centering\arraybackslash}p{1.05cm}" * 3 + "}", r"\toprule",
              " & \\multicolumn{3}{c}{\\makecell{Specificity:\\\\mean-map share (\\%)}}"
              " & \\multicolumn{3}{c}{\\makecell{Location:\\\\probe accuracy (\\%)}}"
-             " & \\multicolumn{3}{c}{\\makecell{Contribution:\\\\high-norm share (\\%)}}"
+             " & \\multicolumn{3}{c}{\\makecell{Output magnitude:\\\\high-norm share (\\%)}}"
              " & \\multicolumn{3}{c}{\\makecell{Map quality:\\\\ClickMe alignment}} \\\\",
              r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}",
              "Layer" + " & S & B & D" * 4 + r" \\", r"\midrule"]

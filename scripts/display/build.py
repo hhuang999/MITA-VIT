@@ -27,11 +27,10 @@ def main():
     run(DISPLAY / "build_diagnostic_figure.py")
     run(ROOT / "experiments/endpoints/plot_curves.py",
         "--input", ROOT / "experiments/endpoints/budget_differences.csv",
-        "--output", ROOT / "paper/figures/deletion_curves.pdf")
+        "--output", ROOT / "docs/figures/deletion_curves.pdf")
     expected = (
         "fast_weight_lens.pdf", "diagnosis_correction_bridge.pdf",
         "execution_k_sweep.pdf", "example_maps.pdf", "example_maps_more.pdf",
-        "deletion_curves.pdf",
     )
     missing = [name for name in expected if not (ROOT / "paper/figures" / name).is_file()]
     if missing:

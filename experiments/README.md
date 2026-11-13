@@ -52,11 +52,11 @@ python -m experiments.endpoints.plot_curves --input outputs/rerun/endpoints/budg
 paired contrasts must match to floating-point precision. The script produces
 `deletion_areas.csv`, `budget_differences.csv`, `clickme_bootstrap.csv`, and a
 vector PDF. Add `--preview-formats` to also export SVG and PNG. The original protocol is in
-[`endpoints/protocol.md`](endpoints/protocol.md). To rebuild the paper figure
+[`endpoints/protocol.md`](endpoints/protocol.md). To rebuild the linked budget-wise figure
 from the committed exploratory results, use:
 
 ```powershell
-python -m experiments.endpoints.plot_curves --input experiments/endpoints/budget_differences.csv --output paper/figures/deletion_curves.pdf
+python -m experiments.endpoints.plot_curves --input experiments/endpoints/budget_differences.csv --output docs/figures/deletion_curves.pdf
 ```
 
 ## Oxford-IIIT Pet study and CLS intervention

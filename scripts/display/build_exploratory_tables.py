@@ -25,7 +25,7 @@ def ci(mean, low, high):
 def spatial_table():
     study=json.loads((DATA/"spatial/summary.json").read_text(encoding="utf-8"))
     labels={"R0":"Received attention", "C3":"Value weighting (own lengths)",
-            "donor_rank":"Donor-image positions", "ring_shuffle":"Within-ring permutation",
+            "donor_rank":"Same lengths in donor rank order", "ring_shuffle":"Same lengths shuffled within radius",
             "norm_only":"Own lengths, mean attention", "C3v":"Unprojected value norm",
             "net_output":"Norm after summing heads"}
     placement = {"R0": "Received attention", "C3": "Value weighting (own lengths)",
@@ -53,7 +53,7 @@ def appendix_tables():
     click=rows("endpoints/clickme_bootstrap.csv")
     body=[]
     for model,name in MODELS.items():
-        for control,label in (("R0","R0"),("stand_in_no_high","Zero high-norm")):
+        for control,label in (("R0","Received attention"),("stand_in_no_high","Zero high-norm")):
             row=[name,label]
             for metric in ("p_target","kl"):
                 x=next(t for t in areas if (t["model"],t["a"],t["b"],t["metric"])==(model,"C3",control,metric))
