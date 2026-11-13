@@ -1,5 +1,10 @@
 # Provenance of the original observations
 
+## Historical commit identifiers
+
+Commit author and committer metadata were unified under the repository owner. File trees, experiment records and original dates were preserved. Historical SHA identifiers in protocols, metadata, the PDF and links can be translated using [commit-map.txt](commit-map.txt) (old SHA to current SHA). The original identifiers remain in the archived evidence so its recorded hashes are unchanged.
+
+
 The published `outputs/` are preserved observations from the original frozen-model study. No new inference run is substituted for them. The repository also includes the configurations, fixed samples, original protocol and historical run records needed to interpret the results.
 
 ## Main study records
