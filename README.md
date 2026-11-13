@@ -5,11 +5,11 @@
 
 **A background patch lights up on an attention map. What does that tell us?** The map shows how strongly queries attend to the token at that grid position. By the final layer, that token has already mixed information from other patches. To interpret the bright spot, we need to know what the token sends, who receives it, and what we want the map to explain.
 
+**Why the receiver matters.** On the same 128 pet images, the CLS-only map better identified which value terms affected the classifier’s margin. The all-query map better located the animal. The choice of receiver changes which question the map answers.
+
 <p align="center"><img src="docs/figures/fast-weight-readout.svg" width="900" alt="For a fixed image and one head, the query and source keys determine softmax activations. Each activation scales a projected value vector. A spatial map can pool either the activations or the lengths of those vector contributions at each source slot."></p>
 
 For a fixed image, one attention head acts like a two-layer network on the **receiving query**. Each source token supplies an input weight (its scaled key) and an output weight (its projected value). The query activates the sources through a joint softmax. An ordinary received-attention map pools those **activations** at each source slot. A value-weighted map pools the **lengths of their vector contributions**. Either map can pool all queries or follow just the classification token (CLS).
-
-**Why the receiver matters.** On the same 128 pet images, the CLS-only map better identified which value terms affected the classifier’s margin. The all-query map better located the animal. The choice of receiver changes which question the map answers.
 
 ## Three assumptions behind a spatial map
 
