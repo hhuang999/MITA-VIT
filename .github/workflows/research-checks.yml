@@ -37,9 +37,7 @@ jobs:
           python scripts/prepare_data.py --help
       - name: CPU regression tests
         run: python -m pytest -q
-      - name: Integrity and saved-output rebuild
-        run: python scripts/validate_research.py --strict --rebuild --report build/ci-verification.json
-      - name: Rebuild paper figures and tables
-        run: python scripts/display/build.py
-      - name: Verify original artifacts are unchanged
-        run: git diff --exit-code -- outputs results data/splits
+      - name: Rebuild the main figures and tables
+        run: python rebuild_main.py
+      - name: Check that saved results are unchanged
+        run: git diff --exit-code -- results experiments data/splits

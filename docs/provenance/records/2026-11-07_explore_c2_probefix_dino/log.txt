@@ -1,4 +1,0 @@
-2026-11-07 13:49:08,082 Loading pretrained weights from Hugging Face hub (timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4)
-2026-11-07 13:49:08,084 [timm/vit_small_patch16_224.dino@10e440b8a34dfd657a90f2fcaa988c6b6a2f0da4] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
-2026-11-07 13:49:18,349 probe part done; 10.0s
-2026-11-07 13:49:18,350 Complete: E-C2 for dino
