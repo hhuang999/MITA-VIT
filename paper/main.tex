@@ -1,0 +1,117 @@
+\documentclass{article}
+\PassOptionsToPackage{numbers,compress,sort}{natbib}
+\usepackage[preprint]{neurips_2025}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref,url,booktabs,amsfonts,amsmath,amssymb,microtype}
+\usepackage{xcolor,graphicx,array,pifont,makecell}
+\usepackage[font=small,labelfont=bf,skip=3pt]{caption}
+\usepackage[shortlabels]{enumitem}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\scriptsize,columns=fullflexible,keepspaces=true,frame=tb,
+  framesep=3pt,showstringspaces=false,upquote=true,aboveskip=6pt,belowskip=4pt}
+\graphicspath{{figures/}}
+\hypersetup{pdftitle={How Should We Read ViT Attention Maps? A Fast-Weight Perspective},pdfauthor={Hongbo Huang},colorlinks=true,linkcolor=black,citecolor=blue!50!black,urlcolor=blue!50!black}
+\newcommand{\up}{$^{\uparrow}$}
+\newcommand{\dn}{$^{\downarrow}$}
+\title{How Should We Read ViT Attention Maps?\\A Fast-Weight Perspective}
+\author{Hongbo Huang\\Student ID: 50026755}
+\begin{document}
+\raggedbottom
+\maketitle
+\begin{abstract}
+What can a bright background patch in a vision transformer's attention map tell us? Holding the model and image fixed, we changed only how we drew the map. In both DeiT checkpoints, weighting received attention by each patch's own projected value length improved alignment with foreground masks and human annotations; deletion gains stayed below our practical threshold. On pet images, assigning the same lengths to other patches removed the enrichment gain in DeiT-S. Moving scores to decoded positions lowered all three metrics in all three models. Restricting the readout to the final classification query better ranked classifier interventions in both DeiTs, but foreground AUROC fell in DeiT-S and rose in DeiT-B.
+\end{abstract}
+
+\section{Introduction}
+Deep-layer attention can highlight background patches. Adding register tokens can absorb some unusually high-norm background activations~\citep{darcet2024}. What changes if we keep the image and model fixed and change only how we read the map?
+
+For a fixed image, each attention head acts as a two-layer fast-weight network with one hidden unit per source token~\citep{wen2026mita}. For one head, the attention coefficient tells us how strongly a query reads a source. Multiplying that coefficient by the length of the source's projected value gives the length of the vector it returns to that query (Fig.~\ref{fig:lens}). Norm-based analyses already distinguish these quantities~\citep{kobayashi2020,zhu2024}. Whether that vector length predicts foreground, human annotations or classifier sensitivity is an empirical question.
+
+Drawing on hidden-unit analysis~\citep{bau2017}, we ask three questions about a bright patch: Is it distinctive to the image? Does its position reflect where the token's content came from? How large a vector does it return? Matched controls test the readout each question suggests. We then ask whether the gain from value weighting survives moving the lengths to other patches, and whether a map for the classifier should pool the same queries as a foreground map.
+
+\begin{figure}[!h]\centering
+\includegraphics[width=\linewidth]{fast_weight_lens}
+\caption{One head for a fixed image. Activation $a_{ij}$ scales source $j$'s output weight $z_j$. The two readouts sum either activation or the magnitude of the resulting vector (Eq.~\ref{eq:attn}).}\label{fig:lens}
+\end{figure}
+
+\clearpage
+
+\section{Related work}
+\paragraph{Activation and the returned vector.} In a ViT~\citep{dosovitskiy2021}, attention sets the coefficient of a source's value vector. Fast-weight memory~\citep{schmidhuber1992,schlag2021}, Hopfield retrieval~\citep{ramsauer2021} and MiTA's two-layer representation~\citep{wen2026mita} describe input-dependent weights and their readout. Norm-based analyses already distinguish attention coefficients from output magnitudes in language models~\citep{kobayashi2020} and visual attribution~\citep{zhu2024}. We ask what happens to foreground rankings when the same lengths are assigned to different patches.
+
+\paragraph{Position and information origin.} Token identity~\citep{brunner2020} and grid information~\citep{raghu2021} can survive contextual mixing. Rollout and relevance propagation trace paths across layers~\citep{abnar2020,chefer2021,chefer2021generic}; GlobEnc, ALTI and TokenTM account for additional transformations~\citep{modarressi2022,ferrando2022,wu2024tokentm}. We test a simpler placement rule: assign a score to decoded grid positions. Registers and no-op heads help explain some high-norm outliers~\citep{darcet2024,jiang2025,bondarenko2023}, whereas spatial priors can produce recurring saliency~\citep{kuang2026}. These alternatives motivate different controls.
+
+\paragraph{What should a map explain?} Attention can agree with annotations without explaining a prediction~\citep{jain2019,wiegreffe2019}. Filtering aims to improve map agreement~\citep{ayyarFiltering}; CAM targets a class score~\citep{zhou2016}, and Value Zeroing measures contextual mixing~\citep{mohebbi2023}. Parameter dependence, supervision and occlusion choices also affect evaluation~\citep{adebayo2018,walmer2023,bluecher2024}. We evaluate the same rankings against masks and an intervention on the classifier path.
+
+\section{Methods for reading a frozen attention head}
+\label{sec:method}
+For query $i$, source $j$ and head $h$, let $z_j^h=W_O^h v_j^h$ be the transformed value. With key dimension $d$, the attention output before residual addition is
+\begin{equation}
+ o_i=b_O+\sum_{h,j}a^h_{ij}z^h_j,\qquad
+ a^h_{ij}=\mathrm{softmax}_j(q_i^{h\top}k_j^h/\sqrt{d}).
+\label{eq:attn}
+\end{equation}
+For a fixed image, $k_j^h/\sqrt d$ and $z_j^h$ act as the input and output weights of a two-layer network in $q_i^h$, with the softmax coupling its activations across all sources. Received attention assigns $s_j=\sum_{h,i}a^h_{ij}$ to patch $j$. Summing over all queries, including CLS, gives one score per patch on the 196-patch grid.
+
+\paragraph{Specificity.} A bright patch may reflect a recurring spatial pattern. We estimate a mean map on separate calibration images, measure the spatial variance it explains on test images, and subtract it from each test map. Subtracting a centred Gaussian scaled to the mean map's spatial standard deviation controls for a radial prior.
+
+\paragraph{Location.} After several layers, a token contains information from other patches. We train a linear probe to decode its grid index and redistribute $s_j$ over the probe's predicted positions. A blur with the same mean squared displacement tests whether this outperforms smoothing alone. The probe decodes a grid index. Its accuracy tests whether position is recoverable; it does not trace content back to input pixels.
+
+\paragraph{Output magnitude.} A strongly attended source can return a short vector. We first measure attention on high-norm tokens: their norm entering the block, before LayerNorm, exceeds three times the image median. One control simply zeros their scores. \emph{Value weighting} instead uses the returned vector at every patch, $c_j=\sum_{h,i}a_{ij}^h\|z_j^h\|_2$, without a threshold. For one query--source pair,
+\[
+ \Big\|\sum_h a^h_{ij} z_j^h\Big\|_2 \leq \sum_h a^h_{ij}\|z_j^h\|_2.
+\]
+The left side retains cancellation between heads; value weighting sums the right side over queries. These terms describe the attention branch before residuals, MLPs and subsequent token mixing.
+\clearpage
+
+\section{Experiments on three reading assumptions}
+\label{sec:exp}
+We compare layers 9--12 of frozen DeiT-S, DeiT-B~\citep{touvron2021} and DINO ViT-S~\citep{caron2021}. Enrichment measures foreground overlap above a same-radius baseline on ImageNet-S (about 12,150 images)~\citep{gao2023}; ClickMe compares agreement with own-image and other-image human maps (17,408 images)~\citep{linsley2019,fel2022}. Deletion measures how patch removal affects top-1 retention (2,000 images). We specified two comparisons in advance: each change against its matched control, and the combination against received attention (App.~\ref{app:setup}). We require an absolute change of at least 0.02 (alignment) or 0.05 (deletion) and a paired 95\% interval excluding zero.
+
+\begin{figure}[!h]\centering\includegraphics{diagnosis_correction_bridge}
+\caption{Does the phenomenon occur (top), and does changing the readout help (bottom)? Circles compare with received attention; diamonds compare with Gaussian subtraction, matched blur and zeroing high-norm scores, respectively. Bars show paired 95\% intervals; filled points meet the decision rule. Grey shading marks layers 9--12 (top) or $\pm0.02$ (bottom). Deletion: Table~\ref{tab:app-paired}.}\label{fig:diag}
+\end{figure}
+
+
+
+\paragraph{Is a recurring bright spot informative?} Across layers 6--12, the mean map explained about 3--6\% of spatial variance in the DeiTs and up to 17\% in DINO (Fig.~\ref{fig:diag}a). In DINO, subtracting the mean raised ClickMe by 0.044, but subtracting a centred Gaussian gave a similar gain. In DeiT-B, mean subtraction beat Gaussian subtraction on all three metrics yet lowered ClickMe by 0.020 relative to received attention. A recurring pattern was not, by itself, a reason to remove it.
+
+\paragraph{Where should a token's score go?} At layer 12, grid-index accuracy was 18\%, 32\% and 36\% in DeiT-S, DeiT-B and DINO (chance: 0.5\%). Yet redistributing scores by decoded positions lowered all nine deep-layer scores. It also did worse than matched blur in DeiT-S and DINO, although it beat blur on DeiT-B enrichment ($+0.035$). Decodability did not justify relocation.
+
+\paragraph{What does an active source send?} At layers 9--12, high-norm patches received up to 9\% of attention in DeiT-S and 44\% in DeiT-B (Fig.~\ref{fig:diag}c). Value weighting improved both alignment scores in both DeiTs. In DeiT-S, enrichment rose by 0.038 and ClickMe rose by 0.033. In DeiT-B the gains were 0.065 in enrichment and 0.058 on ClickMe. Weighting beat zeroing high-norm patches in all but DeiT-B ClickMe. Deletion rose by 0.017 in DeiT-S and 0.029 in DeiT-B: both intervals excluded zero, but neither gain reached 0.05. In DINO, where high-norm patches received no attention in these layers, value weighting changed each score by at most 0.004. For scale, DeiT-S enrichment was 0.178 with value weighting and 0.204 with GAE, which uses class gradients and all 12 layers (Table~\ref{tab:main}).
+
+\paragraph{Do the changes combine?} Combining weighting, relocation and mean subtraction improved only DeiT-B ClickMe, against our prediction of four alignment gains. DeiT-B enrichment was comparable; both DeiT-S scores fell. Value weighting alone helped: did it matter which source received which length?
+
+\clearpage
+\section{Two exploratory tests of what a readout explains}
+\paragraph{Which source gets which length?} The placement test asks whether the same lengths would help if assigned to different patches. On 383 Oxford-IIIT Pet test crops with both foreground and background~\citep{parkhi2012pets}, two controls preserve each DeiT-S head's attention and set of lengths at each layer. One borrows the spatial rank order of lengths from another image; the other shuffles lengths only among patches at the same radius. Same-ring enrichment measures foreground alignment at matched radii; AUROC compares foreground with background regardless of radius.
+
+\par\smallskip\noindent\begin{minipage}{\linewidth}
+\captionof{table}{DeiT-S, layers 9--12, on 383 pet crops. $\Delta$Enrichment is the row minus value weighting (own lengths) (paired 95\% intervals).}
+
+\label{tab:pets}\centering\small\setlength{\tabcolsep}{5pt}
+\input{tables/spatial}
+\end{minipage}\par\smallskip
+
+Reassigning lengths erased the enrichment gain over received attention (Table~\ref{tab:pets}). Conversely, keeping lengths in place but averaging each head's received attention across patches lowered enrichment by 0.040. Both spatial patterns mattered. The gain could reflect two cues to foreground at the same patches; these comparisons do not isolate a benefit specific to multiplication.
+
+\paragraph{Which receiving query matters?} The placement tests pooled all queries. If the target is the classifier rather than the foreground, should every query still count? Only the final classification token (CLS) reaches the classifier, so we compared all queries with CLS alone against both targets. On 128 of the pet images, we held attention fixed in block 12, removed each patch's value term from the CLS update in turn, and recomputed the remaining classifier path. For each patch, we measured the absolute change in the logit margin between the original top two classes.
+
+Using only CLS improved intervention ranking in both checkpoints (Table~\ref{tab:cls}), as expected for an intervention on the CLS pathway. The masks tell a different story. In DeiT-S, foreground AUROC fell by 0.091. In DeiT-B, tested on the same images with both outcomes specified in advance, AUROC rose by 0.024 [0.013, 0.036]; the change in same-ring enrichment was uncertain ($+0.005$ [$-0.005$, 0.013]). Matching the query to the classifier did not consistently improve foreground ranking.
+
+\par\smallskip\noindent\begin{minipage}{\linewidth}
+\captionof{table}{Layer-12 value-weighted rankings, same 128 images. Intervention $\rho$: mean Spearman with CLS margin effects. Differences change only the query set. Full scores and intervals: App.~\ref{app:replication}.}
+\label{tab:cls}\centering\small\input{tables/cls}
+\end{minipage}\par\smallskip
+\section{Discussion and conclusion}
+A bright patch marks a source that received attention. Moving scores to decoded positions lowered all nine model--metric scores. Only value weighting improved both alignment metrics in both DeiTs, and reassigning the lengths erased the enrichment gain on pets. To interpret a map, specify what each patch score measures and which queries it pools, then test the ranking against the outcome the map is meant to explain.
+
+\paragraph{Limitations and ethical considerations.} Placement was tested in DeiT-S; receiver comparisons cover two checkpoints, one layer and 128 images. An intervention on a contextualised token cannot identify causal input pixels. Object size affects enrichment, and ClickMe may overlap training data.
+
+\label{main:end}
+\clearpage
+{\small\setlength{\bibsep}{2pt}\bibliographystyle{plainnat}\bibliography{references}}
+\clearpage\appendix
+\input{appendix}
+\end{document}

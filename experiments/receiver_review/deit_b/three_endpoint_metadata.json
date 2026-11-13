@@ -1,0 +1,15 @@
+{
+  "selected": 128,
+  "eligible": 128,
+  "excluded": [],
+  "no_new_model_forward": true,
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 2026,
+  "tie_noise_seed_shared_by_methods": 2026,
+  "selected_names_sha256": "dcdb7101dd92424579bb5243781e0f1043ca918c4c23f8edf60d217792b98ed1",
+  "per_source_sha256": "5f37fb82ff04fa3b70dc008e9d6329ab615cb6f5a00defbab4c332e8c09f5d36",
+  "per_image_sha256": "d8c28e09b5b9143b8dd39ced460c2214d9303240819c9c0dfdeffdbe92744457",
+  "addendum_protocol_sha256": "0ffc215be1d3d11d994916629434bdeda9e96489e6fe53af5ad4eebb68af3e3f",
+  "script_sha256": "059a622a649656bb087deb3b034f542d7340ec55ff316604b53d8f3f13f7cf30",
+  "elapsed_seconds": 6.400372499999776
+}

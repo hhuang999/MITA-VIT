@@ -1,0 +1,31 @@
+2026-11-07 13:29:29,901 Loading pretrained weights from Hugging Face hub (timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6)
+2026-11-07 13:29:29,904 [timm/deit_base_patch16_224.fb_in1k@b78cc5532a69df6bcad9c3a8d76653fd20b31ac6] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+2026-11-07 13:30:13,811 supp_deit_b 640/17408 images; 43.3s
+2026-11-07 13:30:56,158 supp_deit_b 1280/17408 images; 85.6s
+2026-11-07 13:31:38,449 supp_deit_b 1920/17408 images; 127.9s
+2026-11-07 13:32:20,949 supp_deit_b 2560/17408 images; 170.4s
+2026-11-07 13:33:03,467 supp_deit_b 3200/17408 images; 212.9s
+2026-11-07 13:33:46,087 supp_deit_b 3840/17408 images; 255.6s
+2026-11-07 13:34:28,581 supp_deit_b 4480/17408 images; 298.1s
+2026-11-07 13:35:11,222 supp_deit_b 5120/17408 images; 340.7s
+2026-11-07 13:35:53,908 supp_deit_b 5760/17408 images; 383.4s
+2026-11-07 13:36:36,687 supp_deit_b 6400/17408 images; 426.2s
+2026-11-07 13:37:19,408 supp_deit_b 7040/17408 images; 468.9s
+2026-11-07 13:38:02,131 supp_deit_b 7680/17408 images; 511.6s
+2026-11-07 13:38:44,790 supp_deit_b 8320/17408 images; 554.3s
+2026-11-07 13:39:27,555 supp_deit_b 8960/17408 images; 597.0s
+2026-11-07 13:40:10,114 supp_deit_b 9600/17408 images; 639.6s
+2026-11-07 13:40:52,766 supp_deit_b 10240/17408 images; 682.2s
+2026-11-07 13:41:35,391 supp_deit_b 10880/17408 images; 724.9s
+2026-11-07 13:42:18,003 supp_deit_b 11520/17408 images; 767.5s
+2026-11-07 13:43:00,580 supp_deit_b 12160/17408 images; 810.1s
+2026-11-07 13:43:43,021 supp_deit_b 12800/17408 images; 852.5s
+2026-11-07 13:44:25,543 supp_deit_b 13440/17408 images; 895.0s
+2026-11-07 13:45:07,895 supp_deit_b 14080/17408 images; 937.4s
+2026-11-07 13:45:50,255 supp_deit_b 14720/17408 images; 979.7s
+2026-11-07 13:46:32,686 supp_deit_b 15360/17408 images; 1022.2s
+2026-11-07 13:47:14,829 supp_deit_b 16000/17408 images; 1064.3s
+2026-11-07 13:47:57,066 supp_deit_b 16640/17408 images; 1106.5s
+2026-11-07 13:48:39,464 supp_deit_b 17280/17408 images; 1148.9s
+2026-11-07 13:48:47,977 supp_deit_b 17408/17408 images; 1157.5s
+2026-11-07 13:48:48,012 Complete: supp eval for deit_b

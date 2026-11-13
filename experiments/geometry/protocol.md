@@ -1,0 +1,39 @@
+# Exploratory object-geometry analysis (v13)
+
+Frozen before calculating effects: 2026-11-12. This is a new, post-registration analysis of the existing per-image ImageNet-S outputs. The historical registered results, methods, and decision thresholds are untouched.
+
+## Question
+
+Does the spatial enrichment benefit of the C3 fast-weight reading vary with object area or displacement from image centre? This is a descriptive effect-modification analysis, not a causal intervention. It tests whether an average gain hides systematic dependence on foreground geometry.
+
+## Sources and cohort
+
+Use `outputs/supplementary_eval/imagenet_s/{deit,deit_b,dino}/plausibility.csv.gz` for all comparisons, including its repeated C3 and R0 readings. Compare its repeated C3/R0 values against `outputs/table1/imagenet_s/{deit,deit_b,dino}/plausibility.csv.gz` and report any discrepancies. All comparisons require a unique `(model,index,method)` row and finite enrichment on both sides. Check that per-image object geometry agrees across methods and models; abort on geometry or index mismatch. No ClickMe geometry stratification: ClickMe has clicks, not ImageNet-S foreground masks.
+
+The unit is the ImageNet-S image index. `object_area` is the proportion of valid 14×14 patches occupied by foreground. `object_distance` is the Euclidean distance in patch units between the foreground centroid and grid centre, as computed in `src/fastweight_vit/enrichment.py`. Geometry is taken from each model's original R0 rows, independently of outcome. All rows with finite area and distance define **model-specific** quartile cut points before any effect is computed. DeiT-S and DeiT-B have identical geometry, but DINO's model-specific crop changes object geometry for many of the same image IDs. We therefore interpret within-model strata, not cross-model matched strata.
+
+Validation amendment, recorded before calculating effects: exact main/supplementary comparison found two differing DeiT-S R0 enrichment rows out of 24,838 DeiT-S C3/R0 rows (maximum absolute difference 0.006757); geometry is identical, and all C3/R0 rows match in DeiT-B and DINO. The metric adds random noise when ranking equal scores, so re-evaluation can differ for tied patches. We use the supplementary C3 and R0 readings to keep every paired control within one run, and retain the original table1 outputs unchanged. The script records the discrepancy audit.
+
+Geometry amendment, also before calculating effects: the initial plan assumed common geometry for identical image IDs. Validation showed DeiT-S/B geometry matches exactly, but DINO's model-specific preprocessing changes mask area for 10,165 images and centroid distance for 10,695. We therefore use model-specific quartile cuts. This amendment is based on input geometry alone, without inspecting C3 effects.
+
+## Comparisons and cuts
+
+For each of DeiT-S, DeiT-B and DINO, compute paired per-image enrichment differences `C3−R0`, `C3−stand_in_no_high`, `C3−C3headmean`, and `C3−mean(C3shuffle_s0,...,s4)`. The last control first averages the five shuffle seeds **within image**, retaining one paired unit per image. A higher difference means greater centre-ring enrichment for C3. For each geometry variable, compute its 25th/50th/75th empirical quantiles on that model's full finite-geometry cohort. Assign values exactly equal to a cut to the lower bin (`searchsorted(..., side='left')`). Thus bins may have unequal sizes. Cuts are fixed across controls within a model; do not optimize them using outcomes. Label Q1 through Q4 in increasing geometry order. Report the full-cohort estimate and all four quartiles per variable, not only favorable strata.
+
+For each paired difference, report number of finite pairs, arithmetic mean and percentile 95% paired bootstrap interval using 2,000 image-level resamples, RNG seed 20261112. Also report the simple Q4−Q1 contrast for each comparison using independent resampling inside the two disjoint bins, with the same seed scheme. These intervals are descriptive; multiple comparisons are exploratory, with no new registered verdicts or confirmatory significance claims. The primary visual interpretation is the overall shape across all four quartiles, not any selected contrast. Report median baseline R0 enrichment by stratum to reveal possible ceiling effects. Do not alter original sample selection or original result files.
+
+## Interpretation limits
+
+The segmentation mask geometry is observational and may correlate with category, visual complexity, occlusion, or foreground coverage. A quartile trend cannot identify why the C3 reading helps. The ring-enrichment measure itself adjusts for centre distance of selected patches, yet its opportunity to improve can still depend on foreground size and shape. This analysis is about the ImageNet-S localisation metric and does not directly predict deletion faithfulness or ClickMe agreement.
+
+## Follow-up joint stratification (added after first marginal-strata results)
+
+The first results showed strong area and distance gradients, so we add a clearly exploratory joint tabulation to assess whether the distance gradient persists within object-size groups. Apply the **same precomputed model-specific quartile cuts** to both variables, use finite paired `C3−R0` and `C3−stand_in_no_high` values, and report all 4×4 cells with n and mean. For each fixed area quartile, report distance Q4−Q1 (2,000 independent image resamples, seed 20261113). A small or empty cell will be shown as such; no selection or pooling based on its mean. This is not a registered test or a causal adjustment. It can show whether the marginal distance gradient is entirely explained by the size gradient, but residual associations may still reflect unmeasured image properties or metric geometry.
+
+## Follow-up endpoint sensitivity (added after seeing enrichment gradients, before calculating AUROC differences)
+
+The main-agent review asked whether the size/distance gradient is peculiar to centre-ring enrichment, whose top-k is the known foreground size. On the **same model-specific images and precomputed geometry cuts**, analyze the supplementary export's existing patch `auroc` field for `C3−R0` and `C3−stand_in_no_high`. This endpoint ranks foreground over background patches without choosing top-k from the known foreground count. Use exactly the marginal-strata algorithm above: paired finite differences, all four quartiles and full cohort, 2,000 paired bootstrap samples with fixed seed 20261114, plus independent Q4−Q1 bootstrap contrasts. Preserve `auroc`'s original definition and inspect no other endpoint or new split based on the results. AUROC and ring enrichment answer different questions; agreement strengthens descriptive robustness, disagreement narrows endpoint scope but does not identify a mechanism.
+
+## Historical denominator audit (triggered by code/output discrepancy)
+
+The existing `enrichment` implementation yields a finite zero for an all-foreground image, while `auroc` is undefined without background. The archived results' reported finite count may therefore include no-background images. Recompute the six **historical** ImageNet-S `C3−R0` and `C3−stand_in_no_high` means directly from `outputs/table1` and compare against `results/correct_tests.csv`; preserve those outputs unchanged. Separately recompute both paired means after requiring `0 < object_area < 1`, keeping the same original image IDs and metric. Record per-model counts of finite historical enrichment, area-zero, area-one, valid foreground/background, and finite AUROC pairs. This is a cohort/wording audit, not a revised registered result or a new test. The `object_distance` quartile cohort already excluded area-zero rows because the centroid is undefined; the area-one rows remain in enrichment quartiles but are excluded from AUROC by its definition.

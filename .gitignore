@@ -19,14 +19,25 @@ build/
 dist/
 .ipynb_checkpoints/
 
-# Downloaded datasets, model weights, experiment runs and rebuilt displays
+# Data and model weights (fetched by scripts/prepare_data.py and scripts/download_models.py); only the fixed image
+# lists are kept. outputs/ holds the committed per-image outputs of the original runs; new reruns and smoke tests go
+# to the ignored subfolders below.
 /data/*
 !/data/splits/
-/checkpoints/
-/outputs/
+/checkpoints
+/outputs/rerun/
+/outputs/smoke/
 /results/smoke/
-/paper/figures/
-/paper/tables/
 *.pth
 *.pt
 *.safetensors
+
+# LaTeX build files (when the paper is compiled under paper/)
+/paper/**/*.aux
+/paper/**/*.log
+/paper/**/*.out
+/paper/**/*.bbl
+/paper/**/*.blg
+/paper/**/*.fls
+/paper/**/*.fdb_latexmk
+/paper/**/*.synctex.gz

@@ -1,0 +1,16 @@
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Model & Readout & Intervention $\rho$ & Mask AUROC & Enrichment \\
+\midrule
+DeiT-S & All queries, attention & 0.696 & 0.754 & 0.117 \\
+DeiT-S & Value weighting, all queries & 0.705 & 0.769 & 0.127 \\
+DeiT-S & Value weighting, CLS only & 0.747 & 0.678 & 0.095 \\
+DeiT-S & CLS, net vector & 0.756 & 0.678 & 0.098 \\
+DeiT-S & CLS, attention & 0.730 & 0.666 & 0.081 \\
+DeiT-B & All queries, attention & 0.589 & 0.649 & 0.051 \\
+DeiT-B & Value weighting, all queries & 0.652 & 0.685 & 0.084 \\
+DeiT-B & Value weighting, CLS only & 0.734 & 0.710 & 0.088 \\
+DeiT-B & CLS, net vector & 0.751 & 0.719 & 0.096 \\
+DeiT-B & CLS, attention & 0.675 & 0.676 & 0.062 \\
+\bottomrule
+\end{tabular}

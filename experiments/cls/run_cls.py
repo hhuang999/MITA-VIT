@@ -185,6 +185,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=OUTPUT,
                         help="New run output directory (default: outputs/rerun/cls)")
+    parser.add_argument("--model", choices=("small", "base"), default="small")
+    parser.add_argument("--protocol", type=Path, default=HERE / "protocol.md",
+                        help="Protocol fixed before this run; saved by hash in metadata")
     args = parser.parse_args()
     output = args.output_dir.resolve()
     if output == HERE:
@@ -196,7 +199,7 @@ def main():
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA GPU is required for the full 128-image study")
     names = selected_names(output)
-    model = load_deit("cuda")
+    model = load_deit("cuda", base=args.model == "base")
     dataset = PetTest(model)
     spatial_names = (ROOT / "experiments/spatial/selected_names.txt").read_text().splitlines()
     if dataset.names != spatial_names:
@@ -271,11 +274,11 @@ def main():
             "selection_seed_string": "v13-cls-2026:",
             "spatial_selection_sha256": sha256(ROOT / "experiments/spatial/selected_names.txt"),
             "cls_selection_sha256": sha256(output / "selected_names.txt"),
-            "protocol_sha256": sha256(HERE / "protocol.md"),
+            "protocol_sha256": sha256(args.protocol),
             "script_sha256": sha256(Path(__file__)),
             "spatial_loader_sha256": sha256(ROOT / "experiments/spatial/run_spatial.py"),
             "model_source_sha256": sha256(ROOT / "src/fastweight_vit/models/deit.py"),
-            "checkpoint": CHECKPOINTS["small"], "model_eval": not model.training,
+            "checkpoint": CHECKPOINTS[args.model], "model_eval": not model.training,
             "device": torch.cuda.get_device_name(0), "torch": torch.__version__,
             "max_baseline_logit_error": max_baseline_error,
             "max_reference_logit_or_map_error": reference_error,

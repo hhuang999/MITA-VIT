@@ -1,0 +1,161 @@
+{
+  "source_sha256": {
+    "configs/table1.yaml": "c692bd6c647c4081c6d57bc533e2ceb834a802882a489658ca4dfbffa974e30e",
+    "results/correct_tests.csv": "287e523e9e604c95c5ed8f06c9cae3ff73bda7b130a46910b51e1592d06c0a9f",
+    "outputs/table1/imagenet_s/deit/faithfulness.csv.gz": "cc93e0422c030b3b97f003334e89bd34c5665c84eacfc6807fdbc5148114d46d",
+    "outputs/table1/clickme/deit/alignment.csv.gz": "6edd1aeb7450b476342de4b5df59e4666c0dbedaee82bfbdc12e8e37524d162e",
+    "outputs/table1/imagenet_s/deit_b/faithfulness.csv.gz": "4eab4bc22ad805e7732ce46e5e73099f98b2298e4c3d348cbf1836f139535481",
+    "outputs/table1/clickme/deit_b/alignment.csv.gz": "4a0011af66feb20c79b11569b91d420e0a230d7c13b75b2f8f907abaa0f17631",
+    "outputs/table1/imagenet_s/dino/faithfulness.csv.gz": "b85bc3e540aafb1182cb13095a95082da675962d7060a5e1b202de132c3b487a",
+    "outputs/table1/clickme/dino/alignment.csv.gz": "ff71d332b6871c1bd6fe3d195b2d8eee8fd1341360eee350a184a56bf90a364f"
+  },
+  "historical_contrasts_verified": 18,
+  "max_absolute_error": 1.0061396160665481e-16,
+  "all_counts_match": true,
+  "checks": [
+    {
+      "model": "deit",
+      "metric": "srg",
+      "a": "C3",
+      "b": "R0",
+      "max_absolute_error": 9.194034422677078e-17,
+      "n_match": true
+    },
+    {
+      "model": "deit",
+      "metric": "srg",
+      "a": "C3",
+      "b": "stand_in_no_high",
+      "max_absolute_error": 7.632783294297951e-17,
+      "n_match": true
+    },
+    {
+      "model": "deit",
+      "metric": "srg",
+      "a": "stand_in_no_high",
+      "b": "R0",
+      "max_absolute_error": 7.719519468096792e-17,
+      "n_match": true
+    },
+    {
+      "model": "deit",
+      "metric": "clickme",
+      "a": "C3",
+      "b": "R0",
+      "max_absolute_error": 4.85722573273506e-17,
+      "n_match": true
+    },
+    {
+      "model": "deit",
+      "metric": "clickme",
+      "a": "C3",
+      "b": "stand_in_no_high",
+      "max_absolute_error": 8.673617379884035e-17,
+      "n_match": true
+    },
+    {
+      "model": "deit",
+      "metric": "clickme",
+      "a": "stand_in_no_high",
+      "b": "R0",
+      "max_absolute_error": 9.020562075079397e-17,
+      "n_match": true
+    },
+    {
+      "model": "deit_b",
+      "metric": "srg",
+      "a": "C3",
+      "b": "R0",
+      "max_absolute_error": 6.245004513516506e-17,
+      "n_match": true
+    },
+    {
+      "model": "deit_b",
+      "metric": "srg",
+      "a": "C3",
+      "b": "stand_in_no_high",
+      "max_absolute_error": 6.938893903907228e-17,
+      "n_match": true
+    },
+    {
+      "model": "deit_b",
+      "metric": "srg",
+      "a": "stand_in_no_high",
+      "b": "R0",
+      "max_absolute_error": 3.8163916471489756e-17,
+      "n_match": true
+    },
+    {
+      "model": "deit_b",
+      "metric": "clickme",
+      "a": "C3",
+      "b": "R0",
+      "max_absolute_error": 8.326672684688674e-17,
+      "n_match": true
+    },
+    {
+      "model": "deit_b",
+      "metric": "clickme",
+      "a": "C3",
+      "b": "stand_in_no_high",
+      "max_absolute_error": 1.0061396160665481e-16,
+      "n_match": true
+    },
+    {
+      "model": "deit_b",
+      "metric": "clickme",
+      "a": "stand_in_no_high",
+      "b": "R0",
+      "max_absolute_error": 7.632783294297951e-17,
+      "n_match": true
+    },
+    {
+      "model": "dino",
+      "metric": "srg",
+      "a": "C3",
+      "b": "R0",
+      "max_absolute_error": 9.562663161322149e-17,
+      "n_match": true
+    },
+    {
+      "model": "dino",
+      "metric": "srg",
+      "a": "C3",
+      "b": "stand_in_no_high",
+      "max_absolute_error": 9.562663161322149e-17,
+      "n_match": true
+    },
+    {
+      "model": "dino",
+      "metric": "srg",
+      "a": "stand_in_no_high",
+      "b": "R0",
+      "max_absolute_error": 0.0,
+      "n_match": true
+    },
+    {
+      "model": "dino",
+      "metric": "clickme",
+      "a": "C3",
+      "b": "R0",
+      "max_absolute_error": 9.389190813724468e-17,
+      "n_match": true
+    },
+    {
+      "model": "dino",
+      "metric": "clickme",
+      "a": "C3",
+      "b": "stand_in_no_high",
+      "max_absolute_error": 9.389190813724468e-17,
+      "n_match": true
+    },
+    {
+      "model": "dino",
+      "metric": "clickme",
+      "a": "stand_in_no_high",
+      "b": "R0",
+      "max_absolute_error": 0.0,
+      "n_match": true
+    }
+  ]
+}

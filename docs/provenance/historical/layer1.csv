@@ -1,0 +1,32 @@
+table,rows,only_old,only_new,max_abs_difference
+k sweep (figure 2a),39,0,0,0.0
+k sweep tests (P1),33,0,0,0.0
+diagnose (figure 3),252,0,0,0.0
+Table 1 (long),201,0,0,0.0
+correction tests,99,0,0,0.0
+last-layer recovery,24,0,0,0.0
+combination order,27,0,0,0.0
+change the model,10,0,0,0.0
+sanity,252,0,0,0.0
+predictions,22,0,0,0.0
+single layer (appendix B),75,0,0,0.0011999999999999789
+top-k map similarity,3,0,0,0.0
+probe accuracy,36,0,0,0.0
+C2 analysis: errors,378,0,0,0.0
+C2 analysis: mean prediction,147,0,0,0.0
+C2 analysis: shift,42,0,0,0.0
+C2 analysis: shift bins,60,0,0,0.0
+C2 analysis: hypotheses,2,0,0,0.0
+supplementary: combinations.csv,45,0,0,0.0
+supplementary: c3_mechanism.csv,18,0,0,0.0
+supplementary: c3_mechanism_seeds.csv,30,0,0,0.0
+supplementary: dose_layers.csv,96,0,0,0.0
+supplementary: dose.csv,8,0,0,0.0
+supplementary: globalisation.csv,462,0,0,0.0
+supplementary: mlp_probe.csv,216,0,0,0.0
+supplementary: c2_variants.csv,33,0,0,0.0
+supplementary: gae_gap.csv,6,0,0,0.0
+supplementary: head_weights.csv,96,0,0,0.0
+D2: tests,60,0,0,0.0
+D2: branch,1,0,0,0.0
+Table 1 (markdown),16,0,0,0.0

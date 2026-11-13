@@ -114,10 +114,10 @@ def execution_k_sweep(results):
 
 def fast_weight_lens():
     """Trace one head from image-conditioned weights to a source-slot map."""
-    fig, ax = plt.subplots(figsize=(5.50, 1.55))
+    fig, ax = plt.subplots(figsize=(5.50, 1.40))
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
     ax.set(xlim=(0, 5.50), ylim=(.17, 1.72))
-    ax.set_aspect('equal')
+    ax.set_aspect('auto')
     ax.axis('off')
 
     ink = '#22313f'
@@ -157,18 +157,18 @@ def fast_weight_lens():
                                    facecolor='white' if n < 2 else '#fae9df',
                                    edgecolor=edge if n < 2 else accent,
                                    linewidth=.7))
-    ax.text(.25, .71, 'source j', fontsize=7.2, color=ink, ha='center', va='center')
-    box(.50, 1.03, .85, .28, 'key  kⱼ', fill=blue)
+    ax.text(.25, .71, r'source $j$', fontsize=7.2, color=ink, ha='center', va='center')
+    box(.50, 1.03, .85, .28, r'key $k_j$', fill=blue)
     box(.50, .64, .98, .32, '', fill=teal)
     ax.text(.99, .862, 'transformed value', ha='center', va='center', color=ink, fontsize=7.1)
     ax.text(.99, .730, r'$z_j=W_O\,v_j$', ha='center', va='center', color=ink, fontsize=9.6)
 
-    box(1.43, .99, .44, .32, 'qᵢ', fill='#f1f4f6', stroke=ink, size=9)
-    box(2.02, 1.01, .75, .32, 'qᵢ · kⱼ / √d', fill=blue)
-    box(2.92, .99, .62, .34, 'joint\nsoftmaxⱼ', fill=blue, size=7.2)
-    box(3.68, 1.01, .39, .32, 'aᵢⱼ', fill='#dcebf7', stroke='#5687ad', size=9)
-    box(4.22, 1.01, .62, .32, 'aᵢⱼ zⱼ', fill=teal, stroke='#478674', size=9)
-    box(4.99, 1.01, .40, .32, 'Σⱼ', fill='#f1f4f6', stroke=ink, size=9)
+    box(1.43, .99, .44, .32, r'$q_i$', fill='#f1f4f6', stroke=ink, size=10)
+    box(2.02, 1.01, .75, .32, r'$q_i^\top k_j/\sqrt{d}$', fill=blue, size=9)
+    box(2.92, .99, .62, .34, 'joint\n' + r'$\mathrm{softmax}_j$', fill=blue, size=8)
+    box(3.68, 1.01, .39, .32, r'$a_{ij}$', fill='#dcebf7', stroke='#5687ad', size=10)
+    box(4.22, 1.01, .62, .32, r'$a_{ij}\,z_j$', fill=teal, stroke='#478674', size=10)
+    box(4.99, 1.01, .40, .32, r'$\sum_j$', fill='#f1f4f6', stroke=ink, size=10)
 
     arrow((1.35, 1.17), (2.11, 1.33), color='#5d84a6',
           bends=[(1.35, 1.38), (2.11, 1.38)])
@@ -184,12 +184,12 @@ def fast_weight_lens():
     # Keep the transformed value on a separate route until it is multiplied.
     arrow((1.48, .80), (4.37, 1.01), color='#478674', width=.9,
           bends=[(4.37, .80)])
-    ax.text(2.48, .71, 'the same zⱼ', fontsize=7.0, color=ink, ha='center')
+    ax.text(2.48, .71, r'the same $z_j$', fontsize=7.5, color=ink, ha='center')
 
-    ax.text(.11, .43, 'AT SOURCE SLOT j', fontsize=7.2,
+    ax.text(.11, .43, r'AT SOURCE SLOT $j$', fontsize=7.2,
             color=ink, fontweight='bold', va='center')
-    box(1.55, .24, 1.48, .34, 'Received: Σᵢ aᵢⱼ', fill=blue, size=7.4)
-    box(3.18, .24, 1.77, .34, 'Value weighted: Σᵢ aᵢⱼ ‖zⱼ‖', fill=teal, size=7.3)
+    box(1.55, .24, 1.48, .34, r'Received: $\sum_i a_{ij}$', fill=blue, size=8)
+    box(3.18, .24, 1.77, .34, r'Value weighted: $\sum_i a_{ij}\|z_j\|$', fill=teal, size=8)
     arrow((3.87, 1.01), (2.29, .58), color='#5d84a6', width=.75,
           bends=[(3.87, .64), (2.29, .64)])
     arrow((4.53, 1.01), (4.06, .58), color='#478674', width=.75,
@@ -205,14 +205,14 @@ def fast_weight_lens():
     svg = svg.replace('<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"\n  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n', '')
     svg_path.write_text('\n'.join(line.rstrip() for line in svg.splitlines()) + '\n',
                         encoding='utf-8', newline='\n')
-    FILES.append(('fast_weight_lens', 5.50, 1.55))
+    FILES.append(('fast_weight_lens', 5.50, 1.40))
     plt.close(fig)
 
 
 def example_maps(data, name, picks, groups_per_row, cell, gap, group_gap):
     """Fixed index order, five map columns per example, no visual selection."""
     columns = [('image', 'image'), ('human', 'human\n(ClickMe)'), ('map_R0', 'received\nattention'),
-               ('map_C3', 'contribution\nweighting'), ('map_C2', 'probe\nrelocation')]
+               ('map_C3', 'value\nweighting'), ('map_C2', 'probe\nrelocation')]
     rows = -(-len(picks) // groups_per_row)
     group_w = 5 * cell + 4 * gap
     width = groups_per_row * group_w + (groups_per_row - 1) * group_gap
@@ -251,7 +251,8 @@ def main():
     args = parser.parse_args()
     OUTPUTS, OUT = args.outputs, args.figures
     OUT.mkdir(parents=True, exist_ok=True)
-    fast_weight_lens()
+    with plt.rc_context({'font.family': 'STIXGeneral', 'mathtext.fontset': 'cm'}):
+        fast_weight_lens()
     execution_k_sweep(args.results)
     data = load_gallery(OUTPUTS / 'table1/clickme/deit')
     selection = json.loads((ROOT / 'data/splits/gallery_selection.json').read_text(encoding='utf-8'))

@@ -1,0 +1,69 @@
+{
+  "analysis": "post-registration exploratory",
+  "n_geometry_cohort": {
+    "deit": 12150,
+    "deit_b": 12150,
+    "dino": 12144
+  },
+  "quantile_rule": "empirical quartiles; exact ties assigned to lower bin",
+  "cuts": {
+    "deit": {
+      "object_area": [
+        0.1581632653061224,
+        0.3418367346938775,
+        0.5714285714285714
+      ],
+      "object_distance": [
+        0.7677417958562022,
+        1.5,
+        2.703675306230766
+      ]
+    },
+    "deit_b": {
+      "object_area": [
+        0.1581632653061224,
+        0.3418367346938775,
+        0.5714285714285714
+      ],
+      "object_distance": [
+        0.7677417958562022,
+        1.5,
+        2.703675306230766
+      ]
+    },
+    "dino": {
+      "object_area": [
+        0.1632653061224489,
+        0.3571428571428571,
+        0.5969387755102041
+      ],
+      "object_distance": [
+        0.7616600305266772,
+        1.5029545070316948,
+        2.7416365957296622
+      ]
+    }
+  },
+  "n_boot": 2000,
+  "rng_seed": 20261112,
+  "sources": [
+    "outputs/table1/imagenet_s/*/plausibility.csv.gz",
+    "outputs/supplementary_eval/imagenet_s/*/plausibility.csv.gz"
+  ],
+  "main_supplementary_discrepancies": [
+    {
+      "model": "deit",
+      "method": "R0",
+      "index": 943,
+      "main": 0.1427364864864864,
+      "supplementary": 0.1359797297297297
+    },
+    {
+      "model": "deit",
+      "method": "R0",
+      "index": 1136,
+      "main": 0.200354609929078,
+      "supplementary": 0.2070035460992907
+    }
+  ]
+}

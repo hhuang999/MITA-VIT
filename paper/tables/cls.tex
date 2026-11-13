@@ -1,0 +1,12 @@
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Model & Readout & Intervention $\rho$ & Mask AUROC & Enrichment \\
+\midrule
+DeiT-S & Value weighting, all queries & 0.705 & 0.769 & 0.127 \\
+ & Value weighting, CLS only & 0.747 & 0.678 & 0.095 \\
+ & \textbf{CLS $-$ all queries} & {\boldmath$+0.041$} & {\boldmath$-0.091$} & {\boldmath$-0.033$} \\
+DeiT-B & Value weighting, all queries & 0.652 & 0.685 & 0.084 \\
+ & Value weighting, CLS only & 0.734 & 0.710 & 0.088 \\
+ & \textbf{CLS $-$ all queries} & {\boldmath$+0.082$} & {\boldmath$+0.024$} & {\boldmath$+0.005$} \\
+\bottomrule
+\end{tabular}

@@ -98,18 +98,46 @@ def export(fig, stem, out, axes, row_groups, column_groups=()):
     plt.close(fig)
 
 
+def make_diagnostic_figure(diagnostics, out):
+    fig, axes = plt.subplots(1, 3, figsize=(5.5, 1.7))
+    fig.subplots_adjust(left=.10, right=.985, bottom=.28, top=.70, wspace=.55)
+    specs = (("M1", "R0", "Image specificity", "Mean-map share (%)", (0, 25)),
+             ("M2", "probe", "Spatial correspondence", "Index accuracy (%)", (0, 105)),
+             ("M3", "R0", "Output contribution", "High-norm share (%)", (-2, 48)))
+    for ax, (panel, variant, title, label, limits) in zip(axes, specs):
+        ax.set_title(title, fontsize=8)
+        ax.axvspan(8.5, 12.5, color="#F0F0EE", lw=0)
+        for model in MODELS:
+            rows = sorted((r for r in diagnostics if r["model"] == model
+                           and r["panel"] == panel and r["variant"] == variant),
+                          key=lambda r: int(r["layer"]))
+            if len(rows) != 12:
+                raise ValueError(f"Expected 12 diagnostic layers: {model}/{panel}")
+            x = [int(r["layer"]) for r in rows]
+            mean, low, high = [np.array([float(r[k]) for r in rows]) * 100
+                               for k in ("mean", "low", "high")]
+            ax.fill_between(x, low, high, color=COLORS[model], alpha=.18, lw=0)
+            ax.plot(x, mean, color=COLORS[model], ls=STYLES[model], lw=1.2)
+        ax.set(xlim=(.5, 12.5), ylim=limits, xticks=[1, 4, 8, 12], xlabel="Layer", ylabel=label)
+    handles = [Line2D([], [], color=COLORS[m], ls=STYLES[m], label=NAMES[m]) for m in MODELS]
+    handles.append(Patch(facecolor="#F0F0EE", label="Layers 9–12"))
+    fig.legend(handles=handles, loc="upper center", ncol=4, fontsize=8, frameon=False)
+    fig.savefig(out / "reading_diagnostics.pdf", metadata={"CreationDate": None})
+    plt.close(fig)
+
+
 def make_bridge_figure(diagnostics, tests, out):
     fig = plt.figure(figsize=(5.5, 2.85))
     upper = fig.add_gridspec(1, 3, left=0.17, right=0.985, bottom=0.635,
                             top=0.85, wspace=0.43)
-    lower = fig.add_gridspec(1, 3, left=0.17, right=0.985, bottom=0.16,
+    lower = fig.add_gridspec(1, 3, left=0.17, right=0.985, bottom=0.21,
                             top=0.45, wspace=0.43)
     top_axes = [fig.add_subplot(upper[0, col]) for col in range(3)]
     low_axes = [fig.add_subplot(lower[0, col]) for col in range(3)]
     panels = [("M1", "R0", "Specificity", "Mean-map\nshare (%)", (0, 25), [0, 10, 20]),
               ("M2", "probe", "Location", "Index-probe\naccuracy (%)", (0, 105), [0, 50, 100]),
               # Leave a little room below zero so DINO's zero series is visible above the frame.
-              ("M3", "R0", "Contribution", "High-norm\nshare (%)", (-2, 48), [0, 20, 40])]
+              ("M3", "R0", "Output magnitude", "High-norm\nshare (%)", (-2, 48), [0, 20, 40])]
     diagnostic_data = []
     for index, (ax, spec) in enumerate(zip(top_axes, panels)):
         panel, variant, title, ylabel, limits, ticks = spec
@@ -139,7 +167,7 @@ def make_bridge_figure(diagnostics, tests, out):
     paired_data = []
     for index, (ax, method, title) in enumerate(zip(
             low_axes, ("C1", "C2", "C3"),
-            ("Mean subtraction", "Probe relocation", "Norm weighting"))):
+            ("Mean subtraction", "Probe relocation", "Value weighting"))):
         letter = chr(100 + index)
         ax.set_gid(letter)
         panel_header(ax, letter, title, pad=6)
@@ -165,6 +193,7 @@ def make_bridge_figure(diagnostics, tests, out):
     fig.legend(handles=ref_handles, loc="lower center", bbox_to_anchor=(0.55, 0.005),
                frameon=False, ncol=2, fontsize=7, handletextpad=0.4,
                columnspacing=1.8)
+    fig.text(.57, .090, "Score difference (readout − comparator)", ha="center", fontsize=7)
     axes = top_axes + low_axes
     export(fig, "diagnosis_correction_bridge", out, axes,
            [["a", "b", "c"], ["d", "e", "f"]],
@@ -196,6 +225,8 @@ def main():
     diagnostic_rows = read_rows("results/diagnose.csv")
     test_rows = read_rows("results/correct_tests.csv")
     tests = contrast_index(test_rows)
+    with mpl.rc_context({"font.size": 8, "axes.labelsize": 8, "xtick.labelsize": 8, "ytick.labelsize": 8}):
+        make_diagnostic_figure(diagnostic_rows, args.out)
     manifest = {
         "status": "Manuscript figure regenerated from original stored statistics",
         "inputs": {path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest()

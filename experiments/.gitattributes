@@ -1,0 +1,3 @@
+# Raw measured exports and hash-selected lists use the original runtime line endings.
+*.csv -text whitespace=trailing-space,space-before-tab,cr-at-eol
+selected_names.txt -text whitespace=trailing-space,space-before-tab,cr-at-eol

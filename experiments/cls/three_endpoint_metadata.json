@@ -1,0 +1,15 @@
+{
+  "selected": 128,
+  "eligible": 128,
+  "excluded": [],
+  "no_new_model_forward": true,
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 2026,
+  "tie_noise_seed_shared_by_methods": 2026,
+  "selected_names_sha256": "dcdb7101dd92424579bb5243781e0f1043ca918c4c23f8edf60d217792b98ed1",
+  "per_source_sha256": "1683effdc28023d9788b1a0f669c34e3787ed6f6c69de0bda769fd3580665975",
+  "per_image_sha256": "007e2d36562709e04d82308239144240f35e4248c6ce5beb5c8c5f1f6fb80c30",
+  "addendum_protocol_sha256": "dc8de7c6b8963632a53fc0b3e4537acea2a19cbc1fd13b33ec05fd71593c7bfc",
+  "script_sha256": "e2838dfc723764a985d49afa0399adaf4ea1380aac56bf72a3288aed3ce9c82f",
+  "elapsed_seconds": 3.4125430999556556
+}

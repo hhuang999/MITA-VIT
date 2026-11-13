@@ -50,6 +50,7 @@ def main():
                         help="CLS scores to analyze (default: archived scores)")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "outputs/rerun/cls",
                         help="New output directory (default: outputs/rerun/cls)")
+    parser.add_argument("--protocol", type=Path, default=HERE / "addendum_protocol.md")
     args = parser.parse_args()
     source = args.input_dir.resolve()
     output = args.output_dir.resolve()
@@ -73,7 +74,9 @@ def main():
 
     # The model is instantiated only to recover its pinned evaluation transform.
     # No weights are loaded and no image is passed through the model.
-    transform_reference = load_deit("cpu", pretrained=False)
+    run_metadata = json.loads((source / "metadata.json").read_text())
+    is_base = run_metadata["checkpoint"][0].startswith("deit_base_")
+    transform_reference = load_deit("cpu", pretrained=False, base=is_base)
     dataset = PetTest(transform_reference)
     index = {name: i for i, name in enumerate(dataset.names)}
     if not set(names) <= set(index):
@@ -137,7 +140,7 @@ def main():
                 "selected_names_sha256": digest(source / "selected_names.txt"),
                 "per_source_sha256": digest(source / "per_source.csv.gz"),
                 "per_image_sha256": digest(source / "per_image.csv"),
-                "addendum_protocol_sha256": digest(HERE / "addendum_protocol.md"),
+                "addendum_protocol_sha256": digest(args.protocol),
                 "script_sha256": digest(Path(__file__)),
                 "elapsed_seconds": time.perf_counter() - started}
     (output / "three_endpoint_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
