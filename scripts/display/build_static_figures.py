@@ -16,7 +16,7 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 import json  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
-from matplotlib.patches import Circle  # noqa: E402
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch  # noqa: E402
 from fastweight_vit.gallery import SELECTED, load_gallery  # noqa: E402
 
 OUT = ROOT / 'paper/figures'
@@ -113,24 +113,100 @@ def execution_k_sweep(results):
 
 
 def fast_weight_lens():
-    """The compact first-page schematic used by the manuscript."""
-    fig, ax = plt.subplots(figsize=(1.93, 1.52))
-    ax.set(xlim=(0, 1), ylim=(0, 1))
-    ax.axis('off')
-    for y in (0.24, 0.47, 0.70):
-        ax.plot([0.10, 0.48, 0.90], [0.47, y, 0.47], color='#6d8295', lw=0.8, zorder=0)
-        ax.add_patch(Circle((0.48, y), 0.071, facecolor='#e4edf5', edgecolor='#2566a5', lw=0.9))
-    for x in (0.10, 0.90):
-        ax.add_patch(Circle((x, 0.47), 0.075, facecolor='white', edgecolor='0.25', lw=0.8))
-    ax.text(0.10, 0.47, r'$q_i^h$', ha='center', va='center', fontsize=10)
-    ax.text(0.90, 0.47, r'$o_i^h$', ha='center', va='center', fontsize=10)
-    ax.text(0.48, 0.47, r'$a_{ij}^h$', ha='center', va='center', fontsize=9)
-    ax.text(0.27, 0.83, r'keys $k_j^h$', ha='center', fontsize=9)
-    ax.text(0.76, 0.83, r'$W_O^h v_j^h$', ha='center', fontsize=9)
-    ax.text(0.48, 0.10, 'hidden units = tokens', ha='center', fontsize=8)
-    ax.text(0.48, 0.023, 'softmax-coupled activations', ha='center', fontsize=7.5)
+    """Trace one head from image-conditioned weights to a source-slot map."""
+    fig, ax = plt.subplots(figsize=(5.50, 1.55))
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
-    check_and_save(fig, 'fast_weight_lens')
+    ax.set(xlim=(0, 5.50), ylim=(.17, 1.72))
+    ax.set_aspect('equal')
+    ax.axis('off')
+
+    ink = '#22313f'
+    muted = '#718193'
+    edge = '#a6b5c3'
+    blue = '#eaf2f9'
+    teal = '#e7f3ef'
+    accent = '#bd6337'
+
+    def box(x, y, w, h, label, fill='white', stroke=edge, size=7.5):
+        ax.add_patch(FancyBboxPatch((x, y), w, h,
+                                   boxstyle='round,pad=0.012,rounding_size=0.045',
+                                   facecolor=fill, edgecolor=stroke, linewidth=.75))
+        ax.text(x + w / 2, y + h / 2, label, ha='center', va='center',
+                color=ink, fontsize=size)
+
+    def arrow(start, end, color=muted, width=.8, bends=None):
+        points = [start, *(bends or []), end]
+        for left, right in zip(points[:-2], points[1:-1]):
+            ax.plot([left[0], right[0]], [left[1], right[1]],
+                    color=color, lw=width, solid_capstyle='round')
+        ax.add_patch(FancyArrowPatch(points[-2], points[-1],
+                                    arrowstyle='-|>', mutation_scale=7,
+                                    color=color, linewidth=width))
+
+    ax.text(.10, 1.60, 'FIXED IMAGE  ·  ONE LAYER  ·  ONE HEAD', fontsize=7.2,
+            fontweight='bold', color=ink, va='center')
+    ax.text(.11, 1.45, 'SOURCE WEIGHTS', fontsize=7.0,
+            fontweight='bold', color=ink, va='center')
+    ax.text(1.43, 1.45, 'QUERY READOUT', fontsize=7.0,
+            fontweight='bold', color=ink, va='center')
+
+    # The highlighted source is one of the tokens entering the same joint softmax.
+    for n, x in enumerate((.08, .16, .24)):
+        ax.add_patch(FancyBboxPatch((x, .92 - .055 * n), .17, .27,
+                                   boxstyle='round,pad=0.005,rounding_size=0.025',
+                                   facecolor='white' if n < 2 else '#fae9df',
+                                   edgecolor=edge if n < 2 else accent,
+                                   linewidth=.7))
+    ax.text(.25, .71, 'source j', fontsize=7.2, color=ink, ha='center', va='center')
+    box(.50, 1.03, .85, .28, 'key  kⱼ', fill=blue)
+    box(.50, .64, .98, .32, '', fill=teal)
+    ax.text(.99, .862, 'transformed value', ha='center', va='center', color=ink, fontsize=7.1)
+    ax.text(.99, .730, r'$z_j=W_O\,v_j$', ha='center', va='center', color=ink, fontsize=9.6)
+
+    box(1.43, .99, .44, .32, 'qᵢ', fill='#f1f4f6', stroke=ink, size=9)
+    box(2.02, 1.01, .75, .32, 'qᵢ · kⱼ / √d', fill=blue)
+    box(2.92, .99, .62, .34, 'joint\nsoftmaxⱼ', fill=blue, size=7.2)
+    box(3.68, 1.01, .39, .32, 'aᵢⱼ', fill='#dcebf7', stroke='#5687ad', size=9)
+    box(4.22, 1.01, .62, .32, 'aᵢⱼ zⱼ', fill=teal, stroke='#478674', size=9)
+    box(4.99, 1.01, .40, .32, 'Σⱼ', fill='#f1f4f6', stroke=ink, size=9)
+
+    arrow((1.35, 1.17), (2.11, 1.33), color='#5d84a6',
+          bends=[(1.35, 1.38), (2.11, 1.38)])
+    arrow((1.87, 1.14), (2.02, 1.14), color=ink)
+    arrow((2.77, 1.17), (2.92, 1.17), color=ink)
+    arrow((3.54, 1.17), (3.68, 1.17), color=ink)
+    arrow((4.07, 1.17), (4.22, 1.17), color=ink)
+    arrow((4.84, 1.17), (4.99, 1.17), color=ink)
+    ax.text(3.865, 1.43, 'activation', fontsize=7.0, ha='center', color=ink)
+    ax.text(4.53, 1.43, 'contribution', fontsize=7.0, ha='center', color=ink)
+    ax.text(5.19, 1.43, 'output', fontsize=7.0, ha='center', color=ink)
+
+    # Keep the transformed value on a separate route until it is multiplied.
+    arrow((1.48, .80), (4.37, 1.01), color='#478674', width=.9,
+          bends=[(4.37, .80)])
+    ax.text(2.48, .71, 'the same zⱼ', fontsize=7.0, color=ink, ha='center')
+
+    ax.text(.11, .43, 'AT SOURCE SLOT j', fontsize=7.2,
+            color=ink, fontweight='bold', va='center')
+    box(1.55, .24, 1.48, .34, 'Received: Σᵢ aᵢⱼ', fill=blue, size=7.4)
+    box(3.18, .24, 1.77, .34, 'Value weighted: Σᵢ aᵢⱼ ‖zⱼ‖', fill=teal, size=7.3)
+    arrow((3.87, 1.01), (2.29, .58), color='#5d84a6', width=.75,
+          bends=[(3.87, .64), (2.29, .64)])
+    arrow((4.53, 1.01), (4.06, .58), color='#478674', width=.75,
+          bends=[(4.53, .65), (4.06, .65)])
+
+    # The head and query sums are stated in the caption, where they can be read.
+    fig.canvas.draw()
+    fig.savefig(OUT / 'fast_weight_lens.pdf', metadata={'CreationDate': None})
+    plt.rcParams['svg.hashsalt'] = 'fast_weight_lens'
+    svg_path = OUT / 'fast_weight_lens.svg'
+    fig.savefig(svg_path, metadata={'Date': None})
+    svg = svg_path.read_text(encoding='utf-8')
+    svg = svg.replace('<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"\n  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n', '')
+    svg_path.write_text('\n'.join(line.rstrip() for line in svg.splitlines()) + '\n',
+                        encoding='utf-8', newline='\n')
+    FILES.append(('fast_weight_lens', 5.50, 1.55))
+    plt.close(fig)
 
 
 def example_maps(data, name, picks, groups_per_row, cell, gap, group_gap):

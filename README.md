@@ -48,7 +48,7 @@ The numerical rebuild starts from the preserved per-image and per-layer exports 
 
 | Paper item | Source evidence or implementation | Rebuilt output |
 | --- | --- | --- |
-| Fig. 1, head as a fast-weight network | Schematic in the display scripts | `paper/figures/fast_weight_lens.pdf` |
+| Fig. 1, one image-conditioned attention head | `scripts/display/build_static_figures.py` (`fast_weight_lens`) and editable `paper/figures/fast_weight_lens.svg` | `paper/figures/fast_weight_lens.pdf` |
 | Fig. 2, three diagnostic/readout comparisons | `results/diagnose.csv`, `results/correct_tests.csv` | `paper/figures/diagnosis_correction_bridge.pdf` |
 | Table 1, spatial assignment | `experiments/spatial/summary.json` | `paper/tables/spatial.tex` |
 | Table 2, CLS and masks | `experiments/cls/three_endpoint_{summary,contrasts}.csv` | `paper/tables/cls.tex` |

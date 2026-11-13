@@ -69,8 +69,8 @@ def main():
         row["endpoint"]: float(row["mean"]) for row in rows("cls/three_endpoint_contrasts.csv")
         if (row["a"], row["b"]) == ("cls_sum_head", "all_c3")
     }
-    body.append([r"\midrule CLS minus all queries (sum of magnitudes)",
-                 *[f"${contrasts[metric]:+.3f}$" for metric in ("margin_spearman", "ring_enrichment", "auroc")]])
+    body.append([r"\midrule \textbf{CLS $-$ all queries}",
+                 *[rf"{{\boldmath${contrasts[metric]:+.3f}$}}" for metric in ("margin_spearman", "ring_enrichment", "auroc")]])
     write_table("cls.tex","@{}lrrr@{}","Layer-12 readout & Margin Spearman & Enrichment & AUROC",body)
 
 if __name__ == "__main__":
