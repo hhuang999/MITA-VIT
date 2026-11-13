@@ -1,4 +1,5 @@
 """Make manuscript tables from the preserved exploratory summaries."""
+import argparse
 import csv
 import json
 from pathlib import Path
@@ -21,7 +22,7 @@ def write_table(name, cols, header, body):
 def ci(mean, low, high):
     return f"{float(mean):.3f} [{float(low):.3f}, {float(high):.3f}]".replace("-", "$-$")
 
-def main():
+def spatial_table():
     study=json.loads((DATA/"spatial/summary.json").read_text(encoding="utf-8"))
     labels={"R0":"Received attention (R0)", "C3":"Projected value norm (C3)",
             "donor_rank":"Donor-image positions", "ring_shuffle":"Within-ring permutation",
@@ -35,6 +36,8 @@ def main():
         body.append([label,f"{v['mean']:.3f}",delta,f"{m['auroc']['mean']:.3f}"])
     write_table("spatial.tex","@{}lrrr@{}",r"Reading & Enrichment & Difference from C3 [95\% CI] & AUROC",body)
 
+
+def appendix_tables():
     areas=rows("endpoints/deletion_areas.csv")
     click=rows("endpoints/clickme_bootstrap.csv")
     body=[]
@@ -58,6 +61,8 @@ def main():
             body.append([metric,name,*[f"{cell[f'Q{i}']:.3f}".replace("-0.000", "0.000").replace("-", "$-$") for i in range(1,5)]])
     write_table("geometry.tex","@{}llrrrr@{}","Metric & Model & Q1 & Q2 & Q3 & Q4",body)
 
+
+def cls_table():
     records = rows("cls/three_endpoint_summary.csv")
     means = {(r["method"],r["endpoint"]):float(r["mean"]) for r in records}
     methods = {"all_r0":"All queries, attention", "all_c3":"All queries, sum of magnitudes",
@@ -74,4 +79,10 @@ def main():
     write_table("cls.tex","@{}lrrr@{}","Layer-12 readout & Margin Spearman & Enrichment & AUROC",body)
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--main-only", action="store_true", help="Build Tables 1 and 2 only.")
+    args = parser.parse_args()
+    spatial_table()
+    cls_table()
+    if not args.main_only:
+        appendix_tables()
